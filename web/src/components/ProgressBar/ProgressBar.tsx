@@ -1,6 +1,6 @@
 import styles from './ProgressBar.module.css';
 
-export type ProgressTone = 'gradient' | 'cyan' | 'blue' | 'success';
+export type ProgressTone = 'gradient' | 'cyan' | 'blue' | 'success' | 'warning';
 export type ProgressSize = 'sm' | 'md';
 
 interface ProgressBarProps {

@@ -25,3 +25,4 @@
 .cyan { background-color: var(--color-cyan-accent); }
 .blue { background-color: var(--color-secondary); }
 .success { background-color: var(--color-state-success); }
+.warning { background-color: var(--color-state-warning); }

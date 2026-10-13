@@ -1,7 +1,18 @@
 .card {
   background-color: var(--color-surface-card);
   border-radius: var(--radius-xl);
+}
+
+.elevation-1 {
   box-shadow: var(--elevation-1);
+}
+
+.elevation-2 {
+  box-shadow: var(--elevation-2);
+}
+
+.elevation-3 {
+  box-shadow: var(--elevation-3);
 }
 
 .padding-none { padding: 0; }

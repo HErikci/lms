@@ -12,21 +12,25 @@
 /* --- soft --- */
 .soft-brand { background-color: var(--color-secondary-soft); color: var(--color-secondary); }
 .soft-info { background-color: var(--color-surface-container-low); color: var(--color-secondary); }
+.soft-secondary { background-color: var(--color-secondary-soft); color: var(--color-secondary); }
 .soft-cyan { background-color: var(--color-cyan-accent-soft); color: var(--color-cyan-accent); }
 .soft-success { background-color: var(--color-state-success-soft); color: var(--color-state-success); }
 .soft-warning { background-color: var(--color-state-warning-soft); color: var(--color-state-warning); }
 .soft-error { background-color: var(--color-state-error-soft); color: var(--color-state-error); }
 .soft-neutral { background-color: var(--color-surface-container); color: var(--color-text-muted); }
+.soft-muted { background-color: var(--color-surface-container); color: var(--color-text-muted); }
 .soft-navy { background-color: var(--color-surface-container-low); color: var(--color-primary); }
 
 /* --- solid --- */
 .solid-brand { background-color: var(--color-secondary); color: var(--color-on-secondary); }
 .solid-info { background-color: var(--color-state-info); color: var(--color-on-primary); }
+.solid-secondary { background-color: var(--color-secondary); color: var(--color-on-secondary); }
 .solid-cyan { background-color: var(--color-cyan-accent); color: var(--color-on-primary); }
 .solid-success { background-color: var(--color-state-success); color: var(--color-on-primary); }
 .solid-warning { background-color: var(--color-state-warning); color: var(--color-on-primary); }
 .solid-error { background-color: var(--color-state-error); color: var(--color-on-error); }
 .solid-neutral { background-color: var(--color-surface-container); color: var(--color-on-surface); }
+.solid-muted { background-color: var(--color-surface-container); color: var(--color-text-muted); }
 .solid-navy {
   background-color: var(--color-navy-translucent);
   color: var(--color-on-primary);
@@ -36,9 +40,11 @@
 /* --- glass: gradient hero üzerinde --- */
 .glass-brand,
 .glass-info,
+.glass-secondary,
 .glass-cyan,
 .glass-success,
 .glass-neutral,
+.glass-muted,
 .glass-navy {
   background-color: var(--color-glass);
   color: var(--color-tertiary-fixed);
