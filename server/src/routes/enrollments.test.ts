@@ -1,12 +1,17 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
+import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../app.js';
 import { prisma } from '../lib/prisma.js';
 import bcrypt from 'bcrypt';
 
 describe('enrollment routes', () => {
-  const app = buildApp();
+  let app: FastifyInstance;
   let studentToken: string;
   let courseId: string;
+
+  beforeAll(async () => {
+    app = await buildApp();
+  });
 
   beforeEach(async () => {
     await prisma.enrollment.deleteMany();

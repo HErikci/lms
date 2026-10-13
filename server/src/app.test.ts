@@ -1,8 +1,12 @@
-import { describe, it, expect, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import type { FastifyInstance } from 'fastify';
 import { buildApp } from './app.js';
 
 describe('health check', () => {
-  const app = buildApp();
+  let app: FastifyInstance;
+  beforeAll(async () => {
+    app = await buildApp();
+  });
   afterAll(() => app.close());
 
   it('returns ok status', async () => {

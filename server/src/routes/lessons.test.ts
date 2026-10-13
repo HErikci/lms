@@ -1,12 +1,17 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
+import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../app.js';
 import { prisma } from '../lib/prisma.js';
 import bcrypt from 'bcrypt';
 
 describe('lesson routes', () => {
-  const app = buildApp();
+  let app: FastifyInstance;
   let instructorToken: string;
   let moduleId: string;
+
+  beforeAll(async () => {
+    app = await buildApp();
+  });
 
   beforeEach(async () => {
     await prisma.enrollment.deleteMany();
@@ -33,6 +38,7 @@ describe('lesson routes', () => {
         category: 'Test',
         level: 'Başlangıç',
         accessMode: 'SEQUENTIAL',
+        status: 'PUBLISHED',
         instructorId: instructor.id,
       },
     });
@@ -63,5 +69,46 @@ describe('lesson routes', () => {
     const response = await app.inject({ method: 'GET', url: `/api/v1/courses/${module.courseId}` });
     const lessons = response.json().course.modules[0].lessons;
     expect(lessons.map((l: { title: string }) => l.title)).toEqual(['Birinci Ders', 'İkinci Ders']);
+  });
+
+  it('rejects an instructor who does not own the course', async () => {
+    const passwordHash = await bcrypt.hash('sifre123', 12);
+    await prisma.user.create({
+      data: { email: 'other@example.com', passwordHash, name: 'Diğer Eğitmen', role: 'INSTRUCTOR' },
+    });
+    const login = await app.inject({
+      method: 'POST',
+      url: '/api/v1/auth/login',
+      payload: { email: 'other@example.com', password: 'sifre123' },
+    });
+    const otherToken = login.json().token;
+    const response = await app.inject({
+      method: 'POST',
+      url: `/api/v1/modules/${moduleId}/lessons`,
+      headers: { authorization: `Bearer ${otherToken}` },
+      payload: { title: 'Ders 1', order: 1, status: 'DRAFT' },
+    });
+    expect(response.statusCode).toBe(403);
+    expect(response.json().error.code).toBe('FORBIDDEN');
+  });
+
+  it('allows an admin to add a lesson to any module', async () => {
+    const passwordHash = await bcrypt.hash('sifre123', 12);
+    await prisma.user.create({
+      data: { email: 'admin@example.com', passwordHash, name: 'Yönetici', role: 'ADMIN' },
+    });
+    const login = await app.inject({
+      method: 'POST',
+      url: '/api/v1/auth/login',
+      payload: { email: 'admin@example.com', password: 'sifre123' },
+    });
+    const adminToken = login.json().token;
+    const response = await app.inject({
+      method: 'POST',
+      url: `/api/v1/modules/${moduleId}/lessons`,
+      headers: { authorization: `Bearer ${adminToken}` },
+      payload: { title: 'Ders 1', order: 1, status: 'DRAFT' },
+    });
+    expect(response.statusCode).toBe(201);
   });
 });

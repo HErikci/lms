@@ -1,12 +1,17 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
+import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../app.js';
 import { prisma } from '../lib/prisma.js';
 import bcrypt from 'bcrypt';
 
 describe('course routes', () => {
-  const app = buildApp();
+  let app: FastifyInstance;
   let studentToken: string;
   let instructorToken: string;
+
+  beforeAll(async () => {
+    app = await buildApp();
+  });
 
   beforeEach(async () => {
     await prisma.enrollment.deleteMany();
@@ -106,6 +111,7 @@ describe('course routes', () => {
         accessMode: 'FREE',
       },
     });
+    await prisma.course.updateMany({ data: { status: 'PUBLISHED' } });
     const response = await app.inject({ method: 'GET', url: '/api/v1/courses?category=Yazılım' });
     expect(response.statusCode).toBe(200);
     const { courses } = response.json();
@@ -117,5 +123,90 @@ describe('course routes', () => {
     const response = await app.inject({ method: 'GET', url: '/api/v1/courses/does-not-exist' });
     expect(response.statusCode).toBe(404);
     expect(response.json().error.code).toBe('NOT_FOUND');
+  });
+
+  it('does not list a draft course in the public list', async () => {
+    await app.inject({
+      method: 'POST',
+      url: '/api/v1/courses',
+      headers: { authorization: `Bearer ${instructorToken}` },
+      payload: {
+        title: 'Taslak Kurs',
+        description: 'Açıklama',
+        category: 'Test',
+        level: 'Orta',
+        tags: [],
+        accessMode: 'FREE',
+      },
+    });
+    const response = await app.inject({ method: 'GET', url: '/api/v1/courses' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json().courses).toHaveLength(0);
+  });
+
+  it('404s a draft course detail for an anonymous caller', async () => {
+    const createResponse = await app.inject({
+      method: 'POST',
+      url: '/api/v1/courses',
+      headers: { authorization: `Bearer ${instructorToken}` },
+      payload: {
+        title: 'Taslak Kurs',
+        description: 'Açıklama',
+        category: 'Test',
+        level: 'Orta',
+        tags: [],
+        accessMode: 'FREE',
+      },
+    });
+    const courseId = createResponse.json().course.id;
+    const response = await app.inject({ method: 'GET', url: `/api/v1/courses/${courseId}` });
+    expect(response.statusCode).toBe(404);
+    expect(response.json().error.code).toBe('NOT_FOUND');
+  });
+
+  it('404s a draft course detail for another instructor', async () => {
+    const createResponse = await app.inject({
+      method: 'POST',
+      url: '/api/v1/courses',
+      headers: { authorization: `Bearer ${instructorToken}` },
+      payload: {
+        title: 'Taslak Kurs',
+        description: 'Açıklama',
+        category: 'Test',
+        level: 'Orta',
+        tags: [],
+        accessMode: 'FREE',
+      },
+    });
+    const courseId = createResponse.json().course.id;
+    const response = await app.inject({
+      method: 'GET',
+      url: `/api/v1/courses/${courseId}`,
+      headers: { authorization: `Bearer ${studentToken}` },
+    });
+    expect(response.statusCode).toBe(404);
+  });
+
+  it('allows the owning instructor to view their own draft course', async () => {
+    const createResponse = await app.inject({
+      method: 'POST',
+      url: '/api/v1/courses',
+      headers: { authorization: `Bearer ${instructorToken}` },
+      payload: {
+        title: 'Taslak Kurs',
+        description: 'Açıklama',
+        category: 'Test',
+        level: 'Orta',
+        tags: [],
+        accessMode: 'FREE',
+      },
+    });
+    const courseId = createResponse.json().course.id;
+    const response = await app.inject({
+      method: 'GET',
+      url: `/api/v1/courses/${courseId}`,
+      headers: { authorization: `Bearer ${instructorToken}` },
+    });
+    expect(response.statusCode).toBe(200);
   });
 });
