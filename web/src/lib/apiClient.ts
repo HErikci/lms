@@ -17,11 +17,19 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     },
   });
 
-  const body = await response.json();
-
   if (!response.ok) {
-    throw new ApiError(body.error.code, body.error.message, response.status);
+    let body: { error?: { code?: string; message?: string } } | null = null;
+    try {
+      body = await response.json();
+    } catch {
+      body = null;
+    }
+    throw new ApiError(
+      body?.error?.code ?? 'UNKNOWN',
+      body?.error?.message ?? 'Bilinmeyen bir hata oluştu.',
+      response.status,
+    );
   }
 
-  return body as T;
+  return (await response.json()) as T;
 }
