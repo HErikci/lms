@@ -1,0 +1,26 @@
+.columns {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  align-items: start;
+  gap: var(--space-xl);
+}
+
+.primary,
+.secondary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  min-width: 0;
+}
+
+@media (max-width: 1023px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .primary,
+  .secondary {
+    gap: var(--space-lg);
+  }
+}

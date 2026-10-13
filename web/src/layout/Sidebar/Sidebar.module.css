@@ -1,0 +1,152 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: var(--sidebar-width);
+  height: 100%;
+  padding-bottom: var(--space-lg);
+  overflow-y: auto;
+  background-color: var(--color-surface-container-lowest);
+  box-shadow: var(--elevation-chrome);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  height: var(--topbar-height);
+  padding: 0 var(--space-lg);
+}
+
+.logo {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sectionLabel {
+  padding: var(--space-xs) var(--space-lg);
+  color: var(--color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: 0 var(--space-md);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.625rem var(--space-md);
+  border-radius: var(--radius-xl);
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+.navItem:hover {
+  background-color: var(--color-surface-container);
+  color: var(--color-on-surface);
+}
+
+.navItemActive,
+.navItemActive:hover {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  box-shadow: var(--elevation-1);
+}
+
+.navLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assistantCard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin: 0 var(--space-md);
+  padding: var(--space-md);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-ai-assistant-tint);
+}
+
+.assistantIcon {
+  color: var(--color-cyan-accent);
+  margin-top: 0.125rem;
+}
+
+.assistantText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+/* ---- Tablet: 72px ikon rayı ---- */
+@media (max-width: 1279px) and (min-width: 768px) {
+  .sidebar {
+    width: var(--sidebar-rail-width);
+  }
+
+  .brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .brandText,
+  .navLabel,
+  .sectionLabel,
+  .assistantText {
+    display: none;
+  }
+
+  .navItem {
+    justify-content: center;
+    padding: 0.625rem;
+  }
+
+  .assistantCard {
+    justify-content: center;
+    margin: 0 var(--space-sm);
+    padding: var(--space-sm);
+  }
+
+  .assistantIcon {
+    margin-top: 0;
+  }
+}
+
+/* ---- Mobil: off-canvas çekmece ---- */
+@media (max-width: 767px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+  }
+
+  .open {
+    transform: translateX(0);
+  }
+}

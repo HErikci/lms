@@ -1,0 +1,23 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.tone-secondary { color: var(--color-secondary); }
+.tone-cyan { color: var(--color-cyan-accent); }
+.tone-warning { color: var(--color-state-warning); }
+.tone-success { color: var(--color-state-success); }

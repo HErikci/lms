@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+
+<html lang="tr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "secondary-container": "#5bb8fe",
+          "on-tertiary": "#ffffff",
+          "surface-container-high": "#dce9ff",
+          "surface-bright": "#f8f9ff",
+          "cyan-accent": "#0891b2",
+          "inverse-primary": "#afc6ff",
+          "tertiary-fixed-dim": "#4cd7f6",
+          "primary": "#00163d",
+          "state-info": "#2563eb",
+          "state-success": "#059669",
+          "text-main": "#0f172a",
+          "inverse-surface": "#213145",
+          "error-container": "#ffdad6",
+          "primary-fixed-dim": "#afc6ff",
+          "on-secondary-fixed": "#001d31",
+          "secondary": "#006398",
+          "on-primary": "#ffffff",
+          "canvas-bg": "#f8fafc",
+          "secondary-fixed": "#cce5ff",
+          "tertiary": "#001c22",
+          "surface-dim": "#cbdbf5",
+          "on-primary-fixed": "#001944",
+          "surface-container-low": "#eff4ff",
+          "on-secondary": "#ffffff",
+          "on-tertiary-fixed-variant": "#004e5c",
+          "tertiary-container": "#00323c",
+          "primary-container": "#0f2b5c",
+          "surface-tint": "#465d91",
+          "surface-variant": "#d3e4fe",
+          "on-tertiary-container": "#00a2be",
+          "electric-blue-hover": "#0369a1",
+          "secondary-fixed-dim": "#93ccff",
+          "on-secondary-fixed-variant": "#004b73",
+          "surface-container-lowest": "#ffffff",
+          "state-warning": "#d97706",
+          "brand-navy-deep": "#0a1d3f",
+          "on-surface-variant": "#44464f",
+          "on-surface": "#0b1c30",
+          "on-error-container": "#93000a",
+          "error": "#ba1a1a",
+          "tertiary-fixed": "#acedff",
+          "primary-fixed": "#d9e2ff",
+          "on-primary-container": "#7c94cb",
+          "outline-variant": "#c4c6d0",
+          "background": "#f8f9ff",
+          "on-error": "#ffffff",
+          "on-primary-fixed-variant": "#2d4678",
+          "surface-container": "#e5eeff",
+          "on-background": "#0b1c30",
+          "text-muted": "#64748b",
+          "border-subtle": "#e2e8f0",
+          "surface-card": "#ffffff",
+          "on-tertiary-fixed": "#001f26",
+          "on-secondary-container": "#00476e",
+          "outline": "#747780",
+          "surface": "#f8f9ff",
+          "state-error": "#dc2626",
+          "ai-assistant-tint": "#f0fdfa",
+          "surface-container-highest": "#d3e4fe",
+          "inverse-on-surface": "#eaf1ff"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "gutter-mobile": "1rem",
+          "space-2xl": "3rem",
+          "space-xl": "2rem",
+          "space-lg": "1.5rem",
+          "space-md": "1rem",
+          "space-sm": "0.5rem",
+          "gutter": "1.5rem",
+          "margin-mobile": "1rem",
+          "margin": "2rem",
+          "space-xs": "0.25rem"
+        },
+        "fontFamily": {
+          "headline-lg": [
+            "Plus Jakarta Sans"
+          ],
+          "label-md": [
+            "Inter"
+          ],
+          "body-lg": [
+            "Inter"
+          ],
+          "body-sm": [
+            "Inter"
+          ],
+          "title-md": [
+            "Plus Jakarta Sans"
+          ],
+          "headline-lg-mobile": [
+            "Plus Jakarta Sans"
+          ],
+          "label-lg": [
+            "Inter"
+          ],
+          "display-hero": [
+            "Plus Jakarta Sans"
+          ],
+          "body-md": [
+            "Inter"
+          ],
+          "headline-sm": [
+            "Plus Jakarta Sans"
+          ],
+          "display-hero-mobile": [
+            "Plus Jakarta Sans"
+          ],
+          "headline-md": [
+            "Plus Jakarta Sans"
+          ],
+          "code-sm": [
+            "Inter"
+          ]
+        },
+        "fontSize": {
+          "headline-lg": [
+            "32px",
+            {
+              "lineHeight": "40px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "label-md": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "letterSpacing": "0.02em",
+              "fontWeight": "600"
+            }
+          ],
+          "body-lg": [
+            "16px",
+            {
+              "lineHeight": "26px",
+              "fontWeight": "400"
+            }
+          ],
+          "body-sm": [
+            "12px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "400"
+            }
+          ],
+          "title-md": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-lg-mobile": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "label-lg": [
+            "14px",
+            {
+              "lineHeight": "20px",
+              "letterSpacing": "0.01em",
+              "fontWeight": "600"
+            }
+          ],
+          "display-hero": [
+            "40px",
+            {
+              "lineHeight": "48px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-md": [
+            "14px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "400"
+            }
+          ],
+          "headline-sm": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "fontWeight": "600"
+            }
+          ],
+          "display-hero-mobile": [
+            "28px",
+            {
+              "lineHeight": "36px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-md": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "600"
+            }
+          ],
+          "code-sm": [
+            "13px",
+            {
+              "lineHeight": "20px",
+              "fontWeight": "500"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-canvas-bg font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 flex items-center gap-space-sm px-space-lg bg-surface-container-lowest"><img alt="logo.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WQvDHMAAw5VGEaVUdKMeadWzCQonlvOOze-7BZ7ANhWXY37DIYN7TltlpavU8kjInsuVSL8XpgK9M5Q36rQYrgADJrqA4YYOWvTJGniDxDiVPj5BUpJwd2aVuUyPSoNFI_Vu5ssd_W9gS7ZOC8wjonmrTLn59APvw6uqx1s8Ir4Ea0q4UOEMbv-Z7OVkfo0USKqnD4aZpwB1GqHHBQZICa0ix09922-EAR8C7ufVcvKK_GyY_T5J6NAAQc0i7fFm4b_6sYpTGqGw"/><div class="flex flex-col"><span class="font-title-md text-title-md text-primary leading-tight tracking-tight">Akademi LMS</span><span class="font-label-md text-label-md text-secondary">Öğrenci Portalı</span></div></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Menü</div></div><nav class="flex flex-col gap-space-xs px-space-md" data-active-classes="bg-primary-container text-on-primary font-title-md rounded-xl shadow-[0_1px_3px_0_rgba(15,43,92,0.04)]"><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-title-md rounded-xl shadow-[0_1px_3px_0_rgba(15,43,92,0.04)]" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Genel Bakış</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="kurslarim" href="#"><span class="material-symbols-outlined text-[20px]">school</span><span class="font-label-lg text-label-lg">Kurslarım / Dersler</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="duyurular" href="#"><span class="material-symbols-outlined text-[20px]">campaign</span><span class="font-label-lg text-label-lg">Duyurular</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="takvim" href="#"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span class="font-label-lg text-label-lg">Takvim</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="notlar-ve-gorevler" href="#"><span class="material-symbols-outlined text-[20px]">assignment_turned_in</span><span class="font-label-lg text-label-lg">Notlar &amp; Görevler</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="sinavlar" href="#"><span class="material-symbols-outlined text-[20px]">quiz</span><span class="font-label-lg text-label-lg">Sınav Sistemi</span></a></nav></div><div class="p-space-md"><div class="bg-ai-assistant-tint p-space-md rounded-xl flex items-start gap-space-sm"><span class="material-symbols-outlined text-cyan-accent text-[22px]">auto_awesome</span><div class="flex flex-col"><span class="font-label-md text-label-md text-brand-navy-deep font-semibold">Akıllı Asistan</span><span class="font-body-sm text-body-sm text-on-surface-variant">Ders özetleri ve sınav hazırlığı aktif</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-space-xl flex items-center justify-between gap-space-lg"><div class="flex items-center flex-1 max-w-md"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3 text-text-muted text-[20px]">search</span><input class="w-full h-11 pl-10 pr-4 bg-surface-container-low rounded-xl font-body-sm text-body-sm text-on-surface placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-secondary transition-all" placeholder="Ders, içerik, hoca veya ödev ara..." type="search"/></div></div><div class="flex items-center gap-space-md"><button aria-label="Bildirimler" class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-state-error rounded-full ring-2 ring-surface-container-lowest"></span></button><button aria-label="Mesajlar" class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">chat_bubble</span></button><div class="h-6 w-px bg-surface-container"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden md:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface">Deniz Akın</span><span class="font-body-sm text-body-sm text-text-muted">202484019</span></div></div></div></div></header><main class="w-full pt-16 bg-canvas-bg min-h-screen"><div class="flex flex-col w-full">
+<div class="px-space-xl py-space-xl flex flex-col gap-space-xl max-w-[1600px] mx-auto w-full">
+<!-- Üst Karşılama & Motivasyon Banner'ı -->
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary-container via-brand-navy-deep to-secondary text-on-primary shadow-md p-space-xl">
+<div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-secondary-container/10 blur-3xl pointer-events-none"></div>
+<div class="absolute right-40 -bottom-20 w-64 h-64 rounded-full bg-cyan-accent/20 blur-2xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-lg">
+<div class="flex flex-col gap-space-xs max-w-2xl">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-surface-container-lowest/15 backdrop-blur-md text-tertiary-fixed font-label-md text-label-md tracking-wide">
+<span class="material-symbols-outlined text-[16px]">verified</span> 2024-2025 Güz Dönemi
+            </span>
+<span class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-state-warning/20 text-state-warning font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">local_fire_department</span> 5 Günlük Seri!
+            </span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-primary tracking-tight">
+            Hoş geldin, Selin Demir 👋
+          </h1>
+<p class="font-body-lg text-body-lg text-surface-container-high leading-relaxed">
+            Harika gidiyorsun! Bu hafta hedeflerinin <strong class="text-on-primary font-semibold">%78'ini</strong> tamamladın. Bugün modern mimari modülünü bitirerek haftalık rozeti kazanabilirsin.
+          </p>
+</div>
+<!-- Seri & Haftalık Aktivite Mini Widget -->
+<div class="flex items-center gap-space-md bg-surface-container-lowest/10 backdrop-blur-md rounded-xl p-space-md border-0 shadow-sm self-stretch lg:self-auto">
+<div class="flex flex-col items-center justify-center px-space-sm py-1 bg-surface-container-lowest/15 rounded-lg min-w-[70px]">
+<span class="font-headline-md text-headline-md text-tertiary-fixed-dim leading-none">5</span>
+<span class="font-label-md text-label-md text-surface-container-high uppercase mt-1">Gün Seri</span>
+</div>
+<div class="flex flex-col gap-1.5">
+<span class="font-label-md text-label-md text-surface-container-high">Bu Haftaki Hedef: 6 Saat</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-6 rounded-full bg-cyan-accent" title="Pzt"></span>
+<span class="w-2.5 h-7 rounded-full bg-cyan-accent" title="Sal"></span>
+<span class="w-2.5 h-8 rounded-full bg-cyan-accent" title="Çar"></span>
+<span class="w-2.5 h-6 rounded-full bg-cyan-accent" title="Per"></span>
+<span class="w-2.5 h-9 rounded-full bg-tertiary-fixed-dim ring-2 ring-surface-container-lowest/40" title="Bugün (Cum)"></span>
+<span class="w-2.5 h-3 rounded-full bg-surface-container-lowest/20" title="Cmt"></span>
+<span class="w-2.5 h-3 rounded-full bg-surface-container-lowest/20" title="Paz"></span>
+</div>
+<span class="font-body-sm text-body-sm text-surface-container-highest">Bugün 48 dk tamamlandı</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Hızlı İstatistik Metrik Kartları -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-lg">
+<!-- Metrik 1 -->
+<div class="bg-surface-card rounded-xl p-space-lg shadow-sm flex items-center justify-between group hover:shadow-md transition-all">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-text-muted uppercase tracking-wider">Kayıtlı Kurslar</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-brand-navy-deep font-bold">4</span>
+<span class="font-label-md text-label-md text-state-info font-medium">Aktif Dönem</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px] text-state-success">arrow_upward</span> 2 yeni atanan ders
+          </span>
+</div>
+<div class="w-13 h-13 p-3 rounded-xl bg-surface-container-low text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">menu_book</span>
+</div>
+</div>
+<!-- Metrik 2 -->
+<div class="bg-surface-card rounded-xl p-space-lg shadow-sm flex items-center justify-between group hover:shadow-md transition-all">
+<div class="flex flex-col gap-1 flex-1 pr-2">
+<span class="font-label-md text-label-md text-text-muted uppercase tracking-wider">Tamamlanan Dersler</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-brand-navy-deep font-bold">42<span class="font-title-md text-title-md text-text-muted font-normal">/62</span></span>
+<span class="font-label-md text-label-md text-state-success font-semibold">%68</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full mt-2 overflow-hidden">
+<div class="bg-gradient-to-r from-secondary to-cyan-accent h-full rounded-full transition-all duration-700" style="width: 68%;"></div>
+</div>
+</div>
+<div class="w-13 h-13 p-3 rounded-xl bg-surface-container-low text-cyan-accent flex items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">check_circle</span>
+</div>
+</div>
+<!-- Metrik 3 -->
+<div class="bg-surface-card rounded-xl p-space-lg shadow-sm flex items-center justify-between group hover:shadow-md transition-all">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-text-muted uppercase tracking-wider">Ortalama Başarı</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-brand-navy-deep font-bold">%84</span>
+<span class="font-label-md text-label-md text-state-success font-semibold">AA / Yüksek</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px] text-state-success">trending_up</span> Son quizden +%6 artış
+          </span>
+</div>
+<div class="w-13 h-13 p-3 rounded-xl bg-surface-container-low text-state-success flex items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">military_tech</span>
+</div>
+</div>
+<!-- Metrik 4 -->
+<div class="bg-surface-card rounded-xl p-space-lg shadow-sm flex items-center justify-between group hover:shadow-md transition-all">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-text-muted uppercase tracking-wider">Çalışma Süresi</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-brand-navy-deep font-bold">28.5</span>
+<span class="font-label-md text-label-md text-text-muted">Saat / Bu Ay</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">schedule</span> Aylık hedef: 35 Saat
+          </span>
+</div>
+<div class="w-13 h-13 p-3 rounded-xl bg-surface-container-low text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">timer</span>
+</div>
+</div>
+</div>
+<!-- Ana 2 Sütunlu Gövde: Sol İçerik + Sağ Widget Paneli -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- Sol Ana Sütun (8 Kolon) -->
+<div class="lg:col-span-8 flex flex-col gap-space-xl">
+<!-- "Kaldığın Yerden Devam Et" Hero Kartı -->
+<div class="bg-surface-card rounded-xl p-space-xl shadow-sm relative overflow-hidden flex flex-col gap-space-lg">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-cyan-accent animate-pulse"></span>
+<span class="font-title-md text-title-md text-brand-navy-deep font-bold">Kaldığın Yerden Devam Et</span>
+</div>
+<span class="px-space-sm py-1 rounded-full bg-surface-container-low text-secondary font-label-md text-label-md">
+              Ders #14 • REST API
+            </span>
+</div>
+<div class="flex flex-col md:flex-row gap-space-lg items-stretch">
+<!-- Kurs Önizleme Görseli / Konteyner -->
+<div class="relative w-full md:w-5/12 h-48 md:h-auto rounded-xl overflow-hidden shrink-0 group">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Modern web developer setup showing two sleek 4k monitors displaying cleanly formatted Node JS and React source code, terminal windows with bright syntax highlighting in a minimalist modern study room with blue accent ambient lighting and organized workspace" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqVRuqB4ETqDOJ8ks5OVPNxokPvUD8VI_OGpDrf2Pz5Am2w9OCjJLf65X3nqQmonYx_-FUqZurAfCCZA8GsSYYjyUfPeY-EuoX1MuNFvFSFGjf31nFhc8C-5LSKRPLPtBQrXyZfw7BBTWlpilKc-zhxQZwhOvMbgzqJJht-z2_32r3u6MmSOIqbfYqHXO7FjGb0TqbZClgFBXYTquU7riQrGlHSFs2Ehp6QYVmlGAGfFRoufFQOk9fYg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/30 to-transparent flex items-end p-space-md">
+<span class="px-2 py-1 rounded bg-surface-container-lowest/90 backdrop-blur text-primary font-label-md text-label-md font-semibold">
+                  18 dk kaldı
+                </span>
+</div>
+</div>
+<!-- Kurs Bilgisi & Eylem -->
+<div class="flex flex-col justify-between flex-1 gap-space-md">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-space-xs text-text-muted font-label-md text-label-md">
+<span class="text-secondary font-semibold">Web Teknolojileri</span>
+<span>•</span>
+<span>Dr. Murat Yılmaz</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-brand-navy-deep">
+                  Modern Web Geliştirme: Full Stack React &amp; Node.js
+                </h2>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">
+                  Modül 3: REST API Mimarisi, Express.js Router Yapılandırması ve PostgreSQL Veritabanı Entegrasyonu.
+                </p>
+</div>
+<!-- İlerleme Çubuğu -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center font-label-md text-label-md">
+<span class="text-text-muted">Modül Tamamlanma Oranı</span>
+<span class="text-brand-navy-deep font-bold">%72</span>
+</div>
+<div class="w-full bg-surface-container h-2.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-secondary to-cyan-accent h-full rounded-full transition-all duration-500" style="width: 72%;"></div>
+</div>
+</div>
+<!-- CTA Butonları -->
+<div class="flex items-center gap-space-sm pt-space-xs flex-wrap">
+<button class="inline-flex items-center gap-2 px-space-lg py-2.5 rounded-xl bg-secondary text-on-secondary font-label-lg text-label-lg hover:bg-electric-blue-hover shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-secondary" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+                  Ders Videosunu Başlat
+                </button>
+<button class="inline-flex items-center gap-2 px-space-md py-2.5 rounded-xl bg-surface-container-low text-primary font-label-lg text-label-lg hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">description</span>
+                  Ders Notları &amp; Kodlar
+                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Aktif Kurslarım Grid Kartları -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-brand-navy-deep font-bold">Kayıtlı Kurslarım</h2>
+<p class="font-body-sm text-body-sm text-text-muted">Dönem içi ilerlemenizi ve sonraki dersleri buradan yönetin</p>
+</div>
+<a class="font-label-lg text-label-lg text-secondary hover:text-electric-blue-hover flex items-center gap-1 font-semibold" href="#">
+              Tümünü Gör (4) <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Kurs Kartı 1 -->
+<div class="bg-surface-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div class="relative h-36 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Conceptual 3d visualization of interconnected node network graphs binary search trees glowing with neon cyan and deep blue light on dark clean tech backdrop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIoTad3pVeWakxLH5U1frItfbX0GwdRSF6kqi9-9OHiTC6oL82gxh2oLha_WFpP4sDdCrwppljTaoLQl1v4vy7oILrt_-I5Er98NyZiFPQmUPE6XRW5Nr2bLrngzZRvXlfD8hgKxT1MevVGqD3Z9vWe_SQTFqPcJvN-1ipgvGsynTD7yZjwdb9fynjH5OSuB112G8VYWXMaE0sF1KvusIrwQWvd5XBHawkkH7IidQj8AMIJESNRvjsMQ"/>
+<div class="absolute top-3 left-3">
+<span class="px-2.5 py-1 rounded-md bg-brand-navy-deep/90 text-on-primary font-label-md text-label-md backdrop-blur">
+                    Bilgisayar Müh.
+                  </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1.5">
+<span class="font-label-md text-label-md text-text-muted">CENG 201 • 4 Kredi</span>
+<h3 class="font-title-md text-title-md text-brand-navy-deep group-hover:text-secondary transition-colors line-clamp-1">
+                    Veri Yapıları ve Algoritmalar
+                  </h3>
+<div class="flex items-center gap-1.5 font-body-sm text-body-sm text-on-surface-variant mt-1 bg-surface-container-low p-2 rounded-lg">
+<span class="material-symbols-outlined text-secondary text-[16px]">play_arrow</span>
+<span class="truncate">Sırada: <strong>İkili Arama Ağaçları</strong></span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-center font-label-md text-label-md">
+<span class="text-text-muted">Tamamlanma</span>
+<span class="text-brand-navy-deep font-bold">%85</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-cyan-accent h-full rounded-full" style="width: 85%;"></div>
+</div>
+<button class="w-full mt-2 py-2 px-3 rounded-lg bg-surface-container-low hover:bg-secondary hover:text-on-secondary text-primary font-label-md text-label-md text-center transition-all" type="button">
+                    Ders İçeriğine Git
+                  </button>
+</div>
+</div>
+</div>
+<!-- Kurs Kartı 2 -->
+<div class="bg-surface-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div class="relative h-36 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Modern artificial intelligence neural network conceptual art glowing cyan synthetic synapses high tech geometric patterns in elegant deep navy blue theme" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbudDHWkcpEb_iyrye5fCx5TQEI-UtamHfe6_xzxHyIc5tmStv0iHDUzXgDmozzQNCgDFaK-YgQfobryZvKI9Tqo3yNp6WBHRqiTH7vCkGIq_izbc6n_VGmNr7MyAhjisRFrcEaeFlu_wPYD55POdwDo2UJ-RGdRV4vWItPBWHesu-YRoexxagKFRiglifcYCg98rqNKHOWs9mPRN7lZG3QzAryuc5fkpUq3-GLHev0zWYh04CdX__gA"/>
+<div class="absolute top-3 left-3">
+<span class="px-2.5 py-1 rounded-md bg-brand-navy-deep/90 text-on-primary font-label-md text-label-md backdrop-blur">
+                    Yapay Zekâ
+                  </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1.5">
+<span class="font-label-md text-label-md text-text-muted">AI 304 • 3 Kredi</span>
+<h3 class="font-title-md text-title-md text-brand-navy-deep group-hover:text-secondary transition-colors line-clamp-1">
+                    Yapay Zekâ ve ML Temelleri
+                  </h3>
+<div class="flex items-center gap-1.5 font-body-sm text-body-sm text-on-surface-variant mt-1 bg-surface-container-low p-2 rounded-lg">
+<span class="material-symbols-outlined text-secondary text-[16px]">play_arrow</span>
+<span class="truncate">Sırada: <strong>Denetimli Öğrenme Modelleri</strong></span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-center font-label-md text-label-md">
+<span class="text-text-muted">Tamamlanma</span>
+<span class="text-brand-navy-deep font-bold">%40</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 40%;"></div>
+</div>
+<button class="w-full mt-2 py-2 px-3 rounded-lg bg-surface-container-low hover:bg-secondary hover:text-on-secondary text-primary font-label-md text-label-md text-center transition-all" type="button">
+                    Ders İçeriğine Git
+                  </button>
+</div>
+</div>
+</div>
+<!-- Kurs Kartı 3 -->
+<div class="bg-surface-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+<div class="relative h-36 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Digital representation of database server storage architecture floating relational data blocks isometric perspective clean corporate blue and cyan lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABmGMZtGFXtLzOIcb4GAFmbJnyjdPJdOLm25oA2Dk_7NsO-gXeVwRvyFu3r6V79fcCJR7KU61Wh1Pjx7UrkjGGkFMD01AjOmdD0bR3tgeYrQcpeu8AyQX30KgUp-7qAoU6pF1t_u6KoYriY2eFwJ2axCMozNByKPhqW1EC5Q3qg7gZvUgyaCqZr6Be_Zhj6fRfTSKMSED5GMmG0LujWCWqaiHqSkII0alO9yKqOeGNX6y9wG3_shhMYw"/>
+<div class="absolute top-3 left-3">
+<span class="px-2.5 py-1 rounded-md bg-brand-navy-deep/90 text-on-primary font-label-md text-label-md backdrop-blur">
+                    Yazılım
+                  </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1.5">
+<span class="font-label-md text-label-md text-text-muted">SWE 212 • 4 Kredi</span>
+<h3 class="font-title-md text-title-md text-brand-navy-deep group-hover:text-secondary transition-colors line-clamp-1">
+                    Veritabanı Sistemleri &amp; SQL
+                  </h3>
+<div class="flex items-center gap-1.5 font-body-sm text-body-sm text-on-surface-variant mt-1 bg-surface-container-low p-2 rounded-lg">
+<span class="material-symbols-outlined text-secondary text-[16px]">play_arrow</span>
+<span class="truncate">Sırada: <strong>İndeksleme &amp; Optimizasyon</strong></span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-center font-label-md text-label-md">
+<span class="text-text-muted">Tamamlanma</span>
+<span class="text-brand-navy-deep font-bold">%90</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-state-success h-full rounded-full" style="width: 90%;"></div>
+</div>
+<button class="w-full mt-2 py-2 px-3 rounded-lg bg-surface-container-low hover:bg-secondary hover:text-on-secondary text-primary font-label-md text-label-md text-center transition-all" type="button">
+                    Ders İçeriğine Git
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Akıllı Öğrenme Grafiği / Haftalık Etkileşim -->
+<div class="bg-surface-card rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between flex-wrap gap-2">
+<div>
+<h3 class="font-title-md text-title-md text-brand-navy-deep font-bold">Haftalık Çalışma Aktivitesi</h3>
+<p class="font-body-sm text-body-sm text-text-muted">Son 7 günlük ders çalışma ve video izleme dağılımı</p>
+</div>
+<div class="flex items-center gap-space-md text-body-sm font-body-sm">
+<span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-secondary"></span> Video Dersler</span>
+<span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-cyan-accent"></span> Quiz &amp; Görevler</span>
+</div>
+</div>
+<!-- Inline SVG Çubuk Grafik Simülasyonu -->
+<div class="w-full h-44 flex items-end justify-between gap-3 pt-6 px-2">
+<!-- Pzt -->
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+<div class="w-full max-w-[36px] flex flex-col gap-1 items-center">
+<div class="w-full bg-cyan-accent rounded-t-sm" style="height: 24px;"></div>
+<div class="w-full bg-secondary rounded-b-sm" style="height: 52px;"></div>
+</div>
+<span class="font-label-md text-label-md text-text-muted">Pzt</span>
+</div>
+<!-- Sal -->
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+<div class="w-full max-w-[36px] flex flex-col gap-1 items-center">
+<div class="w-full bg-cyan-accent rounded-t-sm" style="height: 38px;"></div>
+<div class="w-full bg-secondary rounded-b-sm" style="height: 65px;"></div>
+</div>
+<span class="font-label-md text-label-md text-text-muted">Sal</span>
+</div>
+<!-- Çar -->
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+<div class="w-full max-w-[36px] flex flex-col gap-1 items-center">
+<div class="w-full bg-cyan-accent rounded-t-sm" style="height: 15px;"></div>
+<div class="w-full bg-secondary rounded-b-sm" style="height: 80px;"></div>
+</div>
+<span class="font-label-md text-label-md text-text-muted">Çar</span>
+</div>
+<!-- Per -->
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+<div class="w-full max-w-[36px] flex flex-col gap-1 items-center">
+<div class="w-full bg-cyan-accent rounded-t-sm" style="height: 30px;"></div>
+<div class="w-full bg-secondary rounded-b-sm" style="height: 48px;"></div>
+</div>
+<span class="font-label-md text-label-md text-text-muted">Per</span>
+</div>
+<!-- Cum (Aktif) -->
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+<div class="w-full max-w-[36px] flex flex-col gap-1 items-center">
+<div class="w-full bg-cyan-accent rounded-t-sm shadow-[0_0_8px_rgba(8,145,178,0.4)]" style="height: 42px;"></div>
+<div class="w-full bg-secondary rounded-b-sm shadow-[0_0_8px_rgba(0,99,152,0.4)]" style="height: 90px;"></div>
+</div>
+<span class="font-label-md text-label-md text-secondary font-bold">Bugün</span>
+</div>
+<!-- Cmt -->
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+<div class="w-full max-w-[36px] flex flex-col gap-1 items-center opacity-40">
+<div class="w-full bg-secondary rounded-sm" style="height: 18px;"></div>
+</div>
+<span class="font-label-md text-label-md text-text-muted">Cmt</span>
+</div>
+<!-- Paz -->
+<div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+<div class="w-full max-w-[36px] flex flex-col gap-1 items-center opacity-40">
+<div class="w-full bg-secondary rounded-sm" style="height: 25px;"></div>
+</div>
+<span class="font-label-md text-label-md text-text-muted">Paz</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sağ Yan Sütun (4 Kolon): Görevler, Takvim, Duyurular -->
+<div class="lg:col-span-4 flex flex-col gap-space-xl">
+<!-- Yaklaşan Görevler & Teslimler (FR-12) -->
+<div class="bg-surface-card rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-state-warning text-[22px]">pending_actions</span>
+<h3 class="font-title-md text-title-md text-brand-navy-deep font-bold">Yaklaşan Görevler</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-state-warning/15 text-state-warning font-label-md text-label-md font-semibold">
+              3 Teslim
+            </span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Görev 1: Proje Ödevi -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-2 group">
+<div class="flex items-start justify-between gap-2">
+<span class="font-label-md text-label-md text-state-error bg-state-error/10 px-2 py-0.5 rounded font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">priority_high</span> Yüksek Öncelik
+                </span>
+<span class="font-body-sm text-body-sm text-state-error font-semibold">2 gün kaldı</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-label-lg text-label-lg text-brand-navy-deep font-semibold group-hover:text-secondary transition-colors">
+                  Veri Yapıları Proje Ödevi 2
+                </h4>
+<p class="font-body-sm text-body-sm text-text-muted">Dengeli Ağaç (AVL Tree) Gerçekleştirmesi</p>
+</div>
+<div class="flex items-center justify-between pt-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 text-[12px]"><span class="material-symbols-outlined text-[16px]">schedule</span> 27 Ekim 23:59</span>
+<a class="text-secondary font-semibold hover:underline flex items-center gap-0.5 font-label-md text-label-md" href="#">
+                  Teslim Et <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Görev 2: Online Sınav -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-2 group">
+<div class="flex items-start justify-between gap-2">
+<span class="font-label-md text-label-md text-secondary bg-secondary/10 px-2 py-0.5 rounded font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">quiz</span> Çevrim İçi Sınav
+                </span>
+<span class="font-body-sm text-body-sm text-secondary font-semibold">Cuma 14:00</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-label-lg text-label-lg text-brand-navy-deep font-semibold group-hover:text-secondary transition-colors">
+                  SQL Ara Sınavı (Online Quiz)
+                </h4>
+<p class="font-body-sm text-body-sm text-text-muted">Modül 1-4 Kapsamı • 25 Çoktan Seçmeli Soru</p>
+</div>
+<div class="flex items-center justify-between pt-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 text-[12px]"><span class="material-symbols-outlined text-[16px]">timelapse</span> 45 Dakika Süre</span>
+<span class="text-text-muted font-label-md text-label-md">Henüz Başlamadı</span>
+</div>
+</div>
+<!-- Görev 3: Mini Proje -->
+<div class="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-2 group">
+<div class="flex items-start justify-between gap-2">
+<span class="font-label-md text-label-md text-text-muted bg-surface-container px-2 py-0.5 rounded font-semibold">
+                  Laboratuvar
+                </span>
+<span class="font-body-sm text-body-sm text-text-muted font-medium">5 gün kaldı</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-label-lg text-label-lg text-brand-navy-deep font-semibold group-hover:text-secondary transition-colors">
+                  Yapay Zekâ Mini Proje Teslimi
+                </h4>
+<p class="font-body-sm text-body-sm text-text-muted">Lineer Regresyon ile Tahminleme Notebook'u</p>
+</div>
+<div class="flex items-center justify-between pt-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 text-[12px]"><span class="material-symbols-outlined text-[16px]">schedule</span> 31 Ekim 17:00</span>
+<a class="text-secondary font-semibold hover:underline flex items-center gap-0.5 font-label-md text-label-md" href="#">
+                  Detaylar <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Akıllı LMS Asistanı Hızlı Erişim Kartı (FR-57) -->
+<div class="rounded-xl bg-gradient-to-br from-ai-assistant-tint to-surface-card p-space-lg shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-cyan-accent/15 flex items-center justify-center text-cyan-accent">
+<span class="material-symbols-outlined text-[24px]">auto_awesome</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-brand-navy-deep font-bold">Yapay Zekâ Ders Rehberi</h3>
+<span class="font-label-md text-label-md text-cyan-accent">Aktif ve Hazır</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            SQL Ara Sınavı öncesi eksik olduğun konular tespit edildi: <em>'GROUP BY &amp; HAVING'</em> konularında 5 pratik soru çözmek ister misin?
+          </p>
+<button class="mt-2 w-full py-2.5 px-space-md rounded-xl bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-brand-navy-deep shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+            Hızlı Quiz Başlat
+          </button>
+</div>
+<!-- Son Duyurular Mini Özeti -->
+<div class="bg-surface-card rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[22px]">campaign</span>
+<h3 class="font-title-md text-title-md text-brand-navy-deep font-bold">Duyurular</h3>
+</div>
+<a class="font-label-md text-label-md text-secondary hover:underline" href="#">Tümü</a>
+</div>
+<div class="flex flex-col gap-space-md">
+<div class="flex items-start gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-secondary mt-2 shrink-0"></div>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-lg text-label-lg text-brand-navy-deep hover:text-secondary cursor-pointer transition-colors leading-snug">
+                  Güz Dönemi Ara Sınav Takvimi Güncellendi
+                </span>
+<span class="font-body-sm text-body-sm text-text-muted">Öğrenci İşleri • 3 saat önce</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-cyan-accent mt-2 shrink-0"></div>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-lg text-label-lg text-brand-navy-deep hover:text-secondary cursor-pointer transition-colors leading-snug">
+                  Canlı Soru-Cevap Oturumu: Perşembe 19:00
+                </span>
+<span class="font-body-sm text-body-sm text-text-muted">Dr. Murat Yılmaz • Dün</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-surface-container mt-2 shrink-0"></div>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-lg text-label-lg text-on-surface-variant hover:text-secondary cursor-pointer transition-colors leading-snug">
+                  Kampüs Kütüphanesi Dijital Veritabanı Bakımı
+                </span>
+<span class="font-body-sm text-body-sm text-text-muted">Bilgi İşlem Daire Bşk. • 2 gün önce</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

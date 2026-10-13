@@ -1,0 +1,40 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.icon {
+  position: absolute;
+  left: 0.875rem;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 var(--space-md) 0 2.75rem;
+  border: none;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface-container-low);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  color: var(--color-on-surface);
+  transition: box-shadow var(--transition-base);
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-secondary);
+}
+
+.input::-webkit-search-cancel-button {
+  cursor: pointer;
+}

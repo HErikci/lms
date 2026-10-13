@@ -1,0 +1,77 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.media {
+  position: relative;
+  height: 9rem;
+  overflow: hidden;
+  background-image: linear-gradient(
+    135deg,
+    var(--color-primary-container),
+    var(--color-cyan-accent)
+  );
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+.category {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.nextLesson {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 0;
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-container-low);
+  color: var(--color-secondary);
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: auto;
+}
+
+.progressLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cta:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
+}

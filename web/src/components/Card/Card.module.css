@@ -1,0 +1,18 @@
+.card {
+  background-color: var(--color-surface-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--elevation-1);
+}
+
+.padding-none { padding: 0; }
+.padding-sm { padding: var(--space-md); }
+.padding-md { padding: var(--space-lg); }
+.padding-lg { padding: var(--space-xl); }
+
+.interactive {
+  transition: box-shadow var(--transition-base);
+}
+
+.interactive:hover {
+  box-shadow: var(--elevation-2);
+}

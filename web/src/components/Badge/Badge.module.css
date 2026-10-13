@@ -1,0 +1,58 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem var(--space-sm);
+  white-space: nowrap;
+}
+
+.shape-pill { border-radius: var(--radius-full); }
+.shape-rounded { border-radius: var(--radius-default); }
+
+/* --- soft --- */
+.soft-brand { background-color: var(--color-secondary-soft); color: var(--color-secondary); }
+.soft-info { background-color: var(--color-surface-container-low); color: var(--color-secondary); }
+.soft-cyan { background-color: var(--color-cyan-accent-soft); color: var(--color-cyan-accent); }
+.soft-success { background-color: var(--color-state-success-soft); color: var(--color-state-success); }
+.soft-warning { background-color: var(--color-state-warning-soft); color: var(--color-state-warning); }
+.soft-error { background-color: var(--color-state-error-soft); color: var(--color-state-error); }
+.soft-neutral { background-color: var(--color-surface-container); color: var(--color-text-muted); }
+.soft-navy { background-color: var(--color-surface-container-low); color: var(--color-primary); }
+
+/* --- solid --- */
+.solid-brand { background-color: var(--color-secondary); color: var(--color-on-secondary); }
+.solid-info { background-color: var(--color-state-info); color: var(--color-on-primary); }
+.solid-cyan { background-color: var(--color-cyan-accent); color: var(--color-on-primary); }
+.solid-success { background-color: var(--color-state-success); color: var(--color-on-primary); }
+.solid-warning { background-color: var(--color-state-warning); color: var(--color-on-primary); }
+.solid-error { background-color: var(--color-state-error); color: var(--color-on-error); }
+.solid-neutral { background-color: var(--color-surface-container); color: var(--color-on-surface); }
+.solid-navy {
+  background-color: var(--color-navy-translucent);
+  color: var(--color-on-primary);
+  backdrop-filter: blur(4px);
+}
+
+/* --- glass: gradient hero üzerinde --- */
+.glass-brand,
+.glass-info,
+.glass-cyan,
+.glass-success,
+.glass-neutral,
+.glass-navy {
+  background-color: var(--color-glass);
+  color: var(--color-tertiary-fixed);
+  backdrop-filter: blur(12px);
+}
+
+.glass-warning {
+  background-color: var(--color-state-warning-soft);
+  color: var(--color-state-warning);
+  backdrop-filter: blur(12px);
+}
+
+.glass-error {
+  background-color: var(--color-state-error-soft);
+  color: var(--color-error-container);
+  backdrop-filter: blur(12px);
+}

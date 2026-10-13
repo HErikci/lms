@@ -1,0 +1,52 @@
+.tile {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.valueRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.unit {
+  line-height: 1rem;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-text-muted);
+}
+
+.iconTile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface-container-low);
+}
+
+.tone-secondary { color: var(--color-secondary); }
+.tone-cyan { color: var(--color-cyan-accent); }
+.tone-success { color: var(--color-state-success); }
+.tone-warning { color: var(--color-state-warning); }

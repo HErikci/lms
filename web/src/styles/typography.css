@@ -1,0 +1,107 @@
+/*
+ * 13 tipografi rolü — DESIGN.md frontmatter'ındaki typography bloğu.
+ * code.html'de aile ve boyut iki ayrı sınıfla (font-label-md + text-label-md)
+ * uygulanıyordu; burada tek sınıfta birleşiyor.
+ */
+
+:root {
+  --font-display: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+.display-hero {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 3rem;
+  letter-spacing: -0.02em;
+}
+
+.headline-lg {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 2.5rem;
+  letter-spacing: -0.02em;
+}
+
+.headline-md {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 2rem;
+  letter-spacing: -0.01em;
+}
+
+.headline-sm {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+}
+
+.title-md {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+}
+
+.body-lg {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.625rem;
+}
+
+.body-md {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.375rem;
+}
+
+.body-sm {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.125rem;
+}
+
+.label-lg {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  letter-spacing: 0.01em;
+}
+
+.label-md {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.code-sm {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+
+/* Mobil varyantlar — DESIGN.md display-hero-mobile / headline-lg-mobile */
+@media (max-width: 767px) {
+  .display-hero {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+    letter-spacing: -0.01em;
+  }
+
+  .headline-lg {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    letter-spacing: -0.01em;
+  }
+}

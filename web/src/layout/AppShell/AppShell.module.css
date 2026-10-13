@@ -1,0 +1,40 @@
+.shell {
+  min-height: 100vh;
+  background-color: var(--color-canvas-bg);
+}
+
+.body {
+  padding-left: var(--sidebar-width);
+}
+
+.main {
+  width: 100%;
+  min-height: 100vh;
+  padding-top: var(--topbar-height);
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: none;
+  width: 100%;
+  background-color: var(--scrim);
+  backdrop-filter: blur(4px);
+}
+
+@media (max-width: 1279px) {
+  .body {
+    padding-left: var(--sidebar-rail-width);
+  }
+}
+
+@media (max-width: 767px) {
+  .body {
+    padding-left: 0;
+  }
+
+  .scrim {
+    display: block;
+  }
+}

@@ -1,0 +1,157 @@
+/*
+ * Tasarım token'ları — tek kaynak.
+ * Kaynak: ui/DESIGN.md frontmatter + ui/code.html Tailwind config.
+ *
+ * ÇELİŞKİ KARARLARI (bkz. plan):
+ *  1. DESIGN.md düzyazısı birincil CTA/odak halkası için #0284c7 diyor, ancak böyle bir
+ *     token tanımlı değil ve ekranda render edilen renk `secondary` (#006398).
+ *     Render edilen değer esas alındı.
+ *  2. Yarıçap ölçeği code.html'in Tailwind config'inden alındı (xl = .75rem),
+ *     DESIGN.md frontmatter'ındaki kaydırılmış ölçekten (xl = 1.5rem) değil.
+ *  3. `code-sm` rolü Inter olarak tanımlı (düzyazı "monospaced" dese de).
+ *     Gerçek bir mono aileye ihtiyaç olursa ayrı token eklenmeli.
+ *
+ * Bileşen CSS'lerinde ham hex KULLANILMAZ; her renk buradan var() ile alınır.
+ */
+
+:root {
+  /* ---- Material rol renkleri ---- */
+  --color-surface: #f8f9ff;
+  --color-surface-dim: #cbdbf5;
+  --color-surface-bright: #f8f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-high: #dce9ff;
+  --color-surface-container-highest: #d3e4fe;
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #44464f;
+  --color-inverse-surface: #213145;
+  --color-inverse-on-surface: #eaf1ff;
+  --color-outline: #747780;
+  --color-outline-variant: #c4c6d0;
+  --color-surface-tint: #465d91;
+
+  --color-primary: #00163d;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #0f2b5c;
+  --color-on-primary-container: #7c94cb;
+  --color-inverse-primary: #afc6ff;
+
+  --color-secondary: #006398;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #5bb8fe;
+  --color-on-secondary-container: #00476e;
+
+  --color-tertiary: #001c22;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #00323c;
+  --color-on-tertiary-container: #00a2be;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-primary-fixed: #d9e2ff;
+  --color-primary-fixed-dim: #afc6ff;
+  --color-on-primary-fixed: #001944;
+  --color-on-primary-fixed-variant: #2d4678;
+  --color-secondary-fixed: #cce5ff;
+  --color-secondary-fixed-dim: #93ccff;
+  --color-on-secondary-fixed: #001d31;
+  --color-on-secondary-fixed-variant: #004b73;
+  --color-tertiary-fixed: #acedff;
+  --color-tertiary-fixed-dim: #4cd7f6;
+  --color-on-tertiary-fixed: #001f26;
+  --color-on-tertiary-fixed-variant: #004e5c;
+
+  --color-background: #f8f9ff;
+  --color-on-background: #0b1c30;
+  --color-surface-variant: #d3e4fe;
+
+  /* ---- Marka / ürün katmanı ---- */
+  --color-canvas-bg: #f8fafc;
+  --color-surface-card: #ffffff;
+  --color-border-subtle: #e2e8f0;
+  --color-text-main: #0f172a;
+  --color-text-muted: #64748b;
+  --color-brand-navy-deep: #0a1d3f;
+  --color-electric-blue-hover: #0369a1;
+  --color-cyan-accent: #0891b2;
+  --color-state-success: #059669;
+  --color-state-warning: #d97706;
+  --color-state-error: #dc2626;
+  --color-state-info: #2563eb;
+  --color-ai-assistant-tint: #f0fdfa;
+
+  /*
+   * RGB kanal token'ları. Bir rengin saydam varyantına ihtiyaç duyulduğunda
+   * bileşende ham rgba() yazmak yerine rgb(var(--rgb-x) / 0.4) biçimi kullanılır.
+   * Değerler yukarıdaki hex token'larla aynı renklerdir.
+   */
+  --rgb-white: 255 255 255;
+  --rgb-primary: 0 22 61;
+  --rgb-primary-container: 15 43 92;
+  --rgb-secondary: 0 99 152;
+  --rgb-secondary-container: 91 184 254;
+  --rgb-cyan-accent: 8 145 178;
+  --rgb-brand-navy-deep: 10 29 63;
+  --rgb-state-success: 5 150 105;
+  --rgb-state-warning: 217 119 6;
+  --rgb-state-error: 220 38 38;
+
+  /* Saydam varyantlar (rozet zeminleri, parlama efektleri) */
+  --color-state-error-soft: rgb(var(--rgb-state-error) / 0.1);
+  --color-state-warning-soft: rgb(var(--rgb-state-warning) / 0.15);
+  --color-secondary-soft: rgb(var(--rgb-secondary) / 0.1);
+  --color-cyan-accent-soft: rgb(var(--rgb-cyan-accent) / 0.15);
+  --color-state-success-soft: rgb(var(--rgb-state-success) / 0.12);
+  --color-glass: rgb(var(--rgb-white) / 0.15);
+  --color-glass-dim: rgb(var(--rgb-white) / 0.1);
+  --color-glass-faint: rgb(var(--rgb-white) / 0.2);
+  --color-chrome-translucent: rgb(var(--rgb-white) / 0.9);
+  --color-navy-translucent: rgb(var(--rgb-brand-navy-deep) / 0.9);
+
+  /* ---- Yarıçap ---- */
+  --radius-sm: 0.125rem;
+  --radius-default: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* ---- Boşluk ---- */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --gutter: 1.5rem;
+  --gutter-mobile: 1rem;
+  --margin: 2rem;
+  --margin-mobile: 1rem;
+
+  /* ---- Yükselti (DESIGN.md "Elevation") ---- */
+  --elevation-1: 0 1px 3px 0 rgb(var(--rgb-primary-container) / 0.04), 0 1px 2px -1px rgb(var(--rgb-primary-container) / 0.04);
+  --elevation-2: 0 4px 6px -1px rgb(var(--rgb-primary-container) / 0.07), 0 2px 4px -2px rgb(var(--rgb-primary-container) / 0.05);
+  --elevation-3: 0 20px 25px -5px rgb(var(--rgb-primary-container) / 0.12), 0 8px 10px -6px rgb(var(--rgb-primary-container) / 0.08);
+  --elevation-chrome: 0 1px 8px rgba(0, 0, 0, 0.04);
+  --scrim: rgb(15 23 42 / 0.45);
+
+  /* ---- Odak halkası (NFR-30) ---- */
+  --focus-ring-color: var(--color-secondary);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* ---- Kabuk ölçüleri ---- */
+  --sidebar-width: 16rem;
+  --sidebar-rail-width: 4.5rem;
+  --topbar-height: 4rem;
+  --content-max-width: 1600px;
+
+  /* ---- Hareket ---- */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 500ms ease;
+}
