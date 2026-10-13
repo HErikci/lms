@@ -12,6 +12,7 @@ import { ExamsPage } from '../features/exams';
 import { LoginPage } from '../features/auth';
 import { ProfilePage } from '../features/profile';
 import { AdminCoursesPage, CourseStudentsPage } from '../features/admin/courses';
+import { AdminNavItemsPage } from '../features/admin/nav-items';
 
 /**
  * Yollar layout/Sidebar/navItems.ts ile birebir eşleşir.
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
             children: [
               { path: 'yonetim/kurslar', element: <AdminCoursesPage /> },
               { path: 'yonetim/kurslar/:id/ogrenciler', element: <CourseStudentsPage /> },
+              { path: 'yonetim/menu', element: <AdminNavItemsPage /> },
             ],
           },
         ],

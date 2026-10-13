@@ -124,6 +124,18 @@ async function main() {
     data: { userId: student.id, courseId: oopCourse.id, method: 'OPEN' },
   });
 
+  await prisma.navMenuItem.createMany({
+    data: [
+      { path: '/', label: 'Genel Bakış', icon: 'grid_view', order: 1, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
+      { path: '/kurslarim', label: 'Kurslarım / Dersler', icon: 'school', order: 2, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
+      { path: '/duyurular', label: 'Duyurular', icon: 'campaign', order: 3, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
+      { path: '/takvim', label: 'Takvim', icon: 'calendar_today', order: 4, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
+      { path: '/notlar-ve-gorevler', label: 'Notlar & Görevler', icon: 'assignment_turned_in', order: 5, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
+      { path: '/sinavlar', label: 'Sınav Sistemi', icon: 'quiz', order: 6, roles: 'ADMIN' },
+      { path: '/yonetim/kurslar', label: 'Kurs Yönetimi', icon: 'admin_panel_settings', order: 7, roles: 'ADMIN' },
+    ],
+  });
+
   console.log('Seed tamamlandı.');
 }
 

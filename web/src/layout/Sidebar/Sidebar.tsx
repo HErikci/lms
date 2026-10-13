@@ -1,18 +1,22 @@
 import { NavLink } from 'react-router-dom';
 import { Icon, Text } from '../../components';
-import { useCurrentUser } from '../../data/useCurrentUser';
-import { getNavItems } from './navItems';
+import type { UserProfile } from '../../types';
+import { useNavItems } from '../../data/useNavItems';
+import { ADMIN_MENU_MANAGEMENT_ITEM, FALLBACK_NAV_ITEMS } from './navItems';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
+  user: UserProfile | null;
   /** Mobil çekmecenin açık olup olmadığı. Masaüstünde yok sayılır. */
   isOpen: boolean;
   onNavigate: () => void;
 }
 
-export function Sidebar({ isOpen, onNavigate }: SidebarProps) {
-  const { user } = useCurrentUser();
-  const navItems = getNavItems(user?.role);
+export function Sidebar({ user, isOpen, onNavigate }: SidebarProps) {
+  const { items, loading } = useNavItems(user?.role);
+  const baseItems = loading || items.length === 0 ? FALLBACK_NAV_ITEMS : items;
+  const navItems =
+    user?.role === 'ADMIN' ? [...baseItems, ADMIN_MENU_MANAGEMENT_ITEM] : baseItems;
 
   return (
     <aside

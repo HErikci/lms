@@ -61,6 +61,17 @@ model Lesson {
   status   String   @default("DRAFT")
 }
 
+model NavMenuItem {
+  id        String   @id @default(cuid())
+  path      String
+  label     String
+  icon      String
+  order     Int
+  roles     String   // CSV, e.g. "STUDENT,INSTRUCTOR,ADMIN"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Enrollment {
   id         String   @id @default(cuid())
   userId     String

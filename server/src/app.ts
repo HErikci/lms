@@ -7,6 +7,7 @@ import { registerModuleRoutes } from './routes/modules.js';
 import { registerLessonRoutes } from './routes/lessons.js';
 import { registerEnrollmentRoutes } from './routes/enrollments.js';
 import { registerUserRoutes } from './routes/users.js';
+import { registerNavItemRoutes } from './routes/nav-items.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: true });
@@ -24,6 +25,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   registerLessonRoutes(app);
   registerEnrollmentRoutes(app);
   registerUserRoutes(app);
+  registerNavItemRoutes(app);
 
   await app.ready();
   return app;

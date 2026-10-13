@@ -7,7 +7,7 @@ import styles from './AppShell.module.css';
 
 /** Sidebar + Topbar kabuğu; sayfalar <Outlet /> içine render edilir. */
 export function AppShell() {
-  const { user } = useCurrentUser();
+  const { user, switchRole } = useCurrentUser();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -22,7 +22,7 @@ export function AppShell() {
         İçeriğe geç
       </a>
 
-      <Sidebar isOpen={isMenuOpen} onNavigate={() => setMenuOpen(false)} />
+      <Sidebar user={user} isOpen={isMenuOpen} onNavigate={() => setMenuOpen(false)} />
 
       {isMenuOpen ? (
         <button
@@ -36,6 +36,7 @@ export function AppShell() {
       <div className={styles.body}>
         <Topbar
           user={user}
+          switchRole={switchRole}
           isMenuOpen={isMenuOpen}
           onMenuToggle={() => setMenuOpen((open) => !open)}
         />

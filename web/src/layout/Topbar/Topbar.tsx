@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, Icon, IconButton, SearchInput, Text } from '../../components';
 import { useAuth } from '../../data/useAuth';
-import { useCurrentUser } from '../../data/useCurrentUser';
 import type { UserProfile, UserRole } from '../../types';
 import styles from './Topbar.module.css';
 
@@ -20,14 +19,14 @@ const ROLE_SWITCHER_LABELS: Record<UserRole, string> = {
 
 interface TopbarProps {
   user: UserProfile | null;
+  switchRole: (role: UserRole) => Promise<void>;
   onMenuToggle: () => void;
   isMenuOpen: boolean;
 }
 
-export function Topbar({ user, onMenuToggle, isMenuOpen }: TopbarProps) {
+export function Topbar({ user, switchRole, onMenuToggle, isMenuOpen }: TopbarProps) {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { switchRole } = useCurrentUser();
   const [isRoleMenuOpen, setRoleMenuOpen] = useState(false);
   const [switchError, setSwitchError] = useState<string | null>(null);
   const roleMenuRef = useRef<HTMLDivElement>(null);

@@ -1,12 +1,18 @@
-import type { UserRole } from '../../types';
-
 export interface NavItem {
   path: string;
   label: string;
   icon: string;
 }
 
-const BASE_NAV_ITEMS: NavItem[] = [
+/**
+ * Menü artık DB üzerinden (GET /api/v1/nav-items/me, bkz. useNavItems.ts)
+ * yüklenir. Bu liste yalnızca yükleme sırasında / istek hata verdiğinde
+ * gösterilecek bir yedek (fallback): öğrencilerin de erişebildiği 5 ortak
+ * sayfa. Admin'e özel "Menü Yönetimi" bağlantısı Sidebar.tsx içinde
+ * role === 'ADMIN' olduğunda istemci tarafında eklenir (bkz. Sidebar.tsx),
+ * tıpkı daha önce "Kurs Yönetimi" girişinin eklendiği gibi.
+ */
+export const FALLBACK_NAV_ITEMS: NavItem[] = [
   { path: '/', label: 'Genel Bakış', icon: 'grid_view' },
   { path: '/kurslarim', label: 'Kurslarım / Dersler', icon: 'school' },
   { path: '/duyurular', label: 'Duyurular', icon: 'campaign' },
@@ -15,20 +21,8 @@ const BASE_NAV_ITEMS: NavItem[] = [
   { path: '/sinavlar', label: 'Sınav Sistemi', icon: 'quiz' },
 ];
 
-const ADMIN_NAV_ITEMS: NavItem[] = [
-  { path: '/yonetim/kurslar', label: 'Kurs Yönetimi', icon: 'admin_panel_settings' },
-];
-
-/**
- * Sol menünün tek kaynağı. Yeni bir sayfa eklemek için buraya bir satır,
- * routes/index.tsx içine bir <Route> eklemek yeterli.
- * Yollar ui/code.html'deki data-path değerleriyle aynı.
- * Aktif role göre ek (örn. admin) öğeler burada eklenir; Sidebar.tsx
- * sadece bu listeyi render eder, rol bazlı dallanma yapmaz.
- */
-export function getNavItems(role: UserRole | undefined): NavItem[] {
-  if (role === 'ADMIN') {
-    return [...BASE_NAV_ITEMS, ...ADMIN_NAV_ITEMS];
-  }
-  return BASE_NAV_ITEMS;
-}
+export const ADMIN_MENU_MANAGEMENT_ITEM: NavItem = {
+  path: '/yonetim/menu',
+  label: 'Menü Yönetimi',
+  icon: 'list_alt',
+};
