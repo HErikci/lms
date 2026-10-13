@@ -15,6 +15,7 @@ describe('course routes', () => {
 
   beforeEach(async () => {
     await prisma.enrollment.deleteMany();
+    await prisma.lessonProgress.deleteMany();
     await prisma.lesson.deleteMany();
     await prisma.module.deleteMany();
     await prisma.course.deleteMany();
@@ -320,6 +321,37 @@ describe('course routes', () => {
       expect(course.isEnrolled).toBe(true);
       expect(course.modules).toHaveLength(1);
       expect(course.modules[0].lessons).toHaveLength(1);
+    });
+
+    it('includes progress only when the caller is enrolled', async () => {
+      const courseId = await createPublishedCourseWithModule();
+      const before = await app.inject({
+        method: 'GET',
+        url: `/api/v1/courses/${courseId}`,
+        headers: { authorization: `Bearer ${studentToken}` },
+      });
+      expect(before.json().course).not.toHaveProperty('progress');
+      const anon = await app.inject({ method: 'GET', url: `/api/v1/courses/${courseId}` });
+      expect(anon.json().course).not.toHaveProperty('progress');
+
+      await app.inject({
+        method: 'POST',
+        url: `/api/v1/courses/${courseId}/enroll`,
+        headers: { authorization: `Bearer ${studentToken}` },
+        payload: { method: 'OPEN' },
+      });
+      const after = await app.inject({
+        method: 'GET',
+        url: `/api/v1/courses/${courseId}`,
+        headers: { authorization: `Bearer ${studentToken}` },
+      });
+      expect(after.json().course.progress).toEqual({
+        courseId,
+        percent: 0,
+        completedLessonIds: [],
+        completedCount: 0,
+        totalLessons: 1,
+      });
     });
   });
 

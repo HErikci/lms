@@ -1,7 +1,11 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Badge, Button, Card, Icon, Panel, Text } from '../../components';
+import { Button, Card, Icon, Panel, ProgressBar, Text } from '../../components';
 import { PageContainer } from '../../layout/PageContainer';
 import { useCourseDetail } from './useCourseDetail';
+import { useLessonAutoComplete } from './useLessonAutoComplete';
+import { useStudyTracker } from './useStudyTracker';
+import { useMyLessonGrade } from './useMyLessonGrade';
+import { LessonFeedback } from './LessonFeedback';
 import { CONTENT_TYPE_ICONS } from './contentType';
 import type { CourseLessonSummary, CourseModuleSummary } from '../../types';
 import styles from './LessonDetailPage.module.css';
@@ -30,7 +34,16 @@ interface FlatLesson {
 export function LessonDetailPage() {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const navigate = useNavigate();
-  const { course, loading, error, enrolling, enroll } = useCourseDetail(courseId);
+  const { course, loading, error, enrolling, enroll, setLessonCompleted, progressError } = useCourseDetail(courseId);
+
+  const lessonExists = Boolean(
+    lessonId && course?.modules.some((module) => module.lessons.some((lesson) => lesson.id === lessonId)),
+  );
+  const alreadyCompleted = Boolean(lessonId && course?.progress?.completedLessonIds.includes(lessonId));
+  useLessonAutoComplete(lessonId, Boolean(course?.isEnrolled) && lessonExists && !alreadyCompleted, (id) =>
+    setLessonCompleted(id, true),
+  );
+  useStudyTracker(lessonId, Boolean(course?.isEnrolled) && lessonExists);
 
   if (loading) {
     return (
@@ -111,6 +124,8 @@ export function LessonDetailPage() {
   const previous = activeIndex > 0 ? flattened[activeIndex - 1] : null;
   const next = activeIndex < flattened.length - 1 ? flattened[activeIndex + 1] : null;
 
+  const completedIds = new Set(course.progress?.completedLessonIds ?? []);
+
   const goTo = (entry: FlatLesson | null) => {
     if (!entry) return;
     navigate(`/kurslarim/${course.id}/ders/${entry.lesson.id}`);
@@ -153,6 +168,14 @@ export function LessonDetailPage() {
 
           <LessonContent lesson={active.lesson} />
 
+          <LessonFeedback lessonId={active.lesson.id} />
+
+          {progressError && (
+            <Text role="body-sm" tone="error" as="p" className={styles.completion}>
+              {progressError}
+            </Text>
+          )}
+
           <div className={styles.navButtons}>
             <Button variant="secondary" iconStart="chevron_left" onClick={() => goTo(previous)} disabled={!previous}>
               Önceki Ders
@@ -164,6 +187,14 @@ export function LessonDetailPage() {
         </div>
 
         <Panel title="Müfredat" icon="menu_book" className={styles.curriculum}>
+          {course.progress && (
+            <div className={styles.progressBlock}>
+              <ProgressBar value={course.progress.percent} label="Kurs tamamlanma oranı" size="sm" />
+              <Text role="label-md" tone="muted">
+                %{course.progress.percent}
+              </Text>
+            </div>
+          )}
           <div className={styles.moduleList}>
             {course.modules
               .slice()
@@ -189,9 +220,15 @@ export function LessonDetailPage() {
                               .join(' ')}
                           >
                             <Icon name={CONTENT_TYPE_ICONS[lesson.contentType]} size="sm" />
-                            <Text role="body-sm" as="span">
+                            <Text role="body-sm" as="span" className={styles.lessonTitle}>
                               {lesson.title}
                             </Text>
+                            {completedIds.has(lesson.id) && (
+                              <>
+                                <Icon name="check_circle" size="sm" filled className={styles.doneIcon} />
+                                <span className={styles.visuallyHidden}>tamamlandı</span>
+                              </>
+                            )}
                           </Link>
                         </li>
                       ))}
@@ -202,6 +239,46 @@ export function LessonDetailPage() {
         </Panel>
       </div>
     </PageContainer>
+  );
+}
+
+/** Öğrencinin bu quizdeki notu (varsa). Not, eğitmen/yönetici tarafından elle girilir. */
+function QuizGrade({ lessonId }: { lessonId: string }) {
+  const { grade, loading, error } = useMyLessonGrade(lessonId);
+
+  if (loading) {
+    return (
+      <Text role="body-md" tone="muted" as="p">
+        Not bilgisi yükleniyor…
+      </Text>
+    );
+  }
+
+  if (error) {
+    return (
+      <Text role="body-md" tone="error" as="p">
+        {error}
+      </Text>
+    );
+  }
+
+  if (!grade) {
+    return (
+      <Text role="body-md" tone="muted" as="p">
+        Bu quizin notu henüz girilmedi.
+      </Text>
+    );
+  }
+
+  return (
+    <>
+      <Text role="title-md" as="p" tone="main">
+        {`Notun: ${grade.score} / 100`}
+      </Text>
+      <Text role="body-sm" tone="muted" as="p">
+        {`Girilme tarihi: ${new Date(grade.gradedAt).toLocaleDateString('tr-TR')}`}
+      </Text>
+    </>
   );
 }
 
@@ -253,10 +330,8 @@ function LessonContent({ lesson }: { lesson: CourseLessonSummary }) {
       );
     case 'QUIZ':
       return (
-        <Card padding="lg" elevation="1">
-          <Text role="body-md" tone="muted">
-            Bu içerik bir sınavdır, sınav modülü yakında aktif olacak.
-          </Text>
+        <Card padding="lg" elevation="1" className={styles.quizGrade}>
+          <QuizGrade lessonId={lesson.id} />
         </Card>
       );
     case 'TEXT':

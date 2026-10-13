@@ -27,8 +27,14 @@ model User {
   role         String       @default("STUDENT")
   roles        String       @default("STUDENT")
   createdAt    DateTime     @default(now())
-  courses      Course[]     @relation("InstructorCourses")
+  instructorAssignments CourseInstructor[] @relation("InstructorAssignments")
   enrollments  Enrollment[]
+  lessonProgress LessonProgress[]
+  studyActivity StudyActivity[]
+  quizGradesReceived QuizGrade[] @relation("QuizGradesReceived")
+  quizGradesGiven    QuizGrade[] @relation("QuizGradesGiven")
+  lessonFeedback LessonFeedback[]
+  calendarEventsCreated CalendarEvent[] @relation("CalendarEventsCreated")
 }
 
 model Course {
@@ -40,10 +46,11 @@ model Course {
   tags        String       @default("")
   accessMode  String       @default("FREE")
   status      String       @default("DRAFT")
-  instructorId String
-  instructor  User         @relation("InstructorCourses", fields: [instructorId], references: [id])
   modules     Module[]
   enrollments Enrollment[]
+  instructors CourseInstructor[]
+  studyActivity StudyActivity[]
+  calendarEvents CalendarEvent[]
 }
 
 model Module {
@@ -66,6 +73,38 @@ model Lesson {
   // Allowed literals: "VIDEO_YOUTUBE" | "DOCUMENT" | "QUIZ" | "LINK" | "TEXT"
   contentType String   @default("DOCUMENT")
   contentUrl  String?
+  lessonProgress LessonProgress[]
+  quizGrades  QuizGrade[]
+  lessonFeedback LessonFeedback[]
+}
+
+/// Ders başına kullanıcı geri bildirimi: beğeni ve/veya 1–5 puan. İkisi de boşsa satır tutulmaz.
+model LessonFeedback {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  liked     Boolean  @default(false)
+  /// 1–5 arası; DB zorlamaz, API doğrular. Puan verilmediyse null.
+  rating    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([lessonId])
+}
+
+model LessonProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, lessonId])
+  @@index([userId])
 }
 
 model NavMenuItem {
@@ -89,4 +128,81 @@ model Enrollment {
   enrolledAt DateTime @default(now())
 
   @@unique([userId, courseId])
+}
+
+model CourseInstructor {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation("InstructorAssignments", fields: [userId], references: [id], onDelete: Cascade)
+  position  Int
+  createdAt DateTime @default(now())
+
+  @@unique([courseId, userId])
+  @@index([courseId, position])
+}
+
+/// Kullanıcı başına günlük çalışma süresi özeti. Ham olay tutulmaz; her istemci
+/// bildirimi (heartbeat) ilgili satırın `seconds` değerini artırır.
+/// Satır sayısı: kullanıcı × gün × çalışılan kurs × kategori (en fazla 3).
+model StudyActivity {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  /// YYYY-MM-DD, ACTIVITY_TIMEZONE (varsayılan Europe/Istanbul) takvimine göre.
+  day       String
+  /// Allowed literals: "VIDEO" | "QUIZ" | "READING" (dersin contentType'ından türetilir)
+  category  String
+  seconds   Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  /// Önek (userId, day) aralık sorgularını da karşılar; ayrı indeks gerekmez.
+  @@unique([userId, day, courseId, category])
+}
+
+/// QUIZ türündeki derslerde öğrenci başına tek not (0–100). Yeniden not girişi kaydı günceller.
+model QuizGrade {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation("QuizGradesReceived", fields: [userId], references: [id], onDelete: Cascade)
+  lessonId   String
+  lesson     Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  /// 0–100 arası tam sayı
+  score      Int
+  gradedById String?
+  gradedBy   User?    @relation("QuizGradesGiven", fields: [gradedById], references: [id], onDelete: SetNull)
+  /// Son not giriş/güncelleme zamanı (trend hesabında kullanılır)
+  gradedAt   DateTime @default(now())
+
+  @@unique([userId, lessonId])
+  @@index([lessonId])
+  @@index([userId, gradedAt])
+}
+
+/// Akademik takvim etkinliği. courseId boşsa genel (herkese görünür) etkinliktir;
+/// doluysa yalnızca kursa kayıtlılar ve kursu yönetenler görür.
+model CalendarEvent {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  /// Allowed literals: "lecture" | "lab" | "exam" | "deadline" | "holiday" | "event"
+  type        String   @default("event")
+  /// Zamanlı etkinlikte gerçek an (UTC). Tüm gün etkinlikte gün başı UTC 00:00 olarak saklanır.
+  start       DateTime
+  /// Bitiş (dahil değil). Tüm gün etkinlikte bitiş günü hariç, UTC 00:00.
+  end         DateTime?
+  allDay      Boolean  @default(false)
+  location    String?
+  courseId    String?
+  course      Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdById String?
+  createdBy   User?    @relation("CalendarEventsCreated", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([start])
+  @@index([courseId, start])
 }

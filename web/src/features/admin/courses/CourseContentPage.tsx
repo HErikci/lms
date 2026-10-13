@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Badge, Button, Card, IconButton, Panel, Text } from '../../../components';
+import { Avatar, Badge, Button, Card, Icon, IconButton, Panel, Text } from '../../../components';
 import { PageContainer } from '../../../layout/PageContainer';
 import { CONTENT_TYPE_LABELS } from '../../courses/contentType';
 import { useCourseContent } from './data/useCourseContent';
+import { useCourseInstructors } from './data/useCourseInstructors';
 import type {
   ContentLesson,
   ContentModule,
@@ -30,6 +31,47 @@ export function CourseContentPage() {
     updateLesson,
     deleteLesson,
   } = useCourseContent(id);
+
+  const {
+    instructors,
+    available,
+    loading: instructorsLoading,
+    error: instructorsError,
+    addInstructor,
+    removeInstructor,
+    reorderInstructors,
+  } = useCourseInstructors(id);
+  const [selectedInstructor, setSelectedInstructor] = useState('');
+  const [instructorBusy, setInstructorBusy] = useState(false);
+  const [instructorActionError, setInstructorActionError] = useState<string | null>(null);
+
+  const runInstructorAction = async (action: () => Promise<void>, fallback: string) => {
+    setInstructorBusy(true);
+    setInstructorActionError(null);
+    try {
+      await action();
+    } catch (err) {
+      setInstructorActionError(err instanceof Error ? err.message : fallback);
+    } finally {
+      setInstructorBusy(false);
+    }
+  };
+
+  const handleAddInstructor = () => {
+    if (!selectedInstructor) return;
+    return runInstructorAction(async () => {
+      await addInstructor(selectedInstructor);
+      setSelectedInstructor('');
+    }, 'Eğitmen eklenemedi.');
+  };
+
+  const handleMoveInstructor = (index: number, delta: -1 | 1) => {
+    const ids = instructors.map((instructor) => instructor.id);
+    const target = index + delta;
+    if (target < 0 || target >= ids.length) return;
+    [ids[index], ids[target]] = [ids[target], ids[index]];
+    return runInstructorAction(() => reorderInstructors(ids), 'Sıralama güncellenemedi.');
+  };
 
   const [moduleEdit, setModuleEdit] = useState<ModuleEditState>('none');
   const [lessonEdit, setLessonEdit] = useState<LessonEditState>(null);
@@ -138,6 +180,95 @@ export function CourseContentPage() {
         </Text>
       )}
 
+      <div className={styles.instructorPanel}>
+      <Panel title="Eğitmenler" icon="school">
+        {instructorsLoading && <Text role="body-md">Yükleniyor…</Text>}
+        {!instructorsLoading && instructorsError && (
+          <Text role="body-md" tone="error" as="p">
+            {instructorsError}
+          </Text>
+        )}
+        {instructorActionError && (
+          <Text role="body-md" tone="error" as="p">
+            {instructorActionError}
+          </Text>
+        )}
+        {!instructorsLoading && !instructorsError && instructors.length === 0 && (
+          <Text role="body-md" tone="muted" as="p">
+            Henüz eğitmen atanmamış.
+          </Text>
+        )}
+        {instructors.length > 0 && (
+          <ol className={styles.instructorList}>
+            {instructors.map((instructor, index) => (
+              <li key={instructor.id} className={styles.instructorRow}>
+                <Text role="label-md" tone="muted" as="span" className={styles.instructorPosition}>
+                  {index + 1}
+                </Text>
+                <Avatar name={instructor.name} src={instructor.avatarUrl ?? undefined} />
+                <Text role="body-md" as="span" className={styles.instructorName}>
+                  {instructor.name}
+                </Text>
+                <div className={styles.actions}>
+                  <IconButton
+                    icon="arrow_upward"
+                    label={`${instructor.name} eğitmenini yukarı taşı`}
+                    disabled={index === 0 || instructorBusy}
+                    onClick={() => handleMoveInstructor(index, -1)}
+                  />
+                  <IconButton
+                    icon="arrow_downward"
+                    label={`${instructor.name} eğitmenini aşağı taşı`}
+                    disabled={index === instructors.length - 1 || instructorBusy}
+                    onClick={() => handleMoveInstructor(index, 1)}
+                  />
+                  <IconButton
+                    icon="delete"
+                    label={`${instructor.name} eğitmenini kaldır`}
+                    disabled={instructorBusy}
+                    onClick={() =>
+                      runInstructorAction(
+                        () => removeInstructor(instructor.id),
+                        'Eğitmen kaldırılamadı.',
+                      )
+                    }
+                  />
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+        <div className={styles.instructorAdd}>
+          <label className={styles.instructorSelectLabel}>
+            <Text role="label-md" as="span" tone="muted">
+              Eğitmen seç
+            </Text>
+            <select
+              className={styles.select}
+              value={selectedInstructor}
+              onChange={(event) => setSelectedInstructor(event.target.value)}
+              disabled={instructorBusy}
+            >
+              <option value="">Eğitmen seçin…</option>
+              {available.map((candidate) => (
+                <option key={candidate.id} value={candidate.id}>
+                  {candidate.name} ({candidate.email})
+                </option>
+              ))}
+            </select>
+          </label>
+          <Button
+            variant="secondary"
+            iconStart="add"
+            onClick={handleAddInstructor}
+            disabled={!selectedInstructor || instructorBusy}
+          >
+            Ekle
+          </Button>
+        </div>
+      </Panel>
+      </div>
+
       {loading && <Text role="body-md">Yükleniyor…</Text>}
       {!loading && error && (
         <Text role="body-md" tone="error">
@@ -232,6 +363,18 @@ export function CourseContentPage() {
                           </Text>
                         </div>
                         <div className={styles.actions}>
+                          {lesson.contentType === 'QUIZ' && id && (
+                            <Link
+                              to={`/yonetim/kurslar/${id}/dersler/${lesson.id}/notlar`}
+                              className={styles.gradeLink}
+                              aria-label={`Notlar: ${lesson.title}`}
+                            >
+                              <Icon name="grading" size="sm" />
+                              <Text role="label-md" as="span" tone="secondary">
+                                Notlar
+                              </Text>
+                            </Link>
+                          )}
                           <IconButton
                             icon="edit"
                             label="Dersi Düzenle"

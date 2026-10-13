@@ -2,6 +2,15 @@ import type { FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma.js';
 import { requireAuth, requireRole, tryAuth } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
+import { computeProgress } from '../lib/progress.js';
+import {
+  assertCanManageCourse,
+  canManageCourse,
+  instructorsInclude,
+  toPublicInstructors,
+  type InstructorRow,
+} from '../lib/courseAccess.js';
+import { resolveInstructorUsers } from './courseInstructors.js';
 
 interface CreateCourseBody {
   title: string;
@@ -10,6 +19,7 @@ interface CreateCourseBody {
   level: string;
   tags: string[];
   accessMode: 'SEQUENTIAL' | 'FREE';
+  instructorIds?: string[];
 }
 
 interface ListCoursesQuery {
@@ -28,6 +38,7 @@ function toPublicCourse(course: {
   tags: string;
   accessMode: string;
   status: string;
+  instructors: InstructorRow[];
 }) {
   return {
     id: course.id,
@@ -38,6 +49,7 @@ function toPublicCourse(course: {
     tags: course.tags ? course.tags.split(',') : [],
     accessMode: course.accessMode,
     status: course.status,
+    instructors: toPublicInstructors(course.instructors),
   };
 }
 
@@ -66,6 +78,7 @@ export function registerCourseRoutes(app: FastifyInstance) {
           ...(tag ? { tags: { contains: tag } } : {}),
           ...(q ? { title: { contains: q } } : {}),
         },
+        include: { instructors: instructorsInclude },
       });
       return { courses: courses.map(toPublicCourse) };
     },
@@ -77,13 +90,15 @@ export function registerCourseRoutes(app: FastifyInstance) {
     async (request) => {
       const course = await prisma.course.findUnique({
         where: { id: request.params.id },
-        include: { modules: { include: { lessons: true }, orderBy: { order: 'asc' } } },
+        include: {
+          modules: { include: { lessons: true }, orderBy: { order: 'asc' } },
+          instructors: instructorsInclude,
+        },
       });
       if (!course) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
-      const isOwnerOrAdmin =
-        request.user?.role === 'ADMIN' || request.user?.userId === course.instructorId;
+      const isOwnerOrAdmin = await canManageCourse(request.user, course.id);
       if (course.status !== 'PUBLISHED' && !isOwnerOrAdmin) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
@@ -95,10 +110,13 @@ export function registerCourseRoutes(app: FastifyInstance) {
         isEnrolled = Boolean(enrollment);
       }
       const canSeeContent = isOwnerOrAdmin || isEnrolled;
+      const progress =
+        isEnrolled && request.user ? await computeProgress(request.user.userId, course.id) : null;
       return {
         course: {
           ...toPublicCourse(course),
           isEnrolled,
+          ...(progress ? { progress } : {}),
           modules: canSeeContent
             ? course.modules.map((module) => ({
                 id: module.id,
@@ -127,7 +145,15 @@ export function registerCourseRoutes(app: FastifyInstance) {
     '/api/v1/courses',
     { preHandler: [requireAuth, requireRole('INSTRUCTOR', 'ADMIN')] },
     async (request, reply) => {
-      const { title, description, category, level, tags, accessMode } = request.body;
+      const { title, description, category, level, tags, accessMode, instructorIds } = request.body;
+      let assigned: string[];
+      if (request.user!.role === 'ADMIN') {
+        const ids = [...new Set(instructorIds ?? [])];
+        await resolveInstructorUsers(ids, 400);
+        assigned = ids;
+      } else {
+        assigned = [request.user!.userId];
+      }
       const course = await prisma.course.create({
         data: {
           title,
@@ -136,8 +162,11 @@ export function registerCourseRoutes(app: FastifyInstance) {
           level,
           tags: tags.join(','),
           accessMode,
-          instructorId: request.user!.userId,
+          instructors: {
+            create: assigned.map((userId, index) => ({ userId, position: index + 1 })),
+          },
         },
+        include: { instructors: instructorsInclude },
       });
       reply.status(201);
       return { course: toPublicCourse(course) };
@@ -152,12 +181,7 @@ export function registerCourseRoutes(app: FastifyInstance) {
       if (!course) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
-      const isOwnerOrAdmin =
-        request.user!.role === 'ADMIN' ||
-        (request.user!.role === 'INSTRUCTOR' && request.user!.userId === course.instructorId);
-      if (!isOwnerOrAdmin) {
-        throw new AppError('FORBIDDEN', 'Bu işlem için yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, course.id);
       const { title, description, category, level, tags, accessMode, status } = request.body;
       const updated = await prisma.course.update({
         where: { id: course.id },
@@ -170,6 +194,7 @@ export function registerCourseRoutes(app: FastifyInstance) {
           ...(accessMode !== undefined ? { accessMode } : {}),
           ...(status !== undefined ? { status } : {}),
         },
+        include: { instructors: instructorsInclude },
       });
       return { course: toPublicCourse(updated) };
     },
@@ -183,12 +208,7 @@ export function registerCourseRoutes(app: FastifyInstance) {
       if (!course) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
-      const isOwnerOrAdmin =
-        request.user!.role === 'ADMIN' ||
-        (request.user!.role === 'INSTRUCTOR' && request.user!.userId === course.instructorId);
-      if (!isOwnerOrAdmin) {
-        throw new AppError('FORBIDDEN', 'Bu işlem için yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, course.id);
       await prisma.course.delete({ where: { id: course.id } });
       return { success: true };
     },
@@ -202,12 +222,7 @@ export function registerCourseRoutes(app: FastifyInstance) {
       if (!course) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
-      const isOwnerOrAdmin =
-        request.user!.role === 'ADMIN' ||
-        (request.user!.role === 'INSTRUCTOR' && request.user!.userId === course.instructorId);
-      if (!isOwnerOrAdmin) {
-        throw new AppError('FORBIDDEN', 'Bu işlem için yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, course.id);
       const enrollments = await prisma.enrollment.findMany({
         where: { courseId: course.id },
         include: { user: true },
@@ -233,12 +248,7 @@ export function registerCourseRoutes(app: FastifyInstance) {
       if (!course) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
-      const isOwnerOrAdmin =
-        request.user!.role === 'ADMIN' ||
-        (request.user!.role === 'INSTRUCTOR' && request.user!.userId === course.instructorId);
-      if (!isOwnerOrAdmin) {
-        throw new AppError('FORBIDDEN', 'Bu işlem için yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, course.id);
       const enrollment = await prisma.enrollment.findUnique({
         where: { userId_courseId: { userId: request.params.userId, courseId: course.id } },
       });

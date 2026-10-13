@@ -1,0 +1,22 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.avatars {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--color-surface);
+}
+
+.avatar + .avatar {
+  margin-inline-start: calc(var(--space-xs) * -1);
+}

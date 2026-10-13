@@ -2,7 +2,11 @@ import { NavLink } from 'react-router-dom';
 import { Icon, Text } from '../../components';
 import type { UserProfile } from '../../types';
 import { useNavItems } from '../../data/useNavItems';
-import { ADMIN_MENU_MANAGEMENT_ITEM, FALLBACK_NAV_ITEMS } from './navItems';
+import {
+  ADMIN_MENU_MANAGEMENT_ITEM,
+  CALENDAR_MANAGEMENT_ITEM,
+  FALLBACK_NAV_ITEMS,
+} from './navItems';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
@@ -15,8 +19,13 @@ interface SidebarProps {
 export function Sidebar({ user, isOpen, onNavigate }: SidebarProps) {
   const { items, loading } = useNavItems(user?.role);
   const baseItems = loading || items.length === 0 ? FALLBACK_NAV_ITEMS : items;
+  const withCalendar =
+    (user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR') &&
+    !baseItems.some((item) => item.path === CALENDAR_MANAGEMENT_ITEM.path)
+      ? [...baseItems, CALENDAR_MANAGEMENT_ITEM]
+      : baseItems;
   const navItems =
-    user?.role === 'ADMIN' ? [...baseItems, ADMIN_MENU_MANAGEMENT_ITEM] : baseItems;
+    user?.role === 'ADMIN' ? [...withCalendar, ADMIN_MENU_MANAGEMENT_ITEM] : withCalendar;
 
   return (
     <aside

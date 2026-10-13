@@ -1,0 +1,86 @@
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-lg);
+}
+
+.student {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.studentInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.wrap {
+  overflow-wrap: anywhere;
+}
+
+.gradeBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-xs);
+  max-width: 100%;
+}
+
+.form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+.scoreField {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.input {
+  width: 5rem;
+  font: inherit;
+  text-align: right;
+  color: var(--color-on-surface);
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-default);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.input[aria-invalid='true'] {
+  border-color: var(--color-state-error);
+}
+
+.input:read-only {
+  opacity: 0.7;
+}
+
+.input:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.error {
+  margin-top: var(--space-sm);
+}
+
+@media (max-width: 768px) {
+  .gradeBlock {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .form {
+    justify-content: flex-start;
+  }
+}

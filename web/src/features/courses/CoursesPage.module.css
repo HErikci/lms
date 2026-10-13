@@ -127,3 +127,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.progressRow > :first-child {
+  flex: 1;
+}

@@ -26,6 +26,18 @@
   transform: scale(1.05);
 }
 
+.fallbackTitle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-md);
+  overflow: hidden;
+  color: var(--color-on-primary);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
 .category {
   position: absolute;
   top: 0.75rem;

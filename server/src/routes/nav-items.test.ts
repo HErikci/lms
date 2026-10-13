@@ -16,6 +16,7 @@ describe('nav item routes', () => {
   beforeEach(async () => {
     await prisma.navMenuItem.deleteMany();
     await prisma.enrollment.deleteMany();
+    await prisma.lessonProgress.deleteMany();
     await prisma.lesson.deleteMany();
     await prisma.module.deleteMany();
     await prisma.course.deleteMany();

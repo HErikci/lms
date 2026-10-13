@@ -12,6 +12,7 @@ describe('auth routes', () => {
 
   beforeEach(async () => {
     await prisma.enrollment.deleteMany();
+    await prisma.lessonProgress.deleteMany();
     await prisma.lesson.deleteMany();
     await prisma.module.deleteMany();
     await prisma.course.deleteMany();

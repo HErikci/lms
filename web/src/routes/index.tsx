@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../layout/AppShell';
 import { RequireAuth } from './RequireAuth';
@@ -6,13 +7,23 @@ import { RedirectIfAuthed } from './RedirectIfAuthed';
 import { DashboardPage } from '../features/dashboard';
 import { CoursesPage, CourseDetailPage, LessonDetailPage } from '../features/courses';
 import { AnnouncementsPage } from '../features/announcements';
-import { CalendarPage } from '../features/calendar';
 import { AssignmentsPage } from '../features/assignments';
 import { ExamsPage } from '../features/exams';
 import { LoginPage, RegisterPage } from '../features/auth';
 import { ProfilePage } from '../features/profile';
-import { AdminCoursesPage, CourseStudentsPage, CourseContentPage } from '../features/admin/courses';
+import {
+  AdminCoursesPage,
+  CourseStudentsPage,
+  CourseContentPage,
+  QuizGradesPage,
+} from '../features/admin/courses';
 import { AdminNavItemsPage } from '../features/admin/nav-items';
+
+// Takvim, FullCalendar'ı ana pakete eklememek için ayrı parça (chunk) olarak yüklenir.
+const CalendarPage = lazy(() => import('../features/calendar').then((m) => ({ default: m.CalendarPage })));
+const CalendarAdminPage = lazy(() =>
+  import('../features/calendar').then((m) => ({ default: m.CalendarAdminPage })),
+);
 
 /**
  * Yollar layout/Sidebar/navItems.ts ile birebir eşleşir.
@@ -31,7 +42,14 @@ export const router = createBrowserRouter([
           { path: 'kurslarim/:id', element: <CourseDetailPage /> },
           { path: 'kurslarim/:courseId/ders/:lessonId', element: <LessonDetailPage /> },
           { path: 'duyurular', element: <AnnouncementsPage /> },
-          { path: 'takvim', element: <CalendarPage /> },
+          {
+            path: 'takvim',
+            element: (
+              <Suspense fallback={null}>
+                <CalendarPage />
+              </Suspense>
+            ),
+          },
           { path: 'notlar-ve-gorevler', element: <AssignmentsPage /> },
           { path: 'sinavlar', element: <ExamsPage /> },
           { path: 'profil', element: <ProfilePage /> },
@@ -42,6 +60,21 @@ export const router = createBrowserRouter([
               { path: 'yonetim/kurslar/:id/ogrenciler', element: <CourseStudentsPage /> },
               { path: 'yonetim/kurslar/:id/icerik', element: <CourseContentPage /> },
               { path: 'yonetim/menu', element: <AdminNavItemsPage /> },
+            ],
+          },
+          {
+            // Quiz notlarını yöneticiler ve kursa atanmış eğitmenler girer (sunucu ayrıca yetki denetler).
+            element: <RequireRole allow={['ADMIN', 'INSTRUCTOR']} />,
+            children: [
+              { path: 'yonetim/kurslar/:courseId/dersler/:lessonId/notlar', element: <QuizGradesPage /> },
+              {
+                path: 'yonetim/takvim',
+                element: (
+                  <Suspense fallback={null}>
+                    <CalendarAdminPage />
+                  </Suspense>
+                ),
+              },
             ],
           },
         ],

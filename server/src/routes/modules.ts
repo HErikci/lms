@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma.js';
 import { requireAuth, requireRole } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
+import { assertCanManageCourse } from '../lib/courseAccess.js';
 
 interface CreateModuleBody {
   title: string;
@@ -22,9 +23,7 @@ export function registerModuleRoutes(app: FastifyInstance) {
       if (!course) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
-      if (request.user!.role !== 'ADMIN' && course.instructorId !== request.user!.userId) {
-        throw new AppError('FORBIDDEN', 'Bu kursu düzenleme yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, course.id, 'Bu kursu düzenleme yetkiniz yok.');
       const module = await prisma.module.create({
         data: {
           courseId: course.id,
@@ -48,9 +47,7 @@ export function registerModuleRoutes(app: FastifyInstance) {
       if (!module) {
         throw new AppError('NOT_FOUND', 'Modül bulunamadı.', 404);
       }
-      if (request.user!.role !== 'ADMIN' && module.course.instructorId !== request.user!.userId) {
-        throw new AppError('FORBIDDEN', 'Bu kursu düzenleme yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, module.course.id, 'Bu kursu düzenleme yetkiniz yok.');
       const { title, order } = request.body;
       const updated = await prisma.module.update({
         where: { id: module.id },
@@ -74,9 +71,7 @@ export function registerModuleRoutes(app: FastifyInstance) {
       if (!module) {
         throw new AppError('NOT_FOUND', 'Modül bulunamadı.', 404);
       }
-      if (request.user!.role !== 'ADMIN' && module.course.instructorId !== request.user!.userId) {
-        throw new AppError('FORBIDDEN', 'Bu kursu düzenleme yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, module.course.id, 'Bu kursu düzenleme yetkiniz yok.');
       await prisma.module.delete({ where: { id: module.id } });
       return { success: true };
     },

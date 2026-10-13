@@ -1,98 +1,104 @@
-import { Badge, Card, Icon, Text } from '../../components';
+import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Badge, Card, Icon, IconButton, Text } from '../../components';
 import { PageContainer } from '../../layout/PageContainer';
+import { useCurrentUser } from '../../data/useCurrentUser';
+import type { CalendarEvent } from '../../types';
+import { AcademicCalendar } from './AcademicCalendar';
+import { EVENT_TYPES } from './eventTypes';
+import { parseEventDate } from './dateUtils';
 import styles from './CalendarPage.module.css';
 
-interface Event {
-  date: string;
-  type: 'exam' | 'deadline' | 'lecture' | 'holiday';
-  title: string;
-  details: string;
-}
-
-const events: Event[] = [
-  { date: '20 Ekim', type: 'lecture', title: 'Canlı Ders: Veri Yapıları', details: 'CENG 201 - Pazartesi 10:00' },
-  { date: '22 Ekim', type: 'deadline', title: 'Ödev Teslimi', details: 'SWE 212 - Perşembe 23:59' },
-  { date: '25 Ekim', type: 'exam', title: 'Quiz: İkili Arama Ağaçları', details: 'CENG 201 - Çevrim içi 15 dakika' },
-  { date: '27 Ekim', type: 'deadline', title: 'Proje Ödevi 2 Teslimi', details: 'CENG 201 - Cuma 23:59' },
-  { date: '30 Ekim', type: 'exam', title: 'SQL Ara Sınavı', details: 'SWE 212 - Çevrim içi 45 dakika' },
-  { date: '2 Kasım', type: 'holiday', title: 'Kurtuluş Günü Tatili', details: 'Resmi tatil' },
-];
-
-function getEventTone(type: Event['type']) {
-  switch (type) {
-    case 'exam':
-      return 'error' as const;
-    case 'deadline':
-      return 'warning' as const;
-    case 'lecture':
-      return 'cyan' as const;
-    case 'holiday':
-      return 'success' as const;
+function formatRange(event: CalendarEvent): string {
+  const start = parseEventDate(event.start);
+  const dateFormat: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', weekday: 'long' };
+  if (event.allDay) {
+    if (!event.end) return start.toLocaleDateString('tr-TR', dateFormat);
+    const lastDay = parseEventDate(event.end);
+    lastDay.setDate(lastDay.getDate() - 1); // bitiş günü hariç tutulur
+    return `${start.toLocaleDateString('tr-TR', dateFormat)} – ${lastDay.toLocaleDateString('tr-TR', dateFormat)}`;
   }
-}
-
-function getEventIcon(type: Event['type']) {
-  switch (type) {
-    case 'exam':
-      return 'quiz';
-    case 'deadline':
-      return 'assignment';
-    case 'lecture':
-      return 'video_call';
-    case 'holiday':
-      return 'celebration';
-  }
+  const time = (date: Date) => date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+  const end = event.end ? parseEventDate(event.end) : null;
+  return `${start.toLocaleDateString('tr-TR', dateFormat)}, ${time(start)}${end ? ` – ${time(end)}` : ''}`;
 }
 
 export function CalendarPage() {
+  const { user } = useCurrentUser();
+  const [selected, setSelected] = useState<CalendarEvent | null>(null);
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const canManage = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
+
+  // Ayrıntı kartı takvimin altında açılır; seçilince görünür alana getir.
+  useEffect(() => {
+    if (!selected) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    detailsRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest' });
+  }, [selected]);
+
   return (
     <PageContainer>
       <div className={styles.header}>
-        <Text role="headline-lg" as="h1">
-          Akademik Takvim
-        </Text>
-        <Text role="body-md" tone="muted" as="p">
-          Güz 2024 — Sınavlar, ödevler ve canlı dersler
-        </Text>
+        <div>
+          <Text role="headline-lg" as="h1">
+            Akademik Takvim
+          </Text>
+          <Text role="body-md" tone="muted" as="p">
+            Canlı dersler, laboratuvarlar, sınavlar ve son teslim tarihleri
+          </Text>
+        </div>
+        {canManage && (
+          <Link to="/yonetim/takvim" className={styles.manageLink}>
+            <Icon name="edit_calendar" size="md" />
+            Takvimi Yönet
+          </Link>
+        )}
       </div>
 
-      <div className={styles.timeline}>
-        {events.map((event, idx) => (
-          <div key={idx} className={styles.event}>
-            <div className={styles.dateBar}>
-              <Text role="label-md" weight="bold">
-                {event.date}
-              </Text>
-              <div className={styles.line} />
+      <AcademicCalendar editable={false} onEventClick={setSelected} />
+
+      {selected && (
+        <div ref={detailsRef}>
+          <Card padding="lg" className={styles.details}>
+            <div className={styles.detailsHeader}>
+              <span className={styles.detailsTitle}>
+                <Icon name={EVENT_TYPES[selected.type].icon} size="lg" filled />
+                <Text role="title-md" as="h2" tone="main">
+                  {selected.title}
+                </Text>
+              </span>
+              <IconButton icon="close" label="Ayrıntıları kapat" onClick={() => setSelected(null)} />
             </div>
-
-            <Card padding="lg" elevation="1">
-              <div className={styles.eventContent}>
-                <div className={styles.eventIcon}>
-                  <Icon name={getEventIcon(event.type)} size="lg" filled />
-                </div>
-                <div className={styles.eventText}>
-                  <Text role="title-md" as="h3">
-                    {event.title}
-                  </Text>
-                  <Text role="body-sm" tone="muted">
-                    {event.details}
-                  </Text>
-                </div>
-                <Badge tone={getEventTone(event.type)} variant="soft">
-                  {event.type === 'exam'
-                    ? 'Sınav'
-                    : event.type === 'deadline'
-                      ? 'Teslim'
-                      : event.type === 'lecture'
-                        ? 'Ders'
-                        : 'Tatil'}
-                </Badge>
-              </div>
-            </Card>
-          </div>
-        ))}
-      </div>
+            <span className={styles.detailsBadge}>
+              <Badge tone={EVENT_TYPES[selected.type].tone} variant="soft">
+                {EVENT_TYPES[selected.type].label}
+              </Badge>
+            </span>
+            <dl className={styles.detailsList}>
+              <dt>Zaman</dt>
+              <dd>{formatRange(selected)}</dd>
+              {selected.course && (
+                <>
+                  <dt>Kurs</dt>
+                  <dd>{selected.course.title}</dd>
+                </>
+              )}
+              {selected.location && (
+                <>
+                  <dt>Yer</dt>
+                  <dd>{selected.location}</dd>
+                </>
+              )}
+              {selected.description && (
+                <>
+                  <dt>Açıklama</dt>
+                  <dd>{selected.description}</dd>
+                </>
+              )}
+            </dl>
+          </Card>
+        </div>
+      )}
     </PageContainer>
   );
 }

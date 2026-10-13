@@ -1,83 +1,301 @@
 .header {
-  margin-bottom: var(--space-2xl);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
 }
 
 .header h1 {
   margin-bottom: var(--space-sm);
 }
 
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2xl);
-  position: relative;
-}
-
-.event {
-  display: flex;
-  gap: var(--space-lg);
-}
-
-.dateBar {
-  flex-shrink: 0;
-  width: 120px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-md);
-}
-
-.dateBar p {
+.manageLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
   color: var(--color-secondary);
+  font-weight: 600;
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-default);
+  text-decoration: none;
 }
 
-.line {
-  flex: 1;
-  width: 2px;
-  background: var(--color-surface-container);
-  min-height: 100px;
+.manageLink:hover {
+  background-color: var(--color-secondary-soft);
 }
 
-.eventContent {
+.manageLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.status {
+  min-height: 1.5rem;
+  margin-bottom: var(--space-sm);
+}
+
+.legend {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-md);
-  width: 100%;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
 }
 
-.eventIcon {
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+.legendItem {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: var(--color-surface-container-low);
+  gap: var(--space-xs);
+}
+
+.swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+/*
+ * FullCalendar teması. Kütüphanenin CSS değişkenleri tasarım token'larına bağlanır;
+ * global .fc-* sınıfları yalnızca bu kapsayıcı altında ezilir.
+ */
+.calendar {
+  --fc-border-color: var(--color-border-subtle);
+  --fc-page-bg-color: var(--color-surface-card);
+  --fc-neutral-bg-color: var(--color-surface-container-low);
+  --fc-neutral-text-color: var(--color-text-muted);
+  --fc-today-bg-color: var(--color-secondary-soft);
+  --fc-now-indicator-color: var(--color-state-error);
+  --fc-highlight-color: var(--color-secondary-soft);
+  --fc-list-event-hover-bg-color: var(--color-surface-container-low);
+  --fc-button-text-color: var(--color-text-main);
+  --fc-button-bg-color: var(--color-surface-container-low);
+  --fc-button-border-color: var(--color-border-subtle);
+  --fc-button-hover-bg-color: var(--color-surface-container);
+  --fc-button-hover-border-color: var(--color-border-subtle);
+  --fc-button-active-bg-color: var(--color-secondary);
+  --fc-button-active-border-color: var(--color-secondary);
+  --fc-small-font-size: 0.75rem;
+
+  font-family: var(--font-body);
+  color: var(--color-text-main);
+}
+
+/* Araç çubuğu */
+.calendar :global(.fc .fc-toolbar) {
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.calendar :global(.fc .fc-toolbar-title) {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-brand-navy-deep);
+}
+
+.calendar :global(.fc .fc-button) {
+  padding: var(--space-xs) var(--space-md);
   border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: none;
+  box-shadow: none;
+}
+
+.calendar :global(.fc .fc-button-primary:not(:disabled).fc-button-active),
+.calendar :global(.fc .fc-button-primary:not(:disabled):active) {
+  color: var(--color-on-secondary);
+}
+
+.calendar :global(.fc .fc-button:focus),
+.calendar :global(.fc .fc-button-primary:not(:disabled).fc-button-active:focus) {
+  box-shadow: none;
+}
+
+.calendar :global(.fc .fc-button:focus-visible),
+.calendar :global(.fc .fc-event:focus-visible),
+.calendar :global(.fc .fc-list-event:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Gün başlıkları: "PZT" + büyük gün numarası (Google Takvim düzeni) */
+.calendar :global(.fc .fc-col-header-cell) {
+  padding: var(--space-sm) 0;
+}
+
+.calendar :global(.fc .fc-col-header-cell-cushion) {
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.dayHead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.dayName {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.dayNameToday {
   color: var(--color-secondary);
 }
 
-.eventText {
-  flex: 1;
+.dayNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--color-text-main);
 }
 
-.eventText h3 {
-  margin: 0 0 var(--space-xs) 0;
+.dayNumberToday {
+  background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
 }
 
-@media (max-width: 768px) {
-  .event {
-    flex-direction: column;
-    gap: var(--space-md);
+/* Bugünün sütununu boyamak yerine başlıktaki daire yeterli; hafta görünümünde zemin sade kalır. */
+.calendar :global(.fc .fc-timegrid-col.fc-day-today),
+.calendar :global(.fc .fc-timegrid .fc-daygrid-day.fc-day-today) {
+  background-color: transparent;
+}
+
+/* Saat etiketleri */
+.calendar :global(.fc .fc-timegrid-slot-label-cushion),
+.calendar :global(.fc .fc-timegrid-axis-cushion) {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.calendar :global(.fc .fc-timegrid-slot) {
+  height: 2.25rem;
+}
+
+/* Yarım saat çizgileri daha silik */
+.calendar :global(.fc .fc-timegrid-slot-minor) {
+  border-top-style: dotted;
+}
+
+/* Etkinlikler */
+.event {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-1);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.calendar :global(.fc .fc-timegrid-event-harness-inset .fc-timegrid-event) {
+  box-shadow: 0 0 0 1px var(--color-surface-card);
+}
+
+.eventBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.125rem var(--space-xs);
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.eventTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eventMeta {
+  font-size: 0.6875rem;
+  opacity: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Liste (ajanda) görünümünde metin rengi temaya uysun */
+.calendar :global(.fc .fc-list-event) {
+  color: var(--color-text-main);
+}
+
+.calendar :global(.fc .fc-list-day-cushion) {
+  background-color: var(--color-surface-container-low);
+}
+
+.calendar :global(.fc a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Ayrıntı kartı */
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.detailsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.detailsBadge {
+  align-self: flex-start;
+}
+
+.detailsTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-secondary);
+}
+
+.detailsList {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-xs) var(--space-md);
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.detailsList dt {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.detailsList dd {
+  margin: 0;
+  color: var(--color-text-main);
+}
+
+@media (max-width: 767px) {
+  .calendar :global(.fc .fc-toolbar-title) {
+    font-size: 1rem;
   }
 
-  .dateBar {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
+  .detailsList {
+    grid-template-columns: 1fr;
   }
+}
 
-  .line {
-    min-height: 0;
-  }
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
 }

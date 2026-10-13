@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button, Text } from '../../../../components';
 import type { AdminCourse, CourseInput } from '../data/useAdminCourses';
+import { useAssignableInstructors } from '../data/useCourseInstructors';
 import styles from './CourseForm.module.css';
 
 interface CourseFormProps {
@@ -21,6 +22,15 @@ export function CourseForm({ course, saving, onCancel, onSubmit }: CourseFormPro
   const [tagsText, setTagsText] = useState(course?.tags.join(', ') ?? '');
   const [accessMode, setAccessMode] = useState(course?.accessMode ?? 'SEQUENTIAL');
   const [status, setStatus] = useState(course?.status ?? 'DRAFT');
+  // Eğitmen seçimi yalnızca oluşturmada (kurs yönetimi ADMIN'e özeldir).
+  const isCreate = !course;
+  const { pool } = useAssignableInstructors();
+  const [instructorIds, setInstructorIds] = useState<string[]>([]);
+
+  const toggleInstructor = (id: string) =>
+    setInstructorIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,6 +47,7 @@ export function CourseForm({ course, saving, onCancel, onSubmit }: CourseFormPro
       tags,
       accessMode,
       status,
+      ...(isCreate && instructorIds.length > 0 ? { instructorIds } : {}),
     });
   };
 
@@ -135,13 +146,35 @@ export function CourseForm({ course, saving, onCancel, onSubmit }: CourseFormPro
           <select
             className={styles.input}
             value={status}
-            onChange={(event) => setStatus(event.target.value as CourseInput['status'])}
+            onChange={(event) => setStatus(event.target.value as NonNullable<CourseInput['status']>)}
           >
             <option value="DRAFT">Taslak</option>
             <option value="PUBLISHED">Yayınlandı</option>
           </select>
         </label>
       </div>
+
+      {isCreate && pool.length > 0 && (
+        <fieldset className={styles.fieldset}>
+          <legend>
+            <Text role="label-md" as="span" tone="muted">
+              Eğitmenler (isteğe bağlı)
+            </Text>
+          </legend>
+          {pool.map((instructor) => (
+            <label key={instructor.id} className={styles.checkbox}>
+              <input
+                type="checkbox"
+                checked={instructorIds.includes(instructor.id)}
+                onChange={() => toggleInstructor(instructor.id)}
+              />
+              <Text role="body-md" as="span">
+                {instructor.name}
+              </Text>
+            </label>
+          ))}
+        </fieldset>
+      )}
 
       <div className={styles.actions}>
         <Button type="button" variant="ghost" onClick={onCancel} disabled={saving}>

@@ -1,5 +1,4 @@
 import type { DashboardData } from '../types';
-import { IMAGE_1, IMAGE_2, IMAGE_3, IMAGE_4 } from './images';
 
 /**
  * Dashboard için sahte veri. İçerik ui/code.html'deki gerçek Türkçe metinlerden alındı.
@@ -34,21 +33,18 @@ export const dashboardFixture: DashboardData = {
     {
       id: 'completed',
       label: 'Tamamlanan Dersler',
-      value: '42',
-      unit: '/62   %68',
+      // Değer, birim ve ilerleme useCourses() sonucundan DashboardPage'de hesaplanır.
+      value: '—',
       icon: 'check_circle',
       iconTone: 'secondary',
-      progress: 68,
     },
     {
       id: 'average',
       label: 'Ortalama Başarı',
-      value: '%84',
-      unit: 'AA / Yüksek',
+      // Değer, birim ve dipnot GET /users/me/grades özetinden DashboardPage'de üretilir.
+      value: '—',
       icon: 'military_tech',
       iconTone: 'success',
-      footnote: 'Son quizden +%6 artış',
-      footnoteIcon: 'trending_up',
     },
     {
       id: 'studytime',
@@ -60,71 +56,6 @@ export const dashboardFixture: DashboardData = {
       footnote: 'Aylık hedef: 35 Saat',
       footnoteIcon: 'schedule',
     },
-  ],
-
-  continueLesson: {
-    courseTitle: 'Web Teknolojileri',
-    instructor: 'Dr. Murat Yılmaz',
-    lessonNumber: 14,
-    lessonTopic: 'REST API',
-    title: 'Modern Web Geliştirme: Full Stack React & Node.js',
-    description:
-      'Modül 3: REST API Mimarisi, Express.js Router Yapılandırması ve PostgreSQL Veritabanı…',
-    thumbnailUrl: IMAGE_1,
-    thumbnailAlt:
-      'Kod editörü ve geliştirme panosu açık bir monitörün bulunduğu çalışma masası',
-    remainingMinutes: 18,
-    moduleProgress: 72,
-  },
-
-  totalCourseCount: 4,
-  courses: [
-    {
-      id: 'ceng201',
-      code: 'CENG 201',
-      credits: 4,
-      category: 'Bilgisayar Müh.',
-      title: 'Veri Yapıları ve Algoritmalar',
-      nextLesson: 'İkili Arama Ağaçları',
-      progress: 85,
-      progressTone: 'cyan',
-      thumbnailUrl: IMAGE_2,
-      thumbnailAlt: 'Mavi tonlarda ağ düğümlerinden oluşan soyut veri yapısı görseli',
-    },
-    {
-      id: 'ai304',
-      code: 'AI 304',
-      credits: 3,
-      category: 'Yapay Zekâ',
-      title: 'Yapay Zekâ ve ML Temelleri',
-      nextLesson: 'Denetimli Öğrenme',
-      progress: 40,
-      progressTone: 'blue',
-      thumbnailUrl: IMAGE_3,
-      thumbnailAlt: 'Sinir ağı bağlantılarını gösteren mavi renkli görselleştirme',
-    },
-    {
-      id: 'swe212',
-      code: 'SWE 212',
-      credits: 4,
-      category: 'Yazılım',
-      title: 'Veritabanı Sistemleri & SQL',
-      nextLesson: 'İndeksleme Stratejileri',
-      progress: 90,
-      progressTone: 'success',
-      thumbnailUrl: IMAGE_4,
-      thumbnailAlt: 'Veri merkezi sunucularını temsil eden izometrik mavi blok görseli',
-    },
-  ],
-
-  activity: [
-    { label: 'Pzt', videoMinutes: 38, taskMinutes: 22, isToday: false, isWeekend: false },
-    { label: 'Sal', videoMinutes: 58, taskMinutes: 18, isToday: false, isWeekend: false },
-    { label: 'Çar', videoMinutes: 52, taskMinutes: 12, isToday: false, isWeekend: false },
-    { label: 'Per', videoMinutes: 34, taskMinutes: 26, isToday: false, isWeekend: false },
-    { label: 'Bugün', videoMinutes: 66, taskMinutes: 42, isToday: true, isWeekend: false },
-    { label: 'Cmt', videoMinutes: 10, taskMinutes: 0, isToday: false, isWeekend: true },
-    { label: 'Paz', videoMinutes: 16, taskMinutes: 0, isToday: false, isWeekend: true },
   ],
 
   upcomingTasks: [

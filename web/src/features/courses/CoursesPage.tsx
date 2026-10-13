@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Badge, Button, Card, Text } from '../../components';
+import { Badge, Button, Card, ProgressBar, Text } from '../../components';
 import { PageContainer } from '../../layout/PageContainer';
+import { CourseInstructors } from './CourseInstructors';
 import { useCourses } from './useCourses';
 import { useAllCourses } from './useAllCourses';
 import { enrollInCourse } from './enrollInCourse';
@@ -115,6 +116,19 @@ export function CoursesPage() {
                           {course.accessMode === 'SEQUENTIAL' ? 'Sıralı Erişim' : 'Serbest Erişim'}
                         </Badge>
                       </div>
+                      <CourseInstructors instructors={course.instructors} showEmpty={false} />
+                      {course.progress && (
+                        <div className={styles.progressRow}>
+                          <ProgressBar
+                            value={course.progress.percent}
+                            label={`${course.title} tamamlanma oranı`}
+                            size="sm"
+                          />
+                          <Text role="label-md" tone="muted">
+                            %{course.progress.percent}
+                          </Text>
+                        </div>
+                      )}
                     </div>
                   </Card>
                 </div>
@@ -160,6 +174,7 @@ export function CoursesPage() {
                           {course.accessMode === 'SEQUENTIAL' ? 'Sıralı Erişim' : 'Serbest Erişim'}
                         </Badge>
                       </div>
+                      <CourseInstructors instructors={course.instructors} showEmpty={false} />
                       {enrolled ? (
                         <Button
                           variant="secondary"

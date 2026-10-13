@@ -26,3 +26,10 @@ export const ADMIN_MENU_MANAGEMENT_ITEM: NavItem = {
   label: 'Menü Yönetimi',
   icon: 'list_alt',
 };
+
+/** ADMIN ve INSTRUCTOR icin takvim yonetimi; DB'de ayni yol varsa tekrar eklenmez. */
+export const CALENDAR_MANAGEMENT_ITEM: NavItem = {
+  path: '/yonetim/takvim',
+  label: 'Takvim Yönetimi',
+  icon: 'edit_calendar',
+};

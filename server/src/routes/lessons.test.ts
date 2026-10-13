@@ -15,6 +15,7 @@ describe('lesson routes', () => {
 
   beforeEach(async () => {
     await prisma.enrollment.deleteMany();
+    await prisma.lessonProgress.deleteMany();
     await prisma.lesson.deleteMany();
     await prisma.module.deleteMany();
     await prisma.course.deleteMany();
@@ -39,7 +40,7 @@ describe('lesson routes', () => {
         level: 'Başlangıç',
         accessMode: 'SEQUENTIAL',
         status: 'PUBLISHED',
-        instructorId: instructor.id,
+        instructors: { create: [{ userId: instructor.id, position: 1 }] },
       },
     });
     const module = await prisma.module.create({ data: { courseId: course.id, title: 'Modül', order: 1 } });

@@ -47,16 +47,14 @@
 }
 
 .column {
+  position: relative;
+  border-radius: var(--radius-default);
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
   min-width: 0;
-}
-
-.weekend {
-  opacity: 0.4;
 }
 
 .stack {
@@ -86,3 +84,85 @@
 
 .glowVideo { box-shadow: 0 0 8px rgb(var(--rgb-secondary) / 0.4); }
 .glowTask { box-shadow: 0 0 8px rgb(var(--rgb-cyan-accent) / 0.4); }
+
+/* Ekran okuyucu için günün süre özeti; görsel olarak gizli. */
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.column:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Çubuk üzerine gelince veya klavye ile odaklanınca görünen bilgi balonu. */
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + var(--space-xs));
+  left: 50%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 11rem;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-container-lowest);
+  box-shadow: var(--elevation-2);
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 0.25rem);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.column:hover .tooltip,
+.column:focus-visible .tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* İlk ve son sütunda balon kartın dışına taşmasın. */
+.tooltipStart {
+  left: 0;
+  transform: translate(0, 0.25rem);
+}
+
+.tooltipEnd {
+  right: 0;
+  left: auto;
+  transform: translate(0, 0.25rem);
+}
+
+.column:hover .tooltipStart,
+.column:focus-visible .tooltipStart,
+.column:hover .tooltipEnd,
+.column:focus-visible .tooltipEnd {
+  transform: translate(0, 0);
+}
+
+.tooltipDate {
+  font-weight: 700;
+}
+
+.tooltipTotal {
+  color: var(--color-text-muted);
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}

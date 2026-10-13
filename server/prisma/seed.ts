@@ -18,6 +18,18 @@ async function main() {
     },
   });
 
+  const instructor2 = await prisma.user.create({
+    data: {
+      email: 'egitmen2@btkakademi.test',
+      passwordHash,
+      name: 'Mehmet Demir',
+      role: 'INSTRUCTOR',
+      roles: 'INSTRUCTOR',
+      avatarUrl: 'https://i.pravatar.cc/150?u=egitmen2@btkakademi.test',
+      locale: 'tr',
+    },
+  });
+
   const course = await prisma.course.create({
     data: {
       title: 'React ile Modern Web Geliştirme',
@@ -27,7 +39,7 @@ async function main() {
       tags: 'react,typescript,frontend',
       accessMode: 'SEQUENTIAL',
       status: 'PUBLISHED',
-      instructorId: instructor.id,
+      instructors: { create: [{ userId: instructor.id, position: 1 }, { userId: instructor2.id, position: 2 }] },
       modules: {
         create: [
           {
@@ -76,35 +88,101 @@ async function main() {
       tags: 'oop,java,yazilim-tasarimi',
       accessMode: 'SEQUENTIAL',
       status: 'PUBLISHED',
-      instructorId: instructor.id,
+      instructors: { create: [{ userId: instructor.id, position: 1 }] },
+      modules: {
+        create: [],
+      },
+    },
+  });
+
+  const v = (id: string) => `https://www.youtube.com/watch?v=${id}`;
+  const lesson = (order: number, title: string, id: string, description: string) => ({
+    title,
+    order,
+    status: 'PUBLISHED',
+    description,
+    contentType: 'VIDEO_YOUTUBE',
+    contentUrl: v(id),
+  });
+
+  await prisma.course.create({
+    data: {
+      title: 'ASP.NET Core Minimal API',
+      description:
+        'ASP.NET Core Minimal API ile baştan sona REST servisi geliştirin: yönlendirme, parametre bağlama, hata yönetimi, Swagger, Dependency Injection, EF Core, AutoMapper, Identity ve JWT ile kimlik doğrulama.',
+      category: 'Yazılım Geliştirme',
+      level: 'Orta',
+      tags: 'aspnet-core,minimal-api,csharp,rest,jwt,backend',
+      accessMode: 'SEQUENTIAL',
+      status: 'PUBLISHED',
       modules: {
         create: [
           {
-            title: "OOP'a Giriş",
+            title: 'Temeller ve Yönlendirme',
             order: 1,
             lessons: {
-              create: [],
+              create: [
+                lesson(1, 'Minimal APIs Giriş', '5Op71vTjJ6Q', 'Minimal API yaklaşımına giriş ve ilk uç nokta.'),
+                lesson(2, 'HTTP Verbs', 'WI2YG7W8Pbk', 'GET, POST, PUT, DELETE gibi HTTP fiilleri.'),
+                lesson(3, 'Route Handlers', 'YzbWu9Wa4MM', 'Route handler tanımlama biçimleri.'),
+                lesson(4, 'Route Parameters', '1BcalNN-Uf4', 'Route parametreleri ve kısıtlamaları.'),
+              ],
             },
           },
           {
-            title: 'Sınıflar ve Nesneler',
+            title: 'İstek Bağlama ve Yanıtlar',
             order: 2,
             lessons: {
-              create: [],
+              create: [
+                lesson(1, 'Parameter Binding', 'mN0yhn4KZCw', 'Parametrelerin istekten bağlanması.'),
+                lesson(2, 'Results', 'bD9JLpXzkAw', 'Results sınıfı ile tipli yanıtlar döndürme.'),
+              ],
             },
           },
           {
-            title: 'Kalıtım ve Polimorfizm',
+            title: 'Hata Yönetimi, CORS, Swagger ve Doğrulama',
             order: 3,
             lessons: {
-              create: [],
+              create: [
+                lesson(1, 'Global Error Handler', 'nBD-lFf1dxs', 'Merkezi hata yakalama.'),
+                lesson(2, 'CORS', 'nAT7xXN_BNk', 'Cross-Origin Resource Sharing yapılandırması.'),
+                lesson(3, 'Swagger', 'MbprGtGP8Qs', 'Swagger ile API dokümantasyonu.'),
+                lesson(4, 'Validation', 'S77PdaOfdEk', 'İstek verisi doğrulama.'),
+              ],
             },
           },
           {
-            title: 'Kapsülleme ve Soyutlama',
+            title: 'Dependency Injection',
             order: 4,
             lessons: {
-              create: [],
+              create: [
+                lesson(1, 'Dependency Injection', '5daGbCPOEVA', 'Bağımlılık enjeksiyonu temelleri.'),
+                lesson(2, 'Dependency Injection and Interfaces', 'ARbZ1_klwnA', 'Arayüzler ile gevşek bağlı tasarım.'),
+              ],
+            },
+          },
+          {
+            title: 'Veri Erişimi ve Yapılandırma',
+            order: 5,
+            lessons: {
+              create: [
+                lesson(1, 'Repository Management', 'e3NX3Bm-fNc', 'Repository deseni ile veri erişimi.'),
+                lesson(2, 'ORM', 'LNa4rOQEhuc', 'ORM ile veritabanı işlemleri.'),
+                lesson(3, 'AutoMapper', 'm-G4VKqeATE', 'Nesne eşleme için AutoMapper.'),
+                lesson(4, 'Configuration and Extensions', 'l6QSCKbjLYY', 'Yapılandırma ve extension method kullanımı.'),
+                lesson(5, 'Relations', 'deZ9sU2KGbU', 'Varlıklar arası ilişkiler.'),
+              ],
+            },
+          },
+          {
+            title: 'Kimlik Doğrulama ve Yetkilendirme',
+            order: 6,
+            lessons: {
+              create: [
+                lesson(1, 'Identity', 'bltAkFyQPQs', 'ASP.NET Core Identity ile kullanıcı yönetimi.'),
+                lesson(2, 'JSON Web Token', 'vHZOo_ubzaY', 'JWT ile kimlik doğrulama.'),
+                lesson(3, 'Refresh Token', 'ImzlwTTLx8w', 'Refresh token ile oturum yenileme.'),
+              ],
             },
           },
         ],
@@ -141,6 +219,7 @@ async function main() {
       { path: '/notlar-ve-gorevler', label: 'Notlar & Görevler', icon: 'assignment_turned_in', order: 5, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
       { path: '/sinavlar', label: 'Sınav Sistemi', icon: 'quiz', order: 6, roles: 'ADMIN' },
       { path: '/yonetim/kurslar', label: 'Kurs Yönetimi', icon: 'admin_panel_settings', order: 7, roles: 'ADMIN' },
+      { path: '/yonetim/takvim', label: 'Takvim Yönetimi', icon: 'edit_calendar', order: 8, roles: 'ADMIN,INSTRUCTOR' },
     ],
   });
 

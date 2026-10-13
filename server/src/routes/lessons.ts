@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma.js';
 import { requireAuth, requireRole } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
+import { assertCanManageCourse } from '../lib/courseAccess.js';
 
 const ALLOWED_CONTENT_TYPES = ['VIDEO_YOUTUBE', 'DOCUMENT', 'QUIZ', 'LINK', 'TEXT'] as const;
 type ContentType = (typeof ALLOWED_CONTENT_TYPES)[number];
@@ -64,9 +65,7 @@ export function registerLessonRoutes(app: FastifyInstance) {
       if (!module) {
         throw new AppError('NOT_FOUND', 'Modül bulunamadı.', 404);
       }
-      if (request.user!.role !== 'ADMIN' && module.course.instructorId !== request.user!.userId) {
-        throw new AppError('FORBIDDEN', 'Bu kursu düzenleme yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, module.course.id, 'Bu kursu düzenleme yetkiniz yok.');
       assertValidContentType(request.body.contentType);
       const lesson = await prisma.lesson.create({
         data: {
@@ -95,12 +94,7 @@ export function registerLessonRoutes(app: FastifyInstance) {
       if (!lesson) {
         throw new AppError('NOT_FOUND', 'Ders bulunamadı.', 404);
       }
-      if (
-        request.user!.role !== 'ADMIN' &&
-        lesson.module.course.instructorId !== request.user!.userId
-      ) {
-        throw new AppError('FORBIDDEN', 'Bu kursu düzenleme yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, lesson.module.course.id, 'Bu kursu düzenleme yetkiniz yok.');
       const { title, order, status, description, contentType, contentUrl } = request.body;
       assertValidContentType(contentType);
       const updated = await prisma.lesson.update({
@@ -129,12 +123,7 @@ export function registerLessonRoutes(app: FastifyInstance) {
       if (!lesson) {
         throw new AppError('NOT_FOUND', 'Ders bulunamadı.', 404);
       }
-      if (
-        request.user!.role !== 'ADMIN' &&
-        lesson.module.course.instructorId !== request.user!.userId
-      ) {
-        throw new AppError('FORBIDDEN', 'Bu kursu düzenleme yetkiniz yok.', 403);
-      }
+      await assertCanManageCourse(request.user, lesson.module.course.id, 'Bu kursu düzenleme yetkiniz yok.');
       await prisma.lesson.delete({ where: { id: lesson.id } });
       return { success: true };
     },

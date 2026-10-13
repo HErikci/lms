@@ -9,7 +9,7 @@ interface StreakWidgetProps {
 
 /** Hero içindeki seri sayacı ve haftalık hedef mini göstergesi. */
 export function StreakWidget({ term, activity }: StreakWidgetProps) {
-  const peak = Math.max(...activity.map((day) => day.videoMinutes + day.taskMinutes), 1);
+  const peak = Math.max(...activity.map((day) => day.videoMinutes + day.otherMinutes), 1);
 
   return (
     <div className={styles.widget}>
@@ -29,13 +29,13 @@ export function StreakWidget({ term, activity }: StreakWidgetProps) {
 
         <ul className={styles.bars}>
           {activity.map((day) => {
-            const total = day.videoMinutes + day.taskMinutes;
+            const total = day.videoMinutes + day.otherMinutes;
             const height = Math.max(20, Math.round((total / peak) * 100));
             const state = day.isToday ? styles.today : total > 0 ? styles.done : styles.pending;
 
             return (
               <li
-                key={day.label}
+                key={day.date}
                 className={[styles.bar, state].join(' ')}
                 style={{ height: `${height}%` }}
                 title={`${day.label}: ${total} dk`}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '../../../../lib/apiClient';
+import type { CourseInstructor } from '../../../../types';
 
 export type CourseStatus = 'DRAFT' | 'PUBLISHED';
 export type CourseAccessMode = 'SEQUENTIAL' | 'FREE';
@@ -13,6 +14,7 @@ export interface AdminCourse {
   tags: string[];
   accessMode: CourseAccessMode;
   status: CourseStatus;
+  instructors?: CourseInstructor[];
 }
 
 export interface CourseInput {
@@ -23,6 +25,8 @@ export interface CourseInput {
   tags: string[];
   accessMode: CourseAccessMode;
   status?: CourseStatus;
+  /** Yalnızca oluşturmada ve yalnızca ADMIN için. */
+  instructorIds?: string[];
 }
 
 export interface EnrolledStudent {
