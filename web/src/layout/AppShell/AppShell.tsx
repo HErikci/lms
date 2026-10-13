@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from '../Sidebar';
 import { Topbar } from '../Topbar';
-import { useDashboardData } from '../../data/useDashboardData';
+import { useCurrentUser } from '../../data/useCurrentUser';
 import styles from './AppShell.module.css';
 
 /** Sidebar + Topbar kabuğu; sayfalar <Outlet /> içine render edilir. */
 export function AppShell() {
-  const { student } = useDashboardData();
+  const { user } = useCurrentUser();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -35,7 +35,7 @@ export function AppShell() {
 
       <div className={styles.body}>
         <Topbar
-          student={student}
+          user={user}
           isMenuOpen={isMenuOpen}
           onMenuToggle={() => setMenuOpen((open) => !open)}
         />

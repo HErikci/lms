@@ -2,6 +2,19 @@ import type { BadgeTone } from '../components';
 import type { ProgressTone } from '../components';
 import type { StatTone } from '../components';
 
+export type UserRole = 'STUDENT' | 'INSTRUCTOR' | 'ADMIN';
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  roles: UserRole[];
+  avatarUrl: string | null;
+  locale: string;
+  createdAt: string;
+}
+
 export interface StudentProfile {
   fullName: string;
   studentNumber: string;
@@ -106,7 +119,6 @@ export interface AiGuide {
 export interface DashboardData {
   student: StudentProfile;
   term: TermInfo;
-  greeting: string;
   weeklyGoalSummary: string;
   kpis: KpiMetric[];
   continueLesson: ContinueLesson;

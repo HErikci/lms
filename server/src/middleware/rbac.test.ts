@@ -14,10 +14,10 @@ function mockReqRes(headers: Record<string, string> = {}) {
 
 describe('requireAuth', () => {
   it('attaches request.user for a valid bearer token', async () => {
-    const token = signToken({ userId: 'u1', role: 'STUDENT' });
+    const token = signToken({ userId: 'u1', role: 'STUDENT', roles: ['STUDENT'] });
     const { request, reply } = mockReqRes({ authorization: `Bearer ${token}` });
     await requireAuth(request, reply);
-    expect((request as any).user).toEqual({ userId: 'u1', role: 'STUDENT' });
+    expect((request as any).user).toEqual({ userId: 'u1', role: 'STUDENT', roles: ['STUDENT'] });
   });
 
   it('rejects a missing token', async () => {
@@ -28,14 +28,14 @@ describe('requireAuth', () => {
 
 describe('requireRole', () => {
   it('allows a matching role', async () => {
-    const token = signToken({ userId: 'u1', role: 'INSTRUCTOR' });
+    const token = signToken({ userId: 'u1', role: 'INSTRUCTOR', roles: ['INSTRUCTOR'] });
     const { request, reply } = mockReqRes({ authorization: `Bearer ${token}` });
     await requireAuth(request, reply);
     await expect(requireRole('INSTRUCTOR', 'ADMIN')(request, reply)).resolves.not.toThrow();
   });
 
   it('rejects a non-matching role', async () => {
-    const token = signToken({ userId: 'u1', role: 'STUDENT' });
+    const token = signToken({ userId: 'u1', role: 'STUDENT', roles: ['STUDENT'] });
     const { request, reply } = mockReqRes({ authorization: `Bearer ${token}` });
     await requireAuth(request, reply);
     await expect(requireRole('INSTRUCTOR', 'ADMIN')(request, reply)).rejects.toThrow();

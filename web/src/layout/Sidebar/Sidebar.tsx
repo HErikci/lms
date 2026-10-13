@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { Icon, Text } from '../../components';
-import { navItems } from './navItems';
+import { useCurrentUser } from '../../data/useCurrentUser';
+import { getNavItems } from './navItems';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
@@ -10,6 +11,9 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onNavigate }: SidebarProps) {
+  const { user } = useCurrentUser();
+  const navItems = getNavItems(user?.role);
+
   return (
     <aside
       className={[styles.sidebar, isOpen ? styles.open : null].filter(Boolean).join(' ')}

@@ -17,7 +17,6 @@ export const dashboardFixture: DashboardData = {
     minutesCompletedToday: 48,
     weeklyGoalProgress: 78,
   },
-  greeting: 'Hoş geldin, Selin Demir 👋',
   weeklyGoalSummary:
     'Harika gidiyorsun! Bu hafta hedeflerinin %78’ini tamamladın. Bugün modern mimari modülünü bitirerek haftalık rozeti kazanabilirsin.',
 

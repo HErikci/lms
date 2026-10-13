@@ -22,6 +22,7 @@ model User {
   avatarUrl    String?
   locale       String       @default("tr")
   role         String       @default("STUDENT")
+  roles        String       @default("STUDENT")
   createdAt    DateTime     @default(now())
   courses      Course[]     @relation("InstructorCourses")
   enrollments  Enrollment[]
@@ -45,7 +46,7 @@ model Course {
 model Module {
   id       String   @id @default(cuid())
   courseId String
-  course   Course   @relation(fields: [courseId], references: [id])
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title    String
   order    Int
   lessons  Lesson[]
@@ -54,7 +55,7 @@ model Module {
 model Lesson {
   id       String   @id @default(cuid())
   moduleId String
-  module   Module   @relation(fields: [moduleId], references: [id])
+  module   Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   title    String
   order    Int
   status   String   @default("DRAFT")
@@ -65,7 +66,7 @@ model Enrollment {
   userId     String
   user       User     @relation(fields: [userId], references: [id])
   courseId   String
-  course     Course   @relation(fields: [courseId], references: [id])
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   method     String
   enrolledAt DateTime @default(now())
 

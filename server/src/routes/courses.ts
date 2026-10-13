@@ -41,20 +41,35 @@ function toPublicCourse(course: {
   };
 }
 
+interface UpdateCourseBody {
+  title?: string;
+  description?: string;
+  category?: string;
+  level?: string;
+  tags?: string[];
+  accessMode?: 'SEQUENTIAL' | 'FREE';
+  status?: 'DRAFT' | 'PUBLISHED';
+}
+
 export function registerCourseRoutes(app: FastifyInstance) {
-  app.get<{ Querystring: ListCoursesQuery }>('/api/v1/courses', async (request) => {
-    const { category, level, tag, q } = request.query;
-    const courses = await prisma.course.findMany({
-      where: {
-        status: 'PUBLISHED',
-        ...(category ? { category } : {}),
-        ...(level ? { level } : {}),
-        ...(tag ? { tags: { contains: tag } } : {}),
-        ...(q ? { title: { contains: q } } : {}),
-      },
-    });
-    return { courses: courses.map(toPublicCourse) };
-  });
+  app.get<{ Querystring: ListCoursesQuery }>(
+    '/api/v1/courses',
+    { preHandler: [tryAuth] },
+    async (request) => {
+      const { category, level, tag, q } = request.query;
+      const isAdmin = request.user?.role === 'ADMIN';
+      const courses = await prisma.course.findMany({
+        where: {
+          ...(isAdmin ? {} : { status: 'PUBLISHED' }),
+          ...(category ? { category } : {}),
+          ...(level ? { level } : {}),
+          ...(tag ? { tags: { contains: tag } } : {}),
+          ...(q ? { title: { contains: q } } : {}),
+        },
+      });
+      return { courses: courses.map(toPublicCourse) };
+    },
+  );
 
   app.get<{ Params: { id: string } }>(
     '/api/v1/courses/:id',
@@ -112,6 +127,112 @@ export function registerCourseRoutes(app: FastifyInstance) {
       });
       reply.status(201);
       return { course: toPublicCourse(course) };
+    },
+  );
+
+  app.patch<{ Params: { id: string }; Body: UpdateCourseBody }>(
+    '/api/v1/courses/:id',
+    { preHandler: [requireAuth] },
+    async (request) => {
+      const course = await prisma.course.findUnique({ where: { id: request.params.id } });
+      if (!course) {
+        throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
+      }
+      const isOwnerOrAdmin =
+        request.user!.role === 'ADMIN' ||
+        (request.user!.role === 'INSTRUCTOR' && request.user!.userId === course.instructorId);
+      if (!isOwnerOrAdmin) {
+        throw new AppError('FORBIDDEN', 'Bu işlem için yetkiniz yok.', 403);
+      }
+      const { title, description, category, level, tags, accessMode, status } = request.body;
+      const updated = await prisma.course.update({
+        where: { id: course.id },
+        data: {
+          ...(title !== undefined ? { title } : {}),
+          ...(description !== undefined ? { description } : {}),
+          ...(category !== undefined ? { category } : {}),
+          ...(level !== undefined ? { level } : {}),
+          ...(tags !== undefined ? { tags: tags.join(',') } : {}),
+          ...(accessMode !== undefined ? { accessMode } : {}),
+          ...(status !== undefined ? { status } : {}),
+        },
+      });
+      return { course: toPublicCourse(updated) };
+    },
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/api/v1/courses/:id',
+    { preHandler: [requireAuth] },
+    async (request) => {
+      const course = await prisma.course.findUnique({ where: { id: request.params.id } });
+      if (!course) {
+        throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
+      }
+      const isOwnerOrAdmin =
+        request.user!.role === 'ADMIN' ||
+        (request.user!.role === 'INSTRUCTOR' && request.user!.userId === course.instructorId);
+      if (!isOwnerOrAdmin) {
+        throw new AppError('FORBIDDEN', 'Bu işlem için yetkiniz yok.', 403);
+      }
+      await prisma.course.delete({ where: { id: course.id } });
+      return { success: true };
+    },
+  );
+
+  app.get<{ Params: { courseId: string } }>(
+    '/api/v1/courses/:courseId/students',
+    { preHandler: [requireAuth] },
+    async (request) => {
+      const course = await prisma.course.findUnique({ where: { id: request.params.courseId } });
+      if (!course) {
+        throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
+      }
+      const isOwnerOrAdmin =
+        request.user!.role === 'ADMIN' ||
+        (request.user!.role === 'INSTRUCTOR' && request.user!.userId === course.instructorId);
+      if (!isOwnerOrAdmin) {
+        throw new AppError('FORBIDDEN', 'Bu işlem için yetkiniz yok.', 403);
+      }
+      const enrollments = await prisma.enrollment.findMany({
+        where: { courseId: course.id },
+        include: { user: true },
+        orderBy: { enrolledAt: 'asc' },
+      });
+      return {
+        students: enrollments.map((enrollment) => ({
+          id: enrollment.user.id,
+          name: enrollment.user.name,
+          email: enrollment.user.email,
+          enrolledAt: enrollment.enrolledAt,
+          method: enrollment.method,
+        })),
+      };
+    },
+  );
+
+  app.delete<{ Params: { courseId: string; userId: string } }>(
+    '/api/v1/courses/:courseId/students/:userId',
+    { preHandler: [requireAuth] },
+    async (request) => {
+      const course = await prisma.course.findUnique({ where: { id: request.params.courseId } });
+      if (!course) {
+        throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
+      }
+      const isOwnerOrAdmin =
+        request.user!.role === 'ADMIN' ||
+        (request.user!.role === 'INSTRUCTOR' && request.user!.userId === course.instructorId);
+      if (!isOwnerOrAdmin) {
+        throw new AppError('FORBIDDEN', 'Bu işlem için yetkiniz yok.', 403);
+      }
+      const enrollment = await prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId: request.params.userId, courseId: course.id } },
+      });
+      if (!enrollment) {
+        throw new AppError('ENROLLMENT_NOT_FOUND', 'Kayıt bulunamadı.', 404);
+      }
+      await prisma.enrollment.delete({ where: { id: enrollment.id } });
+      return { success: true };
     },
   );
 }

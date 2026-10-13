@@ -4,6 +4,7 @@ import { prisma } from '../lib/prisma.js';
 import { signToken, type TokenPayload } from '../lib/jwt.js';
 import { requireAuth } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
+import { toPublicUser } from '../lib/publicUser.js';
 
 interface RegisterBody {
   email: string;
@@ -16,8 +17,16 @@ interface LoginBody {
   password: string;
 }
 
-function toPublicUser(user: { id: string; email: string; name: string; role: string }) {
-  return { id: user.id, email: user.email, name: user.name, role: user.role };
+interface SwitchRoleBody {
+  role: TokenPayload['role'];
+}
+
+function parseRoles(user: { role: string; roles?: string | null }): TokenPayload['role'][] {
+  const raw = user.roles && user.roles.length > 0 ? user.roles : user.role;
+  return raw
+    .split(',')
+    .map((r) => r.trim())
+    .filter(Boolean) as TokenPayload['role'][];
 }
 
 export function registerAuthRoutes(app: FastifyInstance) {
@@ -29,9 +38,10 @@ export function registerAuthRoutes(app: FastifyInstance) {
     }
     const passwordHash = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
-      data: { email, passwordHash, name, role: 'STUDENT' },
+      data: { email, passwordHash, name, role: 'STUDENT', roles: 'STUDENT' },
     });
-    const token = signToken({ userId: user.id, role: user.role as TokenPayload['role'] });
+    const roles = parseRoles(user);
+    const token = signToken({ userId: user.id, role: user.role as TokenPayload['role'], roles });
     return { user: toPublicUser(user), token };
   });
 
@@ -43,7 +53,8 @@ export function registerAuthRoutes(app: FastifyInstance) {
     if (!user) throw genericError();
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) throw genericError();
-    const token = signToken({ userId: user.id, role: user.role as TokenPayload['role'] });
+    const roles = parseRoles(user);
+    const token = signToken({ userId: user.id, role: user.role as TokenPayload['role'], roles });
     return { user: toPublicUser(user), token };
   });
 
@@ -53,6 +64,28 @@ export function registerAuthRoutes(app: FastifyInstance) {
     async (request) => {
       const user = await prisma.user.findUniqueOrThrow({ where: { id: request.user!.userId } });
       return { user: toPublicUser(user) };
+    },
+  );
+
+  app.post<{ Body: SwitchRoleBody }>(
+    '/api/v1/auth/switch-role',
+    { preHandler: [requireAuth] },
+    async (request) => {
+      const { role: requestedRole } = request.body ?? {};
+      const user = await prisma.user.findUniqueOrThrow({ where: { id: request.user!.userId } });
+      const roles = parseRoles(user);
+
+      if (!roles.includes(requestedRole)) {
+        throw new AppError('ROLE_NOT_ASSIGNED', 'Bu role sahip değilsiniz.', 403);
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: { role: requestedRole },
+      });
+
+      const token = signToken({ userId: updatedUser.id, role: requestedRole, roles });
+      return { user: toPublicUser(updatedUser), token };
     },
   );
 }

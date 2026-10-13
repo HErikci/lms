@@ -36,10 +36,86 @@
   background-color: var(--color-surface-container);
 }
 
+.roleSwitcher {
+  position: relative;
+}
+
+.roleSwitcherToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border: none;
+  border-radius: var(--radius-default);
+  background-color: var(--color-surface-container);
+  cursor: pointer;
+}
+
+.roleSwitcherToggle:hover {
+  background-color: var(--color-surface-container-high);
+}
+
+.roleSwitcherToggle:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.roleSwitcherPanel {
+  position: absolute;
+  top: calc(100% + var(--space-xs));
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 11rem;
+  padding: var(--space-xs);
+  border-radius: var(--radius-default);
+  background-color: var(--color-surface);
+  box-shadow: var(--elevation-2);
+}
+
+.roleSwitcherOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.roleSwitcherOption:hover {
+  background-color: var(--color-surface-container);
+}
+
+.roleSwitcherOption:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.roleSwitcherOptionActive {
+  background-color: var(--color-surface-container);
+}
+
+.roleSwitcherError {
+  padding: var(--space-xs) var(--space-sm);
+}
+
 .user {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  text-decoration: none;
+  border-radius: var(--radius-default);
+}
+
+.user:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .userText {

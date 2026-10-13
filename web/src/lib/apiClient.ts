@@ -24,6 +24,19 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     } catch {
       body = null;
     }
+
+    // Gecersiz/suresi dolmus token: oturumu temizle ve giris sayfasina yonlendir.
+    // auth/login ve auth/register uc noktalari haric tutulur; aksi halde basarisiz
+    // bir giris denemesi LoginPage'in kendi hata gosterimini engelleyip
+    // dogrudan global yonlendirmeyi tetikler.
+    const isAuthEndpoint = path === '/api/v1/auth/login' || path === '/api/v1/auth/register';
+    if (response.status === 401 && !isAuthEndpoint) {
+      localStorage.removeItem('authToken');
+      if (window.location.pathname !== '/giris') {
+        window.location.assign('/giris');
+      }
+    }
+
     throw new ApiError(
       body?.error?.code ?? 'UNKNOWN',
       body?.error?.message ?? 'Bilinmeyen bir hata oluştu.',

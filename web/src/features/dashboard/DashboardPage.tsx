@@ -1,5 +1,6 @@
 import { PageContainer } from '../../layout/PageContainer';
 import { useDashboardData } from '../../data/useDashboardData';
+import { useCurrentUser } from '../../data/useCurrentUser';
 import {
   AiGuideCard,
   AnnouncementsFeed,
@@ -14,11 +15,13 @@ import styles from './DashboardPage.module.css';
 
 export function DashboardPage() {
   const data = useDashboardData();
+  const { user } = useCurrentUser();
+  const greeting = user ? `Hoş geldin, ${user.name} 👋` : 'Hoş geldin 👋';
 
   return (
     <PageContainer>
       <WelcomeBanner
-        greeting={data.greeting}
+        greeting={greeting}
         summary={data.weeklyGoalSummary}
         term={data.term}
         activity={data.activity}

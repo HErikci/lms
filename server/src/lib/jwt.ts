@@ -5,6 +5,7 @@ type Role = 'STUDENT' | 'INSTRUCTOR' | 'ADMIN';
 export interface TokenPayload {
   userId: string;
   role: Role;
+  roles: Role[];
 }
 
 if (
@@ -23,5 +24,5 @@ export function signToken(payload: TokenPayload): string {
 
 export function verifyToken(token: string): TokenPayload {
   const decoded = jwt.verify(token, SECRET) as TokenPayload & { iat: number; exp: number };
-  return { userId: decoded.userId, role: decoded.role };
+  return { userId: decoded.userId, role: decoded.role, roles: decoded.roles };
 }

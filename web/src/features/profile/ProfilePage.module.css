@@ -1,0 +1,48 @@
+.headerRow {
+  margin-bottom: var(--space-2xl);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  max-width: 640px;
+}
+
+.inlineError {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-error-container);
+  border-radius: var(--radius-default);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.detailRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.editSection {
+  border-top: 1px solid var(--color-outline-variant);
+  padding-top: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+  .card {
+    max-width: 100%;
+  }
+
+  .actions {
+    justify-content: stretch;
+  }
+}
