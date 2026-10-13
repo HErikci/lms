@@ -14,9 +14,15 @@ export function registerLessonRoutes(app: FastifyInstance) {
     '/api/v1/modules/:moduleId/lessons',
     { preHandler: [requireAuth, requireRole('INSTRUCTOR', 'ADMIN')] },
     async (request, reply) => {
-      const module = await prisma.module.findUnique({ where: { id: request.params.moduleId } });
+      const module = await prisma.module.findUnique({
+        where: { id: request.params.moduleId },
+        include: { course: true },
+      });
       if (!module) {
         throw new AppError('NOT_FOUND', 'Modül bulunamadı.', 404);
+      }
+      if (request.user!.role !== 'ADMIN' && module.course.instructorId !== request.user!.userId) {
+        throw new AppError('FORBIDDEN', 'Bu kursu düzenleme yetkiniz yok.', 403);
       }
       const lesson = await prisma.lesson.create({
         data: {

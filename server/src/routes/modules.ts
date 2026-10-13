@@ -17,6 +17,9 @@ export function registerModuleRoutes(app: FastifyInstance) {
       if (!course) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
+      if (request.user!.role !== 'ADMIN' && course.instructorId !== request.user!.userId) {
+        throw new AppError('FORBIDDEN', 'Bu kursu düzenleme yetkiniz yok.', 403);
+      }
       const module = await prisma.module.create({
         data: {
           courseId: course.id,
