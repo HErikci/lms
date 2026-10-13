@@ -41,6 +41,7 @@ describe('enrollment routes', () => {
         category: 'Test',
         level: 'Başlangıç',
         accessMode: 'FREE',
+        status: 'PUBLISHED',
         instructorId: instructor.id,
       },
     });
@@ -78,6 +79,80 @@ describe('enrollment routes', () => {
     });
     expect(response.statusCode).toBe(409);
     expect(response.json().error.code).toBe('ALREADY_ENROLLED');
+  });
+
+  it('allows an instructor to self-enroll in a course they do not own', async () => {
+    const passwordHash = await bcrypt.hash('sifre123', 12);
+    await prisma.user.create({
+      data: {
+        email: 'other-instructor@example.com',
+        passwordHash,
+        name: 'Diğer Eğitmen',
+        role: 'INSTRUCTOR',
+      },
+    });
+    const login = await app.inject({
+      method: 'POST',
+      url: '/api/v1/auth/login',
+      payload: { email: 'other-instructor@example.com', password: 'sifre123' },
+    });
+    const otherInstructorToken = login.json().token;
+
+    const response = await app.inject({
+      method: 'POST',
+      url: `/api/v1/courses/${courseId}/enroll`,
+      headers: { authorization: `Bearer ${otherInstructorToken}` },
+      payload: { method: 'OPEN' },
+    });
+    expect(response.statusCode).toBe(201);
+    expect(response.json().enrollment.courseId).toBe(courseId);
+  });
+
+  it('allows an admin to self-enroll in a course', async () => {
+    const passwordHash = await bcrypt.hash('sifre123', 12);
+    await prisma.user.create({
+      data: { email: 'admin@example.com', passwordHash, name: 'Admin', role: 'ADMIN' },
+    });
+    const login = await app.inject({
+      method: 'POST',
+      url: '/api/v1/auth/login',
+      payload: { email: 'admin@example.com', password: 'sifre123' },
+    });
+    const adminToken = login.json().token;
+
+    const response = await app.inject({
+      method: 'POST',
+      url: `/api/v1/courses/${courseId}/enroll`,
+      headers: { authorization: `Bearer ${adminToken}` },
+      payload: { method: 'OPEN' },
+    });
+    expect(response.statusCode).toBe(201);
+    expect(response.json().enrollment.courseId).toBe(courseId);
+  });
+
+  it('404s when enrolling in a draft (unpublished) course', async () => {
+    const instructor = await prisma.user.findUniqueOrThrow({
+      where: { email: 'instructor@example.com' },
+    });
+    const draftCourse = await prisma.course.create({
+      data: {
+        title: 'Taslak Kurs',
+        description: 'Açıklama',
+        category: 'Test',
+        level: 'Başlangıç',
+        accessMode: 'FREE',
+        status: 'DRAFT',
+        instructorId: instructor.id,
+      },
+    });
+    const response = await app.inject({
+      method: 'POST',
+      url: `/api/v1/courses/${draftCourse.id}/enroll`,
+      headers: { authorization: `Bearer ${studentToken}` },
+      payload: { method: 'OPEN' },
+    });
+    expect(response.statusCode).toBe(404);
+    expect(response.json().error.code).toBe('NOT_FOUND');
   });
 
   it('lists the current user enrolled courses', async () => {

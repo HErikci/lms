@@ -210,6 +210,119 @@ describe('course routes', () => {
     expect(response.statusCode).toBe(200);
   });
 
+  describe('GET /api/v1/courses/:id enrollment gating', () => {
+    async function createPublishedCourseWithModule() {
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: '/api/v1/courses',
+        headers: { authorization: `Bearer ${instructorToken}` },
+        payload: {
+          title: 'Yayınlanmış Kurs',
+          description: 'Açıklama',
+          category: 'Test',
+          level: 'Orta',
+          tags: [],
+          accessMode: 'FREE',
+        },
+      });
+      const courseId = createResponse.json().course.id as string;
+      const moduleResponse = await app.inject({
+        method: 'POST',
+        url: `/api/v1/courses/${courseId}/modules`,
+        headers: { authorization: `Bearer ${instructorToken}` },
+        payload: { title: 'Modül 1', order: 1 },
+      });
+      const moduleId = moduleResponse.json().module.id as string;
+      await app.inject({
+        method: 'POST',
+        url: `/api/v1/modules/${moduleId}/lessons`,
+        headers: { authorization: `Bearer ${instructorToken}` },
+        payload: { title: 'Ders 1', order: 1, status: 'PUBLISHED' },
+      });
+      await prisma.course.update({ where: { id: courseId }, data: { status: 'PUBLISHED' } });
+      return courseId;
+    }
+
+    it('hides modules and reports isEnrolled: false for an anonymous caller', async () => {
+      const courseId = await createPublishedCourseWithModule();
+      const response = await app.inject({ method: 'GET', url: `/api/v1/courses/${courseId}` });
+      expect(response.statusCode).toBe(200);
+      const { course } = response.json();
+      expect(course.isEnrolled).toBe(false);
+      expect(course.modules).toEqual([]);
+    });
+
+    it('hides modules and reports isEnrolled: false for a non-enrolled student', async () => {
+      const courseId = await createPublishedCourseWithModule();
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/v1/courses/${courseId}`,
+        headers: { authorization: `Bearer ${studentToken}` },
+      });
+      expect(response.statusCode).toBe(200);
+      const { course } = response.json();
+      expect(course.isEnrolled).toBe(false);
+      expect(course.modules).toEqual([]);
+    });
+
+    it('shows full modules to the owning instructor regardless of enrollment', async () => {
+      const courseId = await createPublishedCourseWithModule();
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/v1/courses/${courseId}`,
+        headers: { authorization: `Bearer ${instructorToken}` },
+      });
+      expect(response.statusCode).toBe(200);
+      const { course } = response.json();
+      expect(course.modules).toHaveLength(1);
+      expect(course.modules[0].lessons).toHaveLength(1);
+    });
+
+    it('shows full modules to an admin regardless of enrollment', async () => {
+      const courseId = await createPublishedCourseWithModule();
+      const passwordHash = await bcrypt.hash('sifre123', 12);
+      await prisma.user.create({
+        data: { email: 'admin@example.com', passwordHash, name: 'Admin', role: 'ADMIN' },
+      });
+      const login = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/login',
+        payload: { email: 'admin@example.com', password: 'sifre123' },
+      });
+      const adminToken = login.json().token;
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/v1/courses/${courseId}`,
+        headers: { authorization: `Bearer ${adminToken}` },
+      });
+      expect(response.statusCode).toBe(200);
+      const { course } = response.json();
+      expect(course.modules).toHaveLength(1);
+    });
+
+    it('shows full modules and isEnrolled: true once the student enrolls', async () => {
+      const courseId = await createPublishedCourseWithModule();
+      const enrollResponse = await app.inject({
+        method: 'POST',
+        url: `/api/v1/courses/${courseId}/enroll`,
+        headers: { authorization: `Bearer ${studentToken}` },
+        payload: { method: 'OPEN' },
+      });
+      expect(enrollResponse.statusCode).toBe(201);
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/v1/courses/${courseId}`,
+        headers: { authorization: `Bearer ${studentToken}` },
+      });
+      expect(response.statusCode).toBe(200);
+      const { course } = response.json();
+      expect(course.isEnrolled).toBe(true);
+      expect(course.modules).toHaveLength(1);
+      expect(course.modules[0].lessons).toHaveLength(1);
+    });
+  });
+
   describe('PATCH /api/v1/courses/:id', () => {
     async function createDraft(token: string) {
       const response = await app.inject({

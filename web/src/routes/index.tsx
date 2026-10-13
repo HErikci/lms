@@ -4,14 +4,14 @@ import { RequireAuth } from './RequireAuth';
 import { RequireRole } from './RequireRole';
 import { RedirectIfAuthed } from './RedirectIfAuthed';
 import { DashboardPage } from '../features/dashboard';
-import { CoursesPage } from '../features/courses';
+import { CoursesPage, CourseDetailPage, LessonDetailPage } from '../features/courses';
 import { AnnouncementsPage } from '../features/announcements';
 import { CalendarPage } from '../features/calendar';
 import { AssignmentsPage } from '../features/assignments';
 import { ExamsPage } from '../features/exams';
-import { LoginPage } from '../features/auth';
+import { LoginPage, RegisterPage } from '../features/auth';
 import { ProfilePage } from '../features/profile';
-import { AdminCoursesPage, CourseStudentsPage } from '../features/admin/courses';
+import { AdminCoursesPage, CourseStudentsPage, CourseContentPage } from '../features/admin/courses';
 import { AdminNavItemsPage } from '../features/admin/nav-items';
 
 /**
@@ -28,6 +28,8 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <DashboardPage /> },
           { path: 'kurslarim', element: <CoursesPage /> },
+          { path: 'kurslarim/:id', element: <CourseDetailPage /> },
+          { path: 'kurslarim/:courseId/ders/:lessonId', element: <LessonDetailPage /> },
           { path: 'duyurular', element: <AnnouncementsPage /> },
           { path: 'takvim', element: <CalendarPage /> },
           { path: 'notlar-ve-gorevler', element: <AssignmentsPage /> },
@@ -38,6 +40,7 @@ export const router = createBrowserRouter([
             children: [
               { path: 'yonetim/kurslar', element: <AdminCoursesPage /> },
               { path: 'yonetim/kurslar/:id/ogrenciler', element: <CourseStudentsPage /> },
+              { path: 'yonetim/kurslar/:id/icerik', element: <CourseContentPage /> },
               { path: 'yonetim/menu', element: <AdminNavItemsPage /> },
             ],
           },
@@ -47,6 +50,9 @@ export const router = createBrowserRouter([
   },
   {
     element: <RedirectIfAuthed />,
-    children: [{ path: 'giris', element: <LoginPage /> }],
+    children: [
+      { path: 'giris', element: <LoginPage /> },
+      { path: 'kayit', element: <RegisterPage /> },
+    ],
   },
 ]);

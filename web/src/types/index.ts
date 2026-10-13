@@ -116,6 +116,51 @@ export interface AiGuide {
   ctaLabel: string;
 }
 
+export type CourseAccessMode = 'SEQUENTIAL' | 'FREE';
+
+/** GET /api/v1/courses ve GET /api/v1/users/me/courses ortak kurs özeti. */
+export interface CourseSummary {
+  id: string;
+  title: string;
+  category: string;
+  level: string;
+  accessMode: CourseAccessMode;
+}
+
+export type ContentType = 'VIDEO_YOUTUBE' | 'DOCUMENT' | 'QUIZ' | 'LINK' | 'TEXT';
+
+export interface CourseLessonSummary {
+  id: string;
+  title: string;
+  description: string | null;
+  contentType: ContentType;
+  contentUrl: string | null;
+  order: number;
+  status: string;
+}
+
+export interface CourseModuleSummary {
+  id: string;
+  title: string;
+  order: number;
+  lessons: CourseLessonSummary[];
+}
+
+/** GET /api/v1/courses/:id yanıtı. */
+export interface CourseDetail {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  level: string;
+  tags: string[];
+  accessMode: CourseAccessMode;
+  status: string;
+  /** Öğrenci bu kursa kayıtlı mı; false ise modules boş döner. */
+  isEnrolled: boolean;
+  modules: CourseModuleSummary[];
+}
+
 export interface DashboardData {
   student: StudentProfile;
   term: TermInfo;

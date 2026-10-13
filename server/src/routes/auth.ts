@@ -32,6 +32,17 @@ function parseRoles(user: { role: string; roles?: string | null }): TokenPayload
 export function registerAuthRoutes(app: FastifyInstance) {
   app.post<{ Body: RegisterBody }>('/api/v1/auth/register', async (request) => {
     const { email, password, name } = request.body;
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      throw new AppError('INVALID_EMAIL', 'Geçerli bir e-posta adresi girin.', 400);
+    }
+    if (typeof password !== 'string' || password.length < 8) {
+      throw new AppError('WEAK_PASSWORD', 'Şifre en az 8 karakter olmalıdır.', 400);
+    }
+    if (!name || name.trim().length === 0) {
+      throw new AppError('INVALID_NAME', 'Ad soyad boş olamaz.', 400);
+    }
+
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       throw new AppError('EMAIL_TAKEN', 'Bu e-posta ile zaten bir hesap var.', 409);

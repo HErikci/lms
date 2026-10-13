@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../data/useAuth';
 import { Button, Text } from '../../components';
 import styles from './LoginPage.module.css';
@@ -47,6 +47,9 @@ export function LoginPage() {
         </Text>
       )}
       <Button variant="primary" type="submit">Giriş Yap</Button>
+      <Text role="body-sm">
+        Hesabın yok mu? <Link to="/kayit">Kayıt Ol</Link>
+      </Text>
     </form>
   );
 }

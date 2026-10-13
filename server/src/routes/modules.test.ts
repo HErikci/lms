@@ -37,7 +37,8 @@ describe('module routes', () => {
         description: 'Açıklama',
         category: 'Test',
         level: 'Başlangıç',
-        accessMode: 'FREE',
+        accessMode: 'SEQUENTIAL',
+        status: 'PUBLISHED',
         instructorId: instructor.id,
       },
     });
@@ -49,28 +50,22 @@ describe('module routes', () => {
     await prisma.$disconnect();
   });
 
-  it('creates a module under a course', async () => {
+  it('updates a module', async () => {
+    const module = await prisma.module.create({ data: { courseId, title: 'Modül', order: 1 } });
     const response = await app.inject({
-      method: 'POST',
-      url: `/api/v1/courses/${courseId}/modules`,
+      method: 'PATCH',
+      url: `/api/v1/modules/${module.id}`,
       headers: { authorization: `Bearer ${instructorToken}` },
-      payload: { title: 'Modül 1', order: 1 },
+      payload: { title: 'Güncellendi' },
     });
-    expect(response.statusCode).toBe(201);
-    expect(response.json().module.courseId).toBe(courseId);
+    expect(response.statusCode).toBe(200);
+    const updated = response.json().module;
+    expect(updated.title).toBe('Güncellendi');
+    expect(updated.order).toBe(1);
   });
 
-  it('returns 404 when the course does not exist', async () => {
-    const response = await app.inject({
-      method: 'POST',
-      url: '/api/v1/courses/does-not-exist/modules',
-      headers: { authorization: `Bearer ${instructorToken}` },
-      payload: { title: 'Modül 1', order: 1 },
-    });
-    expect(response.statusCode).toBe(404);
-  });
-
-  it('rejects an instructor who does not own the course', async () => {
+  it('rejects update from a non-owning instructor', async () => {
+    const module = await prisma.module.create({ data: { courseId, title: 'Modül', order: 1 } });
     const passwordHash = await bcrypt.hash('sifre123', 12);
     await prisma.user.create({
       data: { email: 'other@example.com', passwordHash, name: 'Diğer Eğitmen', role: 'INSTRUCTOR' },
@@ -82,32 +77,41 @@ describe('module routes', () => {
     });
     const otherToken = login.json().token;
     const response = await app.inject({
-      method: 'POST',
-      url: `/api/v1/courses/${courseId}/modules`,
+      method: 'PATCH',
+      url: `/api/v1/modules/${module.id}`,
       headers: { authorization: `Bearer ${otherToken}` },
-      payload: { title: 'Modül 1', order: 1 },
+      payload: { title: 'Hacklendi' },
     });
     expect(response.statusCode).toBe(403);
     expect(response.json().error.code).toBe('FORBIDDEN');
   });
 
-  it('allows an admin to add a module to any course', async () => {
-    const passwordHash = await bcrypt.hash('sifre123', 12);
-    await prisma.user.create({
-      data: { email: 'admin@example.com', passwordHash, name: 'Yönetici', role: 'ADMIN' },
+  it('deletes a module and cascades its lessons', async () => {
+    const module = await prisma.module.create({ data: { courseId, title: 'Modül', order: 1 } });
+    const lesson = await prisma.lesson.create({
+      data: { moduleId: module.id, title: 'Ders', order: 1, status: 'DRAFT' },
     });
-    const login = await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/login',
-      payload: { email: 'admin@example.com', password: 'sifre123' },
-    });
-    const adminToken = login.json().token;
     const response = await app.inject({
-      method: 'POST',
-      url: `/api/v1/courses/${courseId}/modules`,
-      headers: { authorization: `Bearer ${adminToken}` },
-      payload: { title: 'Modül 1', order: 1 },
+      method: 'DELETE',
+      url: `/api/v1/modules/${module.id}`,
+      headers: { authorization: `Bearer ${instructorToken}` },
     });
-    expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(200);
+    expect(response.json().success).toBe(true);
+    const foundModule = await prisma.module.findUnique({ where: { id: module.id } });
+    const foundLesson = await prisma.lesson.findUnique({ where: { id: lesson.id } });
+    expect(foundModule).toBeNull();
+    expect(foundLesson).toBeNull();
+  });
+
+  it('returns 404 for a nonexistent module', async () => {
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/api/v1/modules/does-not-exist`,
+      headers: { authorization: `Bearer ${instructorToken}` },
+      payload: { title: 'x' },
+    });
+    expect(response.statusCode).toBe(404);
+    expect(response.json().error.code).toBe('NOT_FOUND');
   });
 });

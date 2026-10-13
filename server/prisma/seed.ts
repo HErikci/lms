@@ -35,8 +35,29 @@ async function main() {
             order: 1,
             lessons: {
               create: [
-                { title: 'React Nedir?', order: 1, status: 'PUBLISHED' },
-                { title: 'Geliştirme Ortamının Kurulumu', order: 2, status: 'PUBLISHED' },
+                {
+                  title: 'React Nedir?',
+                  order: 1,
+                  status: 'PUBLISHED',
+                  description: 'React kütüphanesine giriş ve temel kavramlar.',
+                  contentType: 'VIDEO_YOUTUBE',
+                  contentUrl: 'https://www.youtube.com/watch?v=Tn6-PIqc4UM',
+                },
+                {
+                  title: 'Geliştirme Ortamının Kurulumu',
+                  order: 2,
+                  status: 'PUBLISHED',
+                  description: 'Node.js, npm ve Vite ile React geliştirme ortamının kurulumu.',
+                  contentType: 'VIDEO_YOUTUBE',
+                  contentUrl: 'https://www.youtube.com/watch?v=O6P86uwfdR0',
+                },
+                {
+                  title: 'Giriş Değerlendirme Sınavı',
+                  order: 3,
+                  status: 'PUBLISHED',
+                  description: 'Bu modülde öğrendiklerinizi ölçen kısa bir sınav.',
+                  contentType: 'QUIZ',
+                },
               ],
             },
           },
@@ -62,41 +83,28 @@ async function main() {
             title: "OOP'a Giriş",
             order: 1,
             lessons: {
-              create: [
-                { title: 'Nesne Yönelimli Programlama Nedir?', order: 1, status: 'PUBLISHED' },
-                { title: 'Prosedürel Programlamadan OOP\'a Geçiş', order: 2, status: 'PUBLISHED' },
-              ],
+              create: [],
             },
           },
           {
             title: 'Sınıflar ve Nesneler',
             order: 2,
             lessons: {
-              create: [
-                { title: 'Sınıf ve Nesne Kavramları', order: 1, status: 'PUBLISHED' },
-                { title: 'Kurucu Metotlar (Constructor)', order: 2, status: 'PUBLISHED' },
-                { title: 'Nesne Yaşam Döngüsü', order: 3, status: 'PUBLISHED' },
-              ],
+              create: [],
             },
           },
           {
             title: 'Kalıtım ve Polimorfizm',
             order: 3,
             lessons: {
-              create: [
-                { title: 'Kalıtım (Inheritance) Temelleri', order: 1, status: 'PUBLISHED' },
-                { title: 'Polimorfizm ve Metot Ezme (Override)', order: 2, status: 'PUBLISHED' },
-              ],
+              create: [],
             },
           },
           {
             title: 'Kapsülleme ve Soyutlama',
             order: 4,
             lessons: {
-              create: [
-                { title: 'Kapsülleme (Encapsulation) ve Erişim Belirleyiciler', order: 1, status: 'PUBLISHED' },
-                { title: 'Soyutlama (Abstraction) ve Arayüzler', order: 2, status: 'PUBLISHED' },
-              ],
+              create: [],
             },
           },
         ],

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html lang="tr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"state-info":"#2563eb","on-tertiary-fixed-variant":"#004e5c","border-subtle":"#e2e8f0","surface":"#f8f9ff","primary-fixed":"#d9e2ff","on-primary-fixed-variant":"#2d4678","secondary-fixed":"#cce5ff","primary-fixed-dim":"#afc6ff","state-error":"#dc2626","background":"#f8f9ff","on-tertiary-fixed":"#001f26","text-main":"#0f172a","surface-bright":"#f8f9ff","inverse-surface":"#213145","primary-container":"#0f2b5c","surface-container-low":"#eff4ff","surface-card":"#ffffff","surface-dim":"#cbdbf5","inverse-primary":"#afc6ff","error":"#ba1a1a","surface-tint":"#465d91","canvas-bg":"#f8fafc","on-primary-fixed":"#001944","ai-assistant-tint":"#f0fdfa","on-surface-variant":"#44464f","on-error":"#ffffff","tertiary-container":"#00323c","surface-container-highest":"#d3e4fe","on-secondary":"#ffffff","electric-blue-hover":"#0369a1","on-primary-container":"#7c94cb","surface-variant":"#d3e4fe","on-tertiary-container":"#00a2be","error-container":"#ffdad6","on-primary":"#ffffff","cyan-accent":"#0891b2","on-secondary-container":"#00476e","tertiary":"#001c22","state-success":"#059669","secondary":"#006398","on-surface":"#0b1c30","outline":"#747780","secondary-fixed-dim":"#93ccff","on-error-container":"#93000a","on-secondary-fixed":"#001d31","surface-container":"#e5eeff","on-background":"#0b1c30","primary":"#00163d","surface-container-high":"#dce9ff","tertiary-fixed":"#acedff","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#004b73","outline-variant":"#c4c6d0","tertiary-fixed-dim":"#4cd7f6","secondary-container":"#5bb8fe","brand-navy-deep":"#0a1d3f","inverse-on-surface":"#eaf1ff","state-warning":"#d97706","text-muted":"#64748b","on-tertiary":"#ffffff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-lg":"1.5rem","gutter-mobile":"1rem","space-2xl":"3rem","gutter":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem","margin":"2rem","margin-mobile":"1rem","space-xl":"2rem","space-md":"1rem"},"fontFamily":{"title-md":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"body-sm":["Inter"],"body-lg":["Inter"],"code-sm":["Inter"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Inter"],"label-md":["Inter"],"body-md":["Inter"],"display-hero-mobile":["Plus Jakarta Sans"]},"fontSize":{"title-md":["16px",{"lineHeight":"24px","fontWeight":"600"}],"display-hero":["40px",{"lineHeight":"48px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"700"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"28px","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"code-sm":["13px",{"lineHeight":"20px","fontWeight":"500"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"display-hero-mobile":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"700"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 px-space-lg flex items-center gap-space-sm bg-surface-container-lowest"><img alt="logo.png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WQvDHMAAw5VGEaVUdKMeadWzCQonlvOOze-7BZ7ANhWXY37DIYN7TltlpavU8kjInsuVSL8XpgK9M5Q36rQYrgADJrqA4YYOWvTJGniDxDiVPj5BUpJwd2aVuUyPSoNFI_Vu5ssd_W9gS7ZOC8wjonmrTLn59APvw6uqx1s8Ir4Ea0q4UOEMbv-Z7OVkfo0USKqnD4aZpwB1GqHHBQZICa0ix09922-EAR8C7ufVcvKK_GyY_T5J6NAAQc0i7fFm4b_6sYpTGqGw"/><span class="font-headline-sm text-headline-sm text-brand-navy-deep tracking-tight">EduPulse</span></div><nav class="flex flex-col gap-space-xs px-space-sm mt-space-md" data-active-classes="bg-primary-container text-on-primary-container font-semibold shadow-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="ogrenme-paneli" href="#"><span class="material-symbols-outlined text-xl">dashboard</span><span>Öğrenme Paneli</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg transition-colors bg-primary-container text-on-primary-container font-semibold shadow-sm" data-path="kurslarim" href="#"><span class="material-symbols-outlined text-xl">menu_book</span><span>Kurslarım</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="sinavlar-degerlendirme" href="#"><span class="material-symbols-outlined text-xl">quiz</span><span>Sınavlar &amp; Değerlendirme</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="odevler" href="#"><span class="material-symbols-outlined text-xl">assignment</span><span>Ödevler</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="yapay-zeka-asistani" href="#"><span class="material-symbols-outlined text-xl text-cyan-accent">smart_toy</span><span>Yapay Zekâ Asistanı</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="takvim-hatirlaticilar" href="#"><span class="material-symbols-outlined text-xl">calendar_today</span><span>Takvim &amp; Hatırlatıcılar</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="performans-analitik" href="#"><span class="material-symbols-outlined text-xl">insights</span><span>Performans &amp; Analitik</span></a></nav></div><div class="p-space-sm bg-surface-container-lowest"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-lg text-label-lg" data-path="ayarlar" href="#"><span class="material-symbols-outlined text-xl">settings</span><span>Ayarlar</span></a></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-card/90 backdrop-blur-xl z-40 px-space-lg flex items-center justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-lg flex-1 max-w-xl"><div class="relative w-full max-w-md flex items-center"><span class="material-symbols-outlined absolute left-3 text-text-muted text-xl pointer-events-none">search</span><input class="w-full h-11 pl-10 pr-4 bg-canvas-bg rounded-lg font-body-sm text-body-sm text-text-main placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-cyan-accent transition-all" placeholder="Ders veya konu ara..." type="text"/></div><nav class="hidden xl:flex items-center gap-space-md shrink-0" data-active-classes="text-secondary font-semibold"><a aria-current="page" class="transition-colors text-secondary font-semibold" data-path="kurslarim" href="#">Derslerim</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="takvim-hatirlaticilar" href="#">Takvim</a></nav></div><div class="flex items-center gap-space-md"><button aria-label="Bildirimler" class="relative p-space-xs text-on-surface-variant hover:text-on-surface transition-colors rounded-full hover:bg-surface-container-high flex items-center justify-center" type="button"><span class="material-symbols-outlined text-2xl">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-state-error ring-2 ring-surface-card"></span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="flex flex-col text-right hidden sm:flex"><span class="font-label-lg text-label-lg text-brand-navy-deep leading-tight">Ece Demir</span><span class="font-body-sm text-body-sm text-text-muted leading-tight">Bilgisayar Müh.</span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBg05b8ghb8MW-felqWSaR4X3_m7U4X9bzRoqwmf4Pc19CCn8-BtSP3N9uDro6gg7I3YdsZvnUSMiW3HnfhtLqpogshKYBKHemdLmC4WzJRcCY_qxoFJkZeZmOhA0uZdkKJTdPGzhVGzu9knZNmsd_XGRfckM5Ha9zZCkJ_3LvnoV2WuyXmOntB4eL0hW4sd0jYiUoaLSMdIongaHAk8a8Ze4Cw_OCWWDxtmPqa6y3M_OltVJdG9-9_A"/></div></div></header><main class="relative pt-16 bg-canvas-bg min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Navigation & Path Breadcrumbs (FR-20 Course Hierarchy) -->
+<div class="px-space-lg py-space-md bg-surface-card flex flex-col md:flex-row md:items-center justify-between gap-space-sm shadow-sm">
+<div class="flex items-center flex-wrap gap-space-xs font-label-md text-label-md text-text-muted">
+<a class="hover:text-secondary flex items-center gap-1 transition-colors" href="#">
+<span class="material-symbols-outlined text-base">arrow_back</span>
+<span>Kurslarım</span>
+</a>
+<span class="text-outline-variant font-bold">/</span>
+<span class="text-text-muted hover:text-on-surface cursor-pointer">Web Geliştirme Temelleri</span>
+<span class="text-outline-variant font-bold">/</span>
+<span class="text-text-muted">Modül 3: React Bileşen Mimarisi</span>
+<span class="text-outline-variant font-bold">/</span>
+<span class="text-secondary font-semibold flex items-center gap-1 bg-surface-container-high px-space-xs py-0.5 rounded">
+<span class="w-1.5 h-1.5 rounded-full bg-cyan-accent animate-pulse"></span>
+        Ders 4: State ve Props Yönetimi
+      </span>
+</div>
+<!-- Quick Navigation Prev / Next (FR-23) -->
+<div class="flex items-center gap-space-sm">
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" title="Önceki Ders" type="button">
+<span class="material-symbols-outlined text-base">skip_previous</span>
+<span>Önceki Ders</span>
+</button>
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-brand-navy-deep shadow-sm transition-all" title="Sonraki Ders" type="button">
+<span>Sonraki Ders</span>
+<span class="material-symbols-outlined text-base">skip_next</span>
+</button>
+</div>
+</div>
+<!-- Main Player & Curriculum Layout -->
+<div class="p-space-lg grid grid-cols-1 xl:grid-cols-12 gap-space-lg">
+<!-- Left: 8 Cols Video & Deep Learning Hub -->
+<div class="xl:col-span-8 flex flex-col gap-space-lg min-w-0">
+<!-- Video Player Frame with Custom EdTech Controls (FR-21) -->
+<div class="bg-primary rounded-xl overflow-hidden shadow-xl relative group flex flex-col">
+<!-- Main 16:9 Screen Container -->
+<div class="relative aspect-video w-full bg-slate-950 flex items-center justify-center overflow-hidden">
+<!-- Background Lesson Screen Artwork Placeholder -->
+<div class="absolute inset-0 bg-cover bg-center opacity-85" data-alt="Modern dark-mode code editor displaying React state and props architecture with live browser preview on the side, soft volumetric ambient cyan and sapphire backlighting, clean high-tech learning workstation" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD_YAWbU1tPj6pxfjq52MMMJUOeCJTWpbNFCxqLuTfJ-oQwIIVGVCwXpD1fLEiMNYr6oR7Ia2lt8FMw9WMOJQssIKZFB6cy6CVIYVY8Cbrno2iLFgcXMQ_PAkr4JdT352XpWG7e9IOxoekirWaMRDFzciFYKYEnyBuebOZmsnK-C9MYsm-tjnUnAxjN4m9z1FvEAPtrQ1zdXzxK0qKEifeLnXcWiN5XvZXZiWU-5w0nFjiWep7ahPLwYg')">
+</div>
+<!-- Subtle Focus Vignette Scrim -->
+<div class="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-primary/40 pointer-events-none"></div>
+<!-- Video Play Overlay / Pause State Center Button -->
+<button aria-label="Oynat / Duraklat" class="z-20 w-16 h-16 rounded-full bg-white/20 backdrop-blur-md hover:bg-cyan-accent text-on-primary flex items-center justify-center transition-transform transform hover:scale-110 shadow-lg" id="mainPlayToggle" type="button">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<!-- Watermark Brand Badge -->
+<div class="absolute top-4 left-4 z-20 flex items-center gap-2 px-3 py-1 rounded-full bg-brand-navy-deep/75 backdrop-blur-md text-on-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-cyan-accent text-base">school</span>
+<span>EduPulse Interactive Lab</span>
+</div>
+<!-- Stream Quality / Resolution Badge -->
+<div class="absolute top-4 right-4 z-20 flex items-center gap-2 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md text-white font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-state-success"></span>
+<span>1080p 60fps HD</span>
+</div>
+<!-- Bottom Control Bar Surface -->
+<div class="absolute bottom-0 inset-x-0 z-30 bg-gradient-to-t from-black/95 via-black/80 to-transparent p-4 flex flex-col gap-2">
+<!-- Progress Line Bar (%75 Completion Indicator) -->
+<div class="relative w-full h-1.5 bg-white/20 rounded-full cursor-pointer group/bar flex items-center">
+<!-- Buffer progress -->
+<div class="absolute left-0 top-0 h-full w-[88%] bg-white/30 rounded-full"></div>
+<!-- Current playback (75%) -->
+<div class="absolute left-0 top-0 h-full w-[75%] bg-gradient-to-r from-secondary to-cyan-accent rounded-full flex items-center justify-end">
+<span class="w-3.5 h-3.5 rounded-full bg-white shadow ring-2 ring-cyan-accent transform scale-0 group-hover/bar:scale-100 transition-transform"></span>
+</div>
+</div>
+<!-- Playback Meta and Action Controls -->
+<div class="flex items-center justify-between text-white pt-1">
+<!-- Left Controls -->
+<div class="flex items-center gap-3">
+<button aria-label="Oynat" class="hover:text-cyan-accent transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-2xl">pause</span>
+</button>
+<button aria-label="10 saniye geri sar" class="hover:text-cyan-accent transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-xl">replay_10</span>
+</button>
+<button aria-label="10 saniye ileri sar" class="hover:text-cyan-accent transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-xl">forward_10</span>
+</button>
+<div class="flex items-center gap-2 group/volume pl-1">
+<button aria-label="Ses" class="hover:text-cyan-accent transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">volume_up</span>
+</button>
+<div class="w-16 h-1 bg-white/30 rounded-full hidden sm:block relative overflow-hidden">
+<div class="w-4/5 h-full bg-white rounded-full"></div>
+</div>
+</div>
+<span class="font-code-sm text-code-sm text-slate-300 ml-2">18:42 / 24:55 <span class="text-cyan-accent font-semibold">(%75 İzleme)</span></span>
+</div>
+<!-- Right Controls: Speed, Captions, Fullscreen -->
+<div class="flex items-center gap-3">
+<!-- Playback Speed Picker -->
+<div class="relative">
+<button class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white font-label-md text-label-md flex items-center gap-1" id="speedToggle" type="button">
+<span>1.25x</span>
+<span class="material-symbols-outlined text-sm">expand_less</span>
+</button>
+</div>
+<!-- Subtitles / Captions -->
+<button aria-label="Altyazı Açık" class="p-1 rounded text-cyan-accent hover:bg-white/10 transition-colors flex items-center" title="Türkçe Altyazı Açık" type="button">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">closed_caption</span>
+</button>
+<!-- Mini Player / PiP -->
+<button aria-label="Resim içinde Resim" class="p-1 rounded hover:text-cyan-accent hover:bg-white/10 transition-colors hidden sm:flex items-center" type="button">
+<span class="material-symbols-outlined text-xl">picture_in_picture_alt</span>
+</button>
+<!-- Fullscreen -->
+<button aria-label="Tam Ekran" class="p-1 rounded hover:text-cyan-accent hover:bg-white/10 transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-xl">fullscreen</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Lesson Meta Header Under Screen -->
+<div class="bg-surface-card p-space-md flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">Modül 3 • Video 4</span>
+<span class="text-text-muted font-body-sm text-body-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-state-success" style="font-variation-settings: 'FILL' 1;">verified</span>
+                Son Güncelleme: Mart 2025
+              </span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Ders 4: State ve Props Yönetimi</h1>
+</div>
+<!-- Mark as Completed Toggle Button (FR-24) -->
+<div class="flex items-center gap-3 shrink-0">
+<button class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-state-success hover:bg-emerald-700 text-on-primary font-label-lg text-label-lg shadow-sm transition-all" id="completeBtn" type="button">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span id="completeBtnLabel">Tamamlandı Olarak İşaretle</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Tabbed Workspace Structure (FR-27 / Q&A / Resources) -->
+<div class="bg-surface-card rounded-xl shadow-sm overflow-hidden flex flex-col">
+<!-- Tab Navigation Bar -->
+<div class="flex items-center gap-2 px-space-md pt-space-sm bg-surface-container-low overflow-x-auto">
+<button class="tab-trigger flex items-center gap-2 px-4 py-3 font-label-lg text-label-lg text-secondary border-b-2 border-secondary font-semibold bg-surface-card rounded-t-lg transition-colors" data-tab="summary" type="button">
+<span class="material-symbols-outlined text-lg">article</span>
+<span>Ders Özeti</span>
+</button>
+<button class="tab-trigger flex items-center gap-2 px-4 py-3 font-label-lg text-label-lg text-text-muted hover:text-on-surface rounded-t-lg transition-colors" data-tab="resources" type="button">
+<span class="material-symbols-outlined text-lg">attachment</span>
+<span>Ders Notları &amp; Kaynaklar</span>
+<span class="px-1.5 py-0.2 bg-surface-container-high text-on-surface font-label-md text-label-md rounded-full">3</span>
+</button>
+<button class="tab-trigger flex items-center gap-2 px-4 py-3 font-label-lg text-label-lg text-text-muted hover:text-on-surface rounded-t-lg transition-colors" data-tab="qa" type="button">
+<span class="material-symbols-outlined text-lg">forum</span>
+<span>Soru &amp; Cevap</span>
+<span class="px-1.5 py-0.2 bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md rounded-full">14 Yanıt</span>
+</button>
+<button class="tab-trigger flex items-center gap-2 px-4 py-3 font-label-lg text-label-lg text-text-muted hover:text-on-surface rounded-t-lg transition-colors" data-tab="notes" type="button">
+<span class="material-symbols-outlined text-lg">edit_note</span>
+<span>Kişisel Notlarım</span>
+<span class="w-2 h-2 rounded-full bg-cyan-accent"></span>
+</button>
+</div>
+<!-- Tab Content Panes -->
+<div class="p-space-lg">
+<!-- Pane 1: Ders Özeti -->
+<div class="tab-pane flex flex-col gap-space-md" id="pane-summary">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-brand-navy-deep mb-2">Bu Derste Neler Öğreneceksiniz?</h3>
+<p class="font-body-md text-body-md text-text-main leading-relaxed">
+                React uygulamalarında veri akışının temel yapı taşı olan <strong class="text-secondary font-semibold">state</strong> ve <strong class="text-secondary font-semibold">props</strong> mekanizmalarını derinlemesine inceliyoruz. Tek yönlü veri akışı (unidirectional data flow), state kaldırma (lifting state up) ve prop drilling problemlerinin modern fonksiyonel bileşenlerde nasıl çözümleneceğini uygulamalı senaryolar üzerinden takip edeceğiz.
+              </p>
+</div>
+<!-- Key Takeaways Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-2">
+<div class="p-space-md rounded-lg bg-surface-container-low flex items-start gap-3">
+<span class="p-2 rounded-lg bg-surface-card text-cyan-accent material-symbols-outlined shadow-xs">sync_alt</span>
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">Tek Yönlü Veri Akışı</h4>
+<p class="font-body-sm text-body-sm text-text-muted mt-1">Ebeveyn bileşenlerden alt bileşenlere doğru immutable veri geçiş prensibi ve prop türleri.</p>
+</div>
+</div>
+<div class="p-space-md rounded-lg bg-surface-container-low flex items-start gap-3">
+<span class="p-2 rounded-lg bg-surface-card text-secondary material-symbols-outlined shadow-xs">bolt</span>
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">useState ile Yeniden Render</h4>
+<p class="font-body-sm text-body-sm text-text-muted mt-1">Bileşen yaşam döngüsü ve asenkron state güncellemelerinde stale state hatalarından kaçınma.</p>
+</div>
+</div>
+</div>
+<!-- Interactive Snippet Preview -->
+<div class="rounded-lg bg-primary-container p-4 text-white">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 font-label-md text-label-md text-on-primary-container">
+<span class="flex items-center gap-1 font-mono"><span class="material-symbols-outlined text-sm">code</span> UserCounter.jsx</span>
+<span class="text-cyan-accent font-semibold cursor-pointer hover:underline">Panoya Kopyala</span>
+</div>
+<pre class="font-code-sm text-code-sm overflow-x-auto text-emerald-300"><code>function UserCounter({ initialCount = 0, onThresholdReached }) {
+  const [count, setCount] = useState(initialCount);
+
+  const increment = () =&gt; {
+    setCount(prev =&gt; prev + 1);
+  };
+  return &lt;button onClick={increment}&gt;Değer: {count}&lt;/button&gt;;
+}</code></pre>
+</div>
+</div>
+<!-- Pane 2: Kaynaklar (Hidden by default) -->
+<div class="tab-pane hidden flex flex-col gap-space-md" id="pane-resources">
+<h3 class="font-headline-sm text-headline-sm text-brand-navy-deep">İndirilebilir Materyaller ve Referanslar</h3>
+<div class="flex flex-col gap-3">
+<a class="flex items-center justify-between p-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors" href="#">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-error-container text-error flex items-center justify-center">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<div>
+<p class="font-title-md text-title-md text-on-surface">Ders_04_State_Props_Rehberi.pdf</p>
+<p class="font-body-sm text-body-sm text-text-muted">2.4 MB • Kapsamlı Akış Şeması ve Kod Notları</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary">download</span>
+</a>
+<a class="flex items-center justify-between p-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors" href="#">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-cyan-accent flex items-center justify-center">
+<span class="material-symbols-outlined">code</span>
+</div>
+<div>
+<p class="font-title-md text-title-md text-on-surface">GitHub Kod Deposu (Modul-3-State-Props)</p>
+<p class="font-body-sm text-body-sm text-text-muted">Canlı Örnek Proje ve Sandbox Çözümleri</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary">open_in_new</span>
+</a>
+<a class="flex items-center justify-between p-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors" href="#">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined">quiz</span>
+</div>
+<div>
+<p class="font-title-md text-title-md text-on-surface">Hızlı Alıştırma Soruları (Cheat Sheet)</p>
+<p class="font-body-sm text-body-sm text-text-muted">Sınav Hazırlık Özeti</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary">download</span>
+</a>
+</div>
+</div>
+<!-- Pane 3: Soru Cevap (Hidden by default) -->
+<div class="tab-pane hidden flex flex-col gap-space-md" id="pane-qa">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-brand-navy-deep">Eğitmen ve Akran Tartışmaları</h3>
+<p class="font-body-sm text-body-sm text-text-muted">Bu dersle ilgili 14 aktif soru bulunmaktadır.</p>
+</div>
+<button class="px-3.5 py-2 rounded-lg bg-secondary hover:bg-electric-blue-hover text-on-primary font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-base">add</span>
+<span>Yeni Soru Sor</span>
+</button>
+</div>
+<!-- Single Q&A Item -->
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary text-white font-bold flex items-center justify-center text-xs">M</div>
+<span class="font-title-md text-title-md text-on-surface">Mert Kaya</span>
+<span class="text-text-muted text-xs">2 gün önce</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-state-success/15 text-state-success font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">check</span> Eğitmen Yanıtladı
+                </span>
+</div>
+<p class="font-body-md text-body-md text-text-main font-medium">State setter fonksiyonu içinde callback (önceki değer) kullanımını tam olarak ne zaman tercih etmeliyiz?</p>
+<!-- Reply Quote -->
+<div class="p-3 rounded-lg bg-surface-card flex gap-3 items-start ml-4">
+<span class="material-symbols-outlined text-cyan-accent text-lg">psychology</span>
+<div>
+<span class="font-label-md text-label-md text-brand-navy-deep font-semibold">Dr. Barış Yılmaz (Eğitmen):</span>
+<p class="font-body-sm text-body-sm text-text-muted mt-0.5">Yeni durumunuz doğrudan bir önceki duruma bağlıysa (örneğin sayaç arttırma veya diziye ekleme) daima prev =&gt; prev + 1 syntax'ını kullanmalısınız. Böylece batching durumunda güncel değeri garantiye alırsınız.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Pane 4: Kişisel Notlarım (FR-27) -->
+<div class="tab-pane hidden flex flex-col gap-space-md" id="pane-notes">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-brand-navy-deep">Kişisel Ders Defteri (FR-27)</h3>
+<p class="font-body-sm text-body-sm text-text-muted">Notlarınız video dakikasıyla eşleştirilerek buluta kaydedilir.</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-base">timer</span>
+<span>Şu anki zamana ekle (18:42)</span>
+</button>
+</div>
+</div>
+<!-- Note Input Area -->
+<div class="p-3 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<textarea class="w-full bg-surface-card rounded-lg p-3 font-body-sm text-body-sm text-text-main focus:ring-2 focus:ring-cyan-accent outline-none h-24 resize-none" placeholder="Bu dakikaya ait özel notunuzu yazın... (Örn: Props lifting işleminde ebeveyn handle fonksiyonu kullanımı önemli)"></textarea>
+<div class="flex justify-between items-center pt-1">
+<span class="text-xs text-text-muted">Otomatik olarak 18:42 zaman damgası eklenecektir.</span>
+<button class="px-4 py-1.5 rounded-lg bg-secondary text-white font-label-md text-label-md hover:bg-electric-blue-hover transition-colors" type="button">Notu Kaydet</button>
+</div>
+</div>
+<!-- Existing Stored Note -->
+<div class="p-3.5 rounded-lg bg-surface-card shadow-xs flex items-start gap-3">
+<span class="px-2 py-1 rounded bg-secondary-fixed text-on-secondary-fixed font-code-sm text-code-sm font-semibold shrink-0 cursor-pointer hover:underline">08:15</span>
+<div class="flex-1">
+<p class="font-body-sm text-body-sm text-text-main">Props'lar 'read-only'dir. Alt bileşen gelen props'u doğrudan değiştiremez; event yayarak ebeveyne bildirmesi gerekir.</p>
+<span class="text-[11px] text-text-muted">Dün 14:20 tarihinde kaydedildi</span>
+</div>
+<button class="text-text-muted hover:text-state-error p-1" type="button">
+<span class="material-symbols-outlined text-base">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: 4 Cols Course Outline & Progress Tracker (FR-20, FR-25) -->
+<div class="xl:col-span-4 flex flex-col gap-space-md">
+<!-- Progress Summary Widget Card -->
+<div class="bg-surface-card p-space-md rounded-xl shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-title-md text-title-md text-on-surface">Kurs İlerleme Durumu</h2>
+<p class="font-body-sm text-body-sm text-text-muted">12 / 16 Ders Tamamlandı</p>
+</div>
+<div class="relative w-12 h-12 flex items-center justify-center">
+<!-- Inline SVG Circular Progress (75%) -->
+<svg class="w-12 h-12 transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-cyan-accent" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="75, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-label-md text-label-md font-bold text-brand-navy-deep">%75</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+<div class="bg-gradient-to-r from-secondary to-cyan-accent h-full w-3/4 rounded-full"></div>
+</div>
+</div>
+<!-- Module & Curriculum List Accordion (FR-20, FR-25) -->
+<div class="bg-surface-card rounded-xl shadow-sm flex flex-col divide-y divide-border-subtle overflow-hidden">
+<!-- Module Header Panel -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">view_list</span>
+<span class="font-title-md text-title-md text-brand-navy-deep">Müfredat Akışı</span>
+</div>
+<span class="font-label-md text-label-md text-text-muted">5 Modül</span>
+</div>
+<!-- MODULE 1: COMPLETED -->
+<div class="flex flex-col">
+<button class="w-full p-4 flex items-center justify-between bg-surface-card hover:bg-surface-container-low transition-colors text-left" type="button">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-state-success/15 text-state-success flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</span>
+<div>
+<p class="font-title-md text-title-md text-on-surface">Modül 1: JavaScript Temelleri</p>
+<p class="font-body-sm text-body-sm text-text-muted">4/4 Ders • 1s 45dk • Tamamlandı</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-muted">expand_more</span>
+</button>
+</div>
+<!-- MODULE 2: COMPLETED -->
+<div class="flex flex-col">
+<button class="w-full p-4 flex items-center justify-between bg-surface-card hover:bg-surface-container-low transition-colors text-left" type="button">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-state-success/15 text-state-success flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</span>
+<div>
+<p class="font-title-md text-title-md text-on-surface">Modül 2: DOM ve Etkinlikler</p>
+<p class="font-body-sm text-body-sm text-text-muted">5/5 Ders • 2s 10dk • Tamamlandı</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-muted">expand_more</span>
+</button>
+</div>
+<!-- MODULE 3: ACTIVE & EXPANDED -->
+<div class="flex flex-col bg-surface-container-low">
+<!-- Accordion Header -->
+<div class="p-4 flex items-center justify-between bg-surface-container cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold shrink-0">
+                3
+              </span>
+<div>
+<p class="font-title-md text-title-md text-brand-navy-deep font-bold">Modül 3: React Bileşen Mimarisi</p>
+<p class="font-body-sm text-body-sm text-secondary font-medium">3/5 Ders Tamamlandı • Aktif Modül</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary">expand_less</span>
+</div>
+<!-- Lessons Sub-List -->
+<div class="flex flex-col p-2 gap-1.5">
+<!-- Lesson 1 (Watched) -->
+<a class="p-2.5 rounded-lg flex items-center justify-between hover:bg-surface-card transition-colors group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-state-success text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface group-hover:text-secondary">Ders 1: JSX Temelleri</p>
+<p class="font-body-sm text-body-sm text-text-muted">Video • 16 dk</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-state-success bg-state-success/10 px-2 py-0.5 rounded">İzlendi</span>
+</a>
+<!-- Lesson 2 (Watched) -->
+<a class="p-2.5 rounded-lg flex items-center justify-between hover:bg-surface-card transition-colors group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-state-success text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface group-hover:text-secondary">Ders 2: Props Kullanımı</p>
+<p class="font-body-sm text-body-sm text-text-muted">Video • 21 dk</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-state-success bg-state-success/10 px-2 py-0.5 rounded">İzlendi</span>
+</a>
+<!-- Lesson 3 (Watched) -->
+<a class="p-2.5 rounded-lg flex items-center justify-between hover:bg-surface-card transition-colors group" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-state-success text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface group-hover:text-secondary">Ders 3: Hook'lar (useState Giriş)</p>
+<p class="font-body-sm text-body-sm text-text-muted">Video • 28 dk</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-state-success bg-state-success/10 px-2 py-0.5 rounded">İzlendi</span>
+</a>
+<!-- Lesson 4: CURRENTLY PLAYING ACTIVE CARD (FR-20, FR-25) -->
+<div class="p-3 rounded-lg bg-surface-card shadow-md flex items-center justify-between ring-2 ring-cyan-accent relative">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-cyan-accent flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-lg animate-pulse" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div>
+<p class="font-title-md text-title-md text-brand-navy-deep font-semibold">Ders 4: State ve Props Yönetimi</p>
+<p class="font-body-sm text-body-sm text-cyan-accent font-medium flex items-center gap-1">
+<span>Şu an oynatılıyor</span>
+<span class="w-1.5 h-1.5 rounded-full bg-cyan-accent animate-ping"></span>
+</p>
+</div>
+</div>
+<span class="font-label-md text-label-md font-bold text-secondary">24:55</span>
+</div>
+<!-- Lesson 5: Locked Quiz -->
+<div class="p-2.5 rounded-lg flex items-center justify-between opacity-60 bg-surface-card/40">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-text-muted text-lg">lock</span>
+<div>
+<p class="font-label-lg text-label-lg text-text-muted">Ders 5: Modül Değerlendirme Testi</p>
+<p class="font-body-sm text-body-sm text-text-muted">Test Sınavı • 15 Soru (20 Dk)</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-text-muted bg-surface-container px-2 py-0.5 rounded">Kilitli</span>
+</div>
+</div>
+</div>
+<!-- MODULE 4: FUTURE -->
+<div class="flex flex-col">
+<div class="w-full p-4 flex items-center justify-between bg-surface-card opacity-50 cursor-not-allowed">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-text-muted">lock</span>
+<div>
+<p class="font-title-md text-title-md text-text-muted">Modül 4: React Router ve SPA Mimarisi</p>
+<p class="font-body-sm text-body-sm text-text-muted">6 Ders • Modül 3 bitiminde açılır</p>
+</div>
+</div>
+</div>
+</div>
+<!-- MODULE 5: FUTURE -->
+<div class="flex flex-col">
+<div class="w-full p-4 flex items-center justify-between bg-surface-card opacity-50 cursor-not-allowed">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-text-muted">lock</span>
+<div>
+<p class="font-title-md text-title-md text-text-muted">Modül 5: Bitirme Projesi &amp; Dağıtım</p>
+<p class="font-body-sm text-body-sm text-text-muted">Proje Değerlendirmesi</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Assistant Quick Prompt Box (EdTech FR-57) -->
+<div class="p-space-md rounded-xl bg-ai-assistant-tint shadow-xs flex flex-col gap-2">
+<div class="flex items-center gap-2 text-cyan-accent font-title-md text-title-md">
+<span class="material-symbols-outlined text-xl">smart_toy</span>
+<span>Ders Yapay Zekâ Eğitmeni</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Bu videoda anlamadığınız bir kod bloğu mu var? State ve props farkını hemen anlatmamı isteyebilirsiniz.</p>
+<button class="mt-1 w-full py-2 px-3 rounded-lg bg-surface-card hover:bg-white text-secondary font-label-md text-label-md shadow-xs flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+<span>"State kaldırma (lifting) mantığını açıkla"</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Tab Switching Behavior
+  const tabTriggers = document.querySelectorAll('.tab-trigger');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  tabTriggers.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-tab');
+      
+      // Update Tab Buttons UI
+      tabTriggers.forEach(t => {
+        t.classList.remove('text-secondary', 'border-b-2', 'border-secondary', 'font-semibold', 'bg-surface-card');
+        t.classList.add('text-text-muted');
+      });
+      btn.classList.add('text-secondary', 'border-b-2', 'border-secondary', 'font-semibold', 'bg-surface-card');
+      btn.classList.remove('text-text-muted');
+
+      // Update Panes Visibility
+      tabPanes.forEach(pane => {
+        pane.classList.add('hidden');
+      });
+      const activePane = document.getElementById(`pane-${target}`);
+      if (activePane) {
+        activePane.classList.remove('hidden');
+      }
+    });
+  });
+
+  // Complete Button State Toggle
+  const completeBtn = document.getElementById('completeBtn');
+  const completeBtnLabel = document.getElementById('completeBtnLabel');
+  let isCompleted = false;
+
+  completeBtn.addEventListener('click', () => {
+    isCompleted = !isCompleted;
+    if (isCompleted) {
+      completeBtn.classList.remove('bg-state-success', 'hover:bg-emerald-700');
+      completeBtn.classList.add('bg-surface-container', 'text-on-surface', 'hover:bg-surface-container-high');
+      completeBtnLabel.textContent = 'Ders Tamamlandı (Geri Al)';
+    } else {
+      completeBtn.classList.add('bg-state-success', 'hover:bg-emerald-700');
+      completeBtn.classList.remove('bg-surface-container', 'text-on-surface', 'hover:bg-surface-container-high');
+      completeBtnLabel.textContent = 'Tamamlandı Olarak İşaretle';
+    }
+  });
+
+  // Main Play Button Interaction
+  const mainPlay = document.getElementById('mainPlayToggle');
+  let isPlaying = false;
+  mainPlay.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    const icon = mainPlay.querySelector('.material-symbols-outlined');
+    if (isPlaying) {
+      icon.textContent = 'pause';
+      mainPlay.classList.add('opacity-40');
+    } else {
+      icon.textContent = 'play_arrow';
+      mainPlay.classList.remove('opacity-40');
+    }
+  });
+</script></main></div></body></html>

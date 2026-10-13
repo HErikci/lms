@@ -87,23 +87,37 @@ export function registerCourseRoutes(app: FastifyInstance) {
       if (course.status !== 'PUBLISHED' && !isOwnerOrAdmin) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
+      let isEnrolled = false;
+      if (!isOwnerOrAdmin && request.user) {
+        const enrollment = await prisma.enrollment.findUnique({
+          where: { userId_courseId: { userId: request.user.userId, courseId: course.id } },
+        });
+        isEnrolled = Boolean(enrollment);
+      }
+      const canSeeContent = isOwnerOrAdmin || isEnrolled;
       return {
         course: {
           ...toPublicCourse(course),
-          modules: course.modules.map((module) => ({
-            id: module.id,
-            title: module.title,
-            order: module.order,
-            lessons: module.lessons
-              .filter((lesson) => isOwnerOrAdmin || lesson.status === 'PUBLISHED')
-              .sort((a, b) => a.order - b.order)
-              .map((lesson) => ({
-                id: lesson.id,
-                title: lesson.title,
-                order: lesson.order,
-                status: lesson.status,
-              })),
-          })),
+          isEnrolled,
+          modules: canSeeContent
+            ? course.modules.map((module) => ({
+                id: module.id,
+                title: module.title,
+                order: module.order,
+                lessons: module.lessons
+                  .filter((lesson) => isOwnerOrAdmin || lesson.status === 'PUBLISHED')
+                  .sort((a, b) => a.order - b.order)
+                  .map((lesson) => ({
+                    id: lesson.id,
+                    title: lesson.title,
+                    description: lesson.description,
+                    contentType: lesson.contentType,
+                    contentUrl: lesson.contentUrl,
+                    order: lesson.order,
+                    status: lesson.status,
+                  })),
+              }))
+            : [],
         },
       };
     },

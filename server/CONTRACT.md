@@ -26,7 +26,8 @@ Header: `Authorization: Bearer <token>`
 Not: Varsayılan olarak yalnızca `status: PUBLISHED` kurslar listelenir. Giriş yapmış kullanıcı `ADMIN` ise bu filtre uygulanmaz ve tüm durumlardaki kurslar listelenir (token opsiyonel; `Authorization` header'ı yoksa anonim davranış değişmez).
 
 ### GET /api/v1/courses/:id
-200: `{ "course": { ...yukarıdaki alanlar, "modules": [{ "id", "title", "order", "lessons": [{ "id", "title", "order", "status" }] }] } }`
+200: `{ "course": { ...yukarıdaki alanlar, "isEnrolled": boolean, "modules": [{ "id", "title", "order", "lessons": [{ "id", "title", "description": string|null, "contentType", "contentUrl": string|null, "order", "status" }] }] } }`
+Not: `isEnrolled`, giriş yapmış kullanıcının bu kursa kayıtlı olup olmadığını belirtir (giriş yapılmamışsa/anonim ise `false`). Kurs sahibi `INSTRUCTOR` veya `ADMIN` için her zaman tam `modules` listesi döner. Diğer tüm kullanıcılar için (kayıtlı olmayan öğrenciler ve anonim ziyaretçiler dahil) `isEnrolled: false` olduğunda `modules: []` döner — kurs başlığı/açıklaması gibi alanlar her durumda döner.
 404: `{ "error": { "code": "NOT_FOUND", "message": "Kurs bulunamadı." } }`
 
 ### POST /api/v1/courses (rol: INSTRUCTOR, ADMIN)
@@ -64,19 +65,51 @@ Belirtilen kullanıcının bu kurstaki kaydını siler (kayıttan çıkarma).
 
 ## Modules / Lessons
 
-### POST /api/v1/courses/:courseId/modules (rol: INSTRUCTOR, ADMIN)
+İçerik türleri (`contentType`), tam olarak şu 5 değerden biri olmalıdır: `"VIDEO_YOUTUBE"`, `"DOCUMENT"`, `"QUIZ"`, `"LINK"`, `"TEXT"`. Belirtilmezse varsayılan `"DOCUMENT"`'tir.
+400: geçersiz `contentType` → `{ "error": { "code": "INVALID_CONTENT_TYPE", "message": "Geçersiz içerik türü." } }`
+
+### POST /api/v1/courses/:courseId/modules (rol: INSTRUCTOR, ADMIN; yetki: ADMIN veya kursun sahibi INSTRUCTOR)
 İstek: `{ "title": string, "order": number }`
 201: `{ "module": { "id", "courseId", "title", "order" } }`
+403/404: aşağıdaki PATCH/DELETE ile aynı kurallar.
 
-### POST /api/v1/modules/:moduleId/lessons (rol: INSTRUCTOR, ADMIN)
-İstek: `{ "title": string, "order": number, "status": "DRAFT"|"PUBLISHED" }`
-201: `{ "lesson": { "id", "moduleId", "title", "order", "status" } }`
+### PATCH /api/v1/modules/:id (yetki: ADMIN veya kursun sahibi INSTRUCTOR)
+Header: `Authorization: Bearer <token>`
+İstek: `{ "title"?, "order"? }` (tüm alanlar opsiyonel; gönderilmeyen alanlar değişmeden kalır)
+200: `{ "module": { "id", "courseId", "title", "order" } }`
+403: `{ "error": { "code": "FORBIDDEN", "message": "Bu kursu düzenleme yetkiniz yok." } }`
+404: `{ "error": { "code": "NOT_FOUND", "message": "Modül bulunamadı." } }`
+
+### DELETE /api/v1/modules/:id (yetki: ADMIN veya kursun sahibi INSTRUCTOR)
+Header: `Authorization: Bearer <token>`
+Modülü ve ilişkili tüm dersleri (cascade ile) siler.
+200: `{ "success": true }`
+403/404: yukarıdaki PATCH ile aynı.
+
+### POST /api/v1/modules/:moduleId/lessons (rol: INSTRUCTOR, ADMIN; yetki: ADMIN veya kursun sahibi INSTRUCTOR)
+İstek: `{ "title": string, "order": number, "status": "DRAFT"|"PUBLISHED", "description"?: string|null, "contentType"?: string, "contentUrl"?: string|null }`
+201: `{ "lesson": { "id", "moduleId", "title", "description": string|null, "contentType", "contentUrl": string|null, "order", "status" } }`
+400/403/404: aşağıdaki PATCH ile aynı kurallar.
+
+### PATCH /api/v1/lessons/:id (yetki: ADMIN veya dersin bağlı olduğu kursun sahibi INSTRUCTOR)
+Header: `Authorization: Bearer <token>`
+İstek: `{ "title"?, "order"?, "status"?, "description"?: string|null, "contentType"?, "contentUrl"?: string|null }` (tüm alanlar opsiyonel; gönderilmeyen alanlar değişmeden kalır)
+200: `{ "lesson": { "id", "moduleId", "title", "description", "contentType", "contentUrl", "order", "status" } }`
+400: `{ "error": { "code": "INVALID_CONTENT_TYPE", "message": "Geçersiz içerik türü." } }`
+403: `{ "error": { "code": "FORBIDDEN", "message": "Bu kursu düzenleme yetkiniz yok." } }`
+404: `{ "error": { "code": "NOT_FOUND", "message": "Ders bulunamadı." } }`
+
+### DELETE /api/v1/lessons/:id (yetki: ADMIN veya dersin bağlı olduğu kursun sahibi INSTRUCTOR)
+Header: `Authorization: Bearer <token>`
+200: `{ "success": true }`
+403/404: yukarıdaki PATCH ile aynı.
 
 ## Enrollments
 
-### POST /api/v1/courses/:courseId/enroll (rol: STUDENT)
+### POST /api/v1/courses/:courseId/enroll (giriş yapmış herhangi bir rol: STUDENT, INSTRUCTOR, ADMIN)
 İstek: `{ "method": "OPEN"|"INVITE_CODE"|"ADMIN_ASSIGNED" }`
 201: `{ "enrollment": { "id", "userId", "courseId", "method", "enrolledAt" } }`
+404: kurs yoksa veya `status !== "PUBLISHED"` ise (taslak kurslara kayıt engellenir; sahibi olmayan biri "yok" ile "henüz yayınlanmadı" durumunu ayırt edemez) → `{ "error": { "code": "NOT_FOUND", "message": "Kurs bulunamadı." } }`
 409: zaten kayıtlı → `{ "error": { "code": "ALREADY_ENROLLED", "message": "Bu kursa zaten kayıtlısınız." } }`
 
 ## Users

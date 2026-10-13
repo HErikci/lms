@@ -122,6 +122,9 @@ export function AdminCoursesPage() {
                   <Link to={`/yonetim/kurslar/${course.id}/ogrenciler`}>
                     <IconButton icon="group" label="Kayıtlı Öğrenciler" />
                   </Link>
+                  <Link to={`/yonetim/kurslar/${course.id}/icerik`}>
+                    <IconButton icon="list_alt" label="İçerik Yönetimi" />
+                  </Link>
                   <IconButton
                     icon="edit"
                     label="Kursu Düzenle"

@@ -1,0 +1,84 @@
+.header {
+  margin-bottom: var(--space-lg);
+}
+
+.backLink {
+  text-decoration: none;
+}
+
+.backLink:focus-visible {
+  outline: var(--focus-ring);
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.meta {
+  margin-top: var(--space-xs);
+}
+
+.description {
+  margin-bottom: var(--space-xl);
+  max-width: 72ch;
+}
+
+.lockedCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.lockedMessage {
+  margin: 0;
+}
+
+.moduleList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.lessonList {
+  list-style: none;
+  margin: var(--space-sm) 0 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.lessonItem {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-container-low);
+}
+
+.lessonLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-sm);
+}
+
+.lessonLink:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.lessonHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.lessonDescription {
+  margin: var(--space-xs) 0 0 0;
+}

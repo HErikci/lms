@@ -13,6 +13,9 @@ datasource db {
 // as `String` fields with identical field names, defaults, and allowed
 // literal values ("STUDENT" | "INSTRUCTOR" | "ADMIN", etc.) so that
 // downstream route code using these field names is unaffected.
+//
+// Lesson.contentType follows the same convention: a `String` field with
+// allowed literals "VIDEO_YOUTUBE" | "DOCUMENT" | "QUIZ" | "LINK" | "TEXT".
 
 model User {
   id           String       @id @default(cuid())
@@ -53,12 +56,16 @@ model Module {
 }
 
 model Lesson {
-  id       String   @id @default(cuid())
-  moduleId String
-  module   Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  title    String
-  order    Int
-  status   String   @default("DRAFT")
+  id          String   @id @default(cuid())
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title       String
+  order       Int
+  status      String   @default("DRAFT")
+  description String?
+  // Allowed literals: "VIDEO_YOUTUBE" | "DOCUMENT" | "QUIZ" | "LINK" | "TEXT"
+  contentType String   @default("DOCUMENT")
+  contentUrl  String?
 }
 
 model NavMenuItem {

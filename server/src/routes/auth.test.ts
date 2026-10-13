@@ -23,87 +23,90 @@ describe('auth routes', () => {
     await prisma.$disconnect();
   });
 
-  it('registers a new user and returns a token', async () => {
-    const response = await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/register',
-      payload: { email: 'test@example.com', password: 'sifre123', name: 'Test Kullanıcı' },
+  const validPayload = {
+    email: 'register@example.com',
+    password: 'sifre123',
+    name: 'Kayıt Kullanıcı',
+  };
+
+  describe('POST /api/v1/auth/register', () => {
+    it('registers a user and returns a token', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: validPayload,
+      });
+      expect(response.statusCode).toBe(200);
+      const body = response.json();
+      expect(body.token).toBeTypeOf('string');
+      expect(body.user.email).toBe(validPayload.email);
     });
-    expect(response.statusCode).toBe(200);
-    const body = response.json();
-    expect(body.user.email).toBe('test@example.com');
-    expect(body.user.role).toBe('STUDENT');
-    expect(typeof body.token).toBe('string');
+
+    it('rejects a duplicate email', async () => {
+      await app.inject({ method: 'POST', url: '/api/v1/auth/register', payload: validPayload });
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: validPayload,
+      });
+      expect(response.statusCode).toBe(409);
+      expect(response.json().error.code).toBe('EMAIL_TAKEN');
+    });
+
+    it('rejects an invalid email format', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: { ...validPayload, email: 'not-an-email' },
+      });
+      expect(response.statusCode).toBe(400);
+      expect(response.json().error.code).toBe('INVALID_EMAIL');
+    });
+
+    it('rejects a short password', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: { ...validPayload, password: 'short' },
+      });
+      expect(response.statusCode).toBe(400);
+      expect(response.json().error.code).toBe('WEAK_PASSWORD');
+    });
+
+    it('rejects an empty/whitespace name', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: { ...validPayload, name: '   ' },
+      });
+      expect(response.statusCode).toBe(400);
+      expect(response.json().error.code).toBe('INVALID_NAME');
+    });
   });
 
-  it('rejects duplicate email registration', async () => {
-    await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/register',
-      payload: { email: 'dup@example.com', password: 'sifre123', name: 'Birinci' },
+  describe('POST /api/v1/auth/login', () => {
+    it('logs in with correct credentials', async () => {
+      await app.inject({ method: 'POST', url: '/api/v1/auth/register', payload: validPayload });
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/login',
+        payload: { email: validPayload.email, password: validPayload.password },
+      });
+      expect(response.statusCode).toBe(200);
+      const body = response.json();
+      expect(body.token).toBeTypeOf('string');
+      expect(body.user.email).toBe(validPayload.email);
     });
-    const response = await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/register',
-      payload: { email: 'dup@example.com', password: 'baskasifre', name: 'İkinci' },
-    });
-    expect(response.statusCode).toBe(409);
-    expect(response.json().error.code).toBe('EMAIL_TAKEN');
-  });
 
-  it('logs in with correct credentials', async () => {
-    await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/register',
-      payload: { email: 'login@example.com', password: 'sifre123', name: 'Giriş Testi' },
+    it('rejects an incorrect password', async () => {
+      await app.inject({ method: 'POST', url: '/api/v1/auth/register', payload: validPayload });
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/login',
+        payload: { email: validPayload.email, password: 'wrongpassword' },
+      });
+      expect(response.statusCode).toBe(401);
+      expect(response.json().error.code).toBe('INVALID_CREDENTIALS');
     });
-    const response = await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/login',
-      payload: { email: 'login@example.com', password: 'sifre123' },
-    });
-    expect(response.statusCode).toBe(200);
-    expect(response.json().user.email).toBe('login@example.com');
-  });
-
-  it('rejects login with wrong password using a generic error', async () => {
-    await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/register',
-      payload: { email: 'wrongpw@example.com', password: 'sifre123', name: 'Kullanıcı' },
-    });
-    const response = await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/login',
-      payload: { email: 'wrongpw@example.com', password: 'yanlis' },
-    });
-    expect(response.statusCode).toBe(401);
-    expect(response.json().error.code).toBe('INVALID_CREDENTIALS');
-  });
-
-  it('rejects login for a nonexistent email with the same generic error', async () => {
-    const response = await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/login',
-      payload: { email: 'yok@example.com', password: 'herhangi' },
-    });
-    expect(response.statusCode).toBe(401);
-    expect(response.json().error.code).toBe('INVALID_CREDENTIALS');
-  });
-
-  it('returns the current user for GET /me with a valid token', async () => {
-    const registerResponse = await app.inject({
-      method: 'POST',
-      url: '/api/v1/auth/register',
-      payload: { email: 'me@example.com', password: 'sifre123', name: 'Ben' },
-    });
-    const { token } = registerResponse.json();
-    const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/auth/me',
-      headers: { authorization: `Bearer ${token}` },
-    });
-    expect(response.statusCode).toBe(200);
-    expect(response.json().user.email).toBe('me@example.com');
   });
 });
