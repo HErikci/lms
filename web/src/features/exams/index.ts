@@ -1,0 +1,1 @@
+export { ExamsPage } from './ExamsPage';

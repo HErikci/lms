@@ -5,11 +5,13 @@ import styles from './Badge.module.css';
 export type BadgeTone =
   | 'brand'
   | 'info'
+  | 'secondary'
   | 'cyan'
   | 'success'
   | 'warning'
   | 'error'
   | 'neutral'
+  | 'muted'
   | 'navy';
 
 /**

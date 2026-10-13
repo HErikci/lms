@@ -1,0 +1,85 @@
+.header {
+  margin-bottom: var(--space-2xl);
+}
+
+.header h1 {
+  margin-bottom: var(--space-sm);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-lg);
+}
+
+.courseCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.courseHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.courseHeader > div {
+  flex: 1;
+}
+
+.courseHeader h2 {
+  margin: var(--space-xs) 0 0 0;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.progressLabel {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nextLesson {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-surface-container-low);
+  border-radius: var(--radius-lg);
+}
+
+.nextLesson > div {
+  flex: 1;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  color: var(--color-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+  background: var(--color-secondary-soft);
+  transition: background var(--transition-base);
+}
+
+.action:hover {
+  background: var(--color-secondary-container);
+}
+
+.action:focus-visible {
+  outline: var(--focus-ring);
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
