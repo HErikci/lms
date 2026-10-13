@@ -6,6 +6,7 @@ import { AnnouncementsPage } from '../features/announcements';
 import { CalendarPage } from '../features/calendar';
 import { AssignmentsPage } from '../features/assignments';
 import { ExamsPage } from '../features/exams';
+import { LoginPage } from '../features/auth';
 
 /**
  * Yollar layout/Sidebar/navItems.ts ile birebir eşleşir.
@@ -24,4 +25,5 @@ export const router = createBrowserRouter([
       { path: 'sinavlar', element: <ExamsPage /> },
     ],
   },
+  { path: 'giris', element: <LoginPage /> },
 ]);
