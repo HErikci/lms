@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Code Agent Teams | LMS Uygulama Atölyesi</title>
+  <style>
+    :root { --navy:#00163d; --ink:#0b1c30; --blue:#006398; --cyan:#1cc6c1; --ice:#eaf4ff; --paper:#f8f9ff; --muted:#526478; --line:#cbd8e7; --lime:#d8f4bb; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:100%; height:100%; overflow:hidden; background:#071427; color:var(--ink); font-family:"Segoe UI",Arial,sans-serif; }
+    button { font:inherit; }
+    #stage { position:absolute; left:0; top:0; width:1280px; height:720px; transform-origin:top left; }
+    .slide { display:none; width:1280px; height:720px; padding:57px 72px 54px; background:var(--paper); position:relative; overflow:hidden; }
+    .slide.active { display:block; }
+    .slide::before { content:""; position:absolute; top:0; left:0; right:0; height:10px; background:linear-gradient(90deg,var(--navy),var(--blue) 65%,var(--cyan)); }
+    .slide.dark { background:var(--navy); color:white; }
+    .slide.dark::before { background:linear-gradient(90deg,var(--cyan),#8de5dc); }
+    .eyebrow { color:var(--blue); text-transform:uppercase; letter-spacing:.18em; font-size:17px; font-weight:800; margin:0 0 18px; }
+    .dark .eyebrow { color:#78e2db; }
+    h1 { font-size:65px; line-height:1.08; letter-spacing:-.035em; margin:0; max-width:1050px; }
+    h2 { font-size:45px; line-height:1.12; letter-spacing:-.03em; margin:0 0 27px; }
+    h3 { font-size:25px; line-height:1.17; margin:0 0 12px; }
+    p { font-size:23px; line-height:1.35; margin:0 0 14px; }
+    ul,ol { margin:0; padding-left:28px; font-size:22px; line-height:1.45; }
+    li { margin:0 0 12px; }
+    strong { color:var(--navy); }
+    .dark strong { color:#8de5dc; }
+    .lead { font-size:29px; line-height:1.35; color:var(--muted); max-width:980px; }
+    .dark .lead { color:#dce9f5; }
+    .small { font-size:17px; line-height:1.35; }
+    .tiny { font-size:14px; line-height:1.3; }
+    .muted { color:var(--muted); }
+    .dark .muted { color:#c0d3e4; }
+    .cols { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    .cols.three { grid-template-columns:repeat(3,1fr); }
+    .card { background:white; border:1px solid var(--line); border-radius:18px; padding:25px 28px; box-shadow:0 10px 25px rgba(0,22,61,.06); }
+    .dark .card { background:#102d58; border-color:#416083; box-shadow:none; }
+    .card p:last-child, .card ul:last-child { margin-bottom:0; }
+    .tag { display:inline-block; padding:8px 13px; border-radius:100px; background:var(--ice); color:var(--blue); font-size:16px; font-weight:700; margin:0 8px 10px 0; }
+    .dark .tag { background:#173e6c; color:#a4ece7; }
+    .arrow { color:var(--blue); font-size:29px; font-weight:700; text-align:center; }
+    .dark .arrow { color:var(--cyan); }
+    .footer { position:absolute; left:72px; right:72px; bottom:23px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:14px; color:var(--muted); }
+    .dark .footer { border-color:#49627f; color:#bcd1e4; }
+    .footer a { color:inherit; text-decoration:none; }
+    .footer a:hover { text-decoration:underline; }
+    .big-number { font-size:64px; color:var(--blue); font-weight:800; line-height:1; margin-bottom:13px; }
+    .dark .big-number { color:var(--cyan); }
+    .code { background:#0c203d; color:#eaf7ff; border-radius:17px; padding:23px 27px; font:19px/1.38 Consolas,"Cascadia Code",monospace; white-space:pre-wrap; overflow-wrap:anywhere; margin:0; }
+    .code.compact { font-size:17px; line-height:1.32; }
+    .code.light { background:#ecf4ff; color:var(--navy); border:1px solid var(--line); }
+    .prompt { background:#0c203d; color:#f2f8ff; border-radius:18px; padding:25px 29px; font:20px/1.36 "Segoe UI",Arial,sans-serif; white-space:pre-wrap; margin:0; }
+    .prompt.smallprompt { font-size:18px; line-height:1.34; }
+    .prompt b { color:#8de5dc; }
+    .callout { border-left:7px solid var(--cyan); padding:15px 19px; background:#e7f8f6; border-radius:0 12px 12px 0; font-size:21px; line-height:1.35; }
+    .dark .callout { background:#123f59; }
+    table { width:100%; border-collapse:collapse; font-size:20px; line-height:1.25; }
+    th { text-align:left; background:var(--navy); color:#fff; padding:15px 16px; }
+    td { border-bottom:1px solid var(--line); padding:15px 16px; vertical-align:top; }
+    tr:nth-child(even) td { background:#eef4fc; }
+    .flow { display:flex; align-items:stretch; gap:14px; margin-top:24px; }
+    .flow .card { flex:1; padding:21px 22px; }
+    .flow .arrow { align-self:center; }
+    .ribbon { display:inline-block; background:var(--lime); color:var(--navy); border-radius:10px; padding:10px 15px; font-size:18px; font-weight:700; }
+    .slide-title { margin-bottom:22px; }
+    .slide-title h2 { margin-bottom:0; }
+    .layout-bottom { position:absolute; bottom:82px; left:72px; right:72px; }
+    .source { color:var(--blue); text-decoration:underline; }
+    #controls { position:fixed; bottom:58px; right:18px; display:flex; align-items:center; gap:9px; z-index:20; }
+    #controls button { border:1px solid #6a8099; color:#fff; background:#17375d; border-radius:10px; min-width:42px; height:42px; cursor:pointer; }
+    #controls button:hover { background:#286399; }
+    #counter { color:white; min-width:72px; text-align:center; font-size:16px; }
+    .screen-note { position:fixed; bottom:58px; left:20px; color:#fff; background:#17375d; padding:11px 14px; border-radius:9px; font-size:14px; z-index:20; }
+    @media print {
+      @page { size:13.333in 7.5in; margin:0; }
+      html,body { width:auto; height:auto; overflow:visible; background:#fff; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+      #stage { position:static; width:1280px; height:auto; transform:none !important; }
+      .slide,.slide.active { display:block; page-break-after:always; break-after:page; }
+      .slide:last-child { page-break-after:auto; break-after:auto; }
+      #controls,.screen-note { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <main id="stage" aria-label="Claude Code Agent Teams sunumu">
+    <section class="slide dark active" aria-label="Kapak">
+      <p class="eyebrow">BTK Akademi LMS • uygulama atölyesi</p>
+      <h1>Claude Code<br>Agent Teams</h1>
+      <p class="lead" style="margin-top:36px;max-width:820px">Birden çok bağımsız Claude Code oturumuyla işi bölme, koordine etme ve sonucu doğrulama.</p>
+      <div class="layout-bottom"><span class="ribbon">Amaç: kendi projenizde bir agent team kurup yönetebilmek</span></div>
+      <div class="footer"><span>13 Ekim 2026 · Resmî dokümana dayalı</span><span>01 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Öğrenme hedefleri">
+      <p class="eyebrow">Yol haritası</p><h2>Bu sunumdan sonra ne yapabileceksiniz?</h2>
+      <div class="cols three" style="margin-top:35px">
+        <div class="card"><div class="big-number">01</div><h3>Karar ver</h3><p>Bir görev için agent team’in uygun olup olmadığını ayırt et.</p></div>
+        <div class="card"><div class="big-number">02</div><h3>Kur ve böl</h3><p>Özelliği aç, oturum başlat, görevleri ve dosya sahiplerini belirle.</p></div>
+        <div class="card"><div class="big-number">03</div><h3>Yönet ve doğrula</h3><p>Ekip arkadaşlarını yönlendir, çıktıları birleştir, kabul ölçütlerini kontrol et.</p></div>
+      </div>
+      <div class="layout-bottom callout">İzleyeceğimiz örnek: LMS’de <strong>kurs kataloğu arama ve filtreleme</strong> işi (FR-26).</div>
+      <div class="footer"><span>Kaynak: Claude Code Agent Teams dokümanı + LMS gereksinimleri</span><span>02 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Agent team yapısı">
+      <p class="eyebrow">Temel model</p><h2>Bir ekip nasıl çalışır?</h2>
+      <div class="flow">
+        <div class="card" style="flex:1.1"><span class="tag">Takım lideri</span><h3>Ana Claude Code oturumu</h3><p>Görevleri tanımlar, işi dağıtır, gelişmeleri izler ve sonuçları birleştirir.</p></div>
+        <div class="arrow">↔</div>
+        <div class="card"><span class="tag">Ortak görev listesi</span><h3>Durum + bağımlılık</h3><p>Bekliyor → sürüyor → tamamlandı. Uygun görevler sahiplenilebilir.</p></div>
+        <div class="arrow">↔</div>
+        <div class="card"><span class="tag">Ekip arkadaşları</span><h3>Bağımsız oturumlar</h3><p>Her birinin kendi bağlamı vardır; birbirlerine mesaj gönderebilirler.</p></div>
+      </div>
+      <div class="cols" style="margin-top:27px"><div class="callout"><strong>Subagent:</strong> dar işi yapıp sonucu çağırana döndürür.</div><div class="callout"><strong>Agent team:</strong> ekip arkadaşları ortak görevler ve doğrudan mesajlaşma ile koordine olur.</div></div>
+      <div class="footer"><span>Kaynak: resmî doküman, “Compare with subagents”, “Architecture”</span><span>03 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Ne zaman kullanmalı">
+      <p class="eyebrow">Karar noktası</p><h2>Agent team ne zaman değer üretir?</h2>
+      <div class="cols">
+        <div class="card"><h3>Uygun işler</h3><ul><li>Bağımsız modüller veya farklı katmanlar</li><li>Paralel kod incelemesi ve araştırma</li><li>Birden fazla hata hipotezinin sınanması</li><li>Ekip arkadaşlarının birbirine bulgu aktarması gereken işler</li></ul></div>
+        <div class="card"><h3>Tek oturum daha uygun</h3><ul><li>Adımlar kesin sırayla ilerliyorsa</li><li>Herkes aynı dosyayı düzenleyecekse</li><li>Görev çok küçük ve koordinasyon maliyeti yüksekse</li><li>Yalnızca kısa, odaklı bir alt sonuç gerekiyorsa</li></ul></div>
+      </div>
+      <div class="layout-bottom callout">Başlangıç için resmî öneri: çoğu akışta <strong>3–5 ekip arkadaşı</strong>; maliyet ve koordinasyon gereksinimi ekip sayısıyla artar.</div>
+      <div class="footer"><span>Kaynak: “When to use agent teams”, “Best practices”</span><span>04 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Kurulum">
+      <p class="eyebrow">Adım 1 · etkinleştir</p><h2>Deneysel özelliği aç ve oturum başlat</h2>
+      <div class="cols" style="grid-template-columns:1.05fr .95fr">
+        <div><p class="small"><strong>Seçenek A — kullanıcı ayarı:</strong> <code>~/.claude/settings.json</code> dosyasındaki <code>env</code> alanı:</p><pre class="code">{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}</pre><p class="small" style="margin-top:16px"><strong>Seçenek B — PowerShell oturumu:</strong></p><pre class="code compact">$env:CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = '1'
+cd D:\btk-akademi\lms
+claude</pre></div>
+        <div class="card"><h3>Kontrol listesi</h3><ol><li>Claude Code’un kurulu ve oturum açılmış olduğundan emin ol.</li><li><strong>Etkileşimli</strong> terminal oturumu aç.</li><li>Takımı doğal dilde açıkça iste.</li><li>Windows için varsayılan <strong>in-process</strong> görünümü kullan.</li></ol><p class="small muted">Not: <code>claude -p</code> gibi etkileşimsiz kullanımda ekip arkadaşı başlatılmaz.</p></div>
+      </div>
+      <div class="footer"><span>Kaynak: “Enable agent teams”, “Choose a display mode”</span><span>05 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="LMS projesi">
+      <p class="eyebrow">Adım 2 · bağlamı oku</p><h2>Örnek: bu LMS deposunda ne var?</h2>
+      <div class="cols">
+        <div class="card"><h3>Mevcut yapı</h3><ul><li><code>web/</code>: React + TypeScript + Vite</li><li><code>web/src/features/courses/CoursesPage.tsx</code>: kayıtlı kurslar ve sabit örnek veri</li><li><code>CLAUDE.md</code>: bileşen, CSS token ve geliştirme kuralları</li><li><code>ui/DESIGN.md</code>: görsel tasarım referansı</li></ul></div>
+        <div class="card"><h3>Hedef iş</h3><ul><li><code>docs/gereksinimler.md</code> içindeki <strong>FR-26</strong>: katalogda kategori, seviye, etiket ve anahtar kelime filtresi</li><li>Gereksinim belgesinde sunucu hedefi: Node.js + SQLite</li><li>Bu depoda sunucu kodu henüz yok; API katmanı yeni bir çalışma alanı</li></ul></div>
+      </div>
+      <div class="layout-bottom callout">Katalog örneği <strong>öğretici senaryodur</strong>; bu sunum kodu uygulamaz. Var olan “Kayıtlı Kurslarım” sayfasını yanlışlıkla katalog sanmayın.</div>
+      <div class="footer"><span>Kaynak: depodaki CLAUDE.md ve docs/gereksinimler.md</span><span>06 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Hedef ve kabul ölçütleri">
+      <p class="eyebrow">Adım 3 · işi tanımla</p><h2>Bitmiş sayılma koşullarını önce yaz</h2>
+      <div class="cols">
+        <div class="card"><h3>Kullanıcı davranışı</h3><ul><li>Kurslar anahtar kelime, kategori, seviye ve etiketle filtrelenir.</li><li>Birden çok filtre birlikte çalışır.</li><li>Boş sonuç, yüklenme ve hata durumları anlaşılır.</li><li>Klavye ile kullanım ve görünür odak sağlanır.</li></ul></div>
+        <div class="card"><h3>Teknik doğrulama</h3><ul><li>API sözleşmesi giriş/çıkışı açıkça tanımlanır.</li><li>Sunucu filtrelemeyi doğrular; istemci parametreleri güvenle üretir.</li><li>Başarılı/boş/hatalı yanıtlar test edilir.</li><li><code>web/</code> için <code>npm run build</code> başarılıdır.</li></ul></div>
+      </div>
+      <div class="layout-bottom"><span class="ribbon">Kabul ölçütleri görev dağıtımı için ortak sözleşmedir.</span></div>
+      <div class="footer"><span>LMS gereksinimi: FR-26 · Tasarım: ui/DESIGN.md</span><span>07 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Dosya sahipliği">
+      <p class="eyebrow">Adım 4 · çakışmayı önle</p><h2>Her ekip arkadaşına ayrı alan ver</h2>
+      <table><thead><tr><th>Rol</th><th>Sahip olduğu alan</th><th>Çıktı</th></tr></thead><tbody>
+        <tr><td><strong>frontend</strong></td><td><code>web/src/features/catalog/**</code></td><td>Katalog arayüzü, durumlar, erişilebilirlik</td></tr>
+        <tr><td><strong>backend</strong></td><td><code>server/src/catalog/**</code> (yeni alan)</td><td>API tasarımı/uygulaması ve filtreleme</td></tr>
+        <tr><td><strong>reviewer</strong></td><td>Salt okunur inceleme; rapor: <code>docs/catalog-review.md</code></td><td>FR-26 kapsamı, sözleşme ve test boşlukları</td></tr>
+        <tr><td><strong>lider</strong></td><td>Paylaşılan yönlendirme dosyaları: <code>web/src/routes/index.tsx</code>, <code>web/src/layout/Sidebar/navItems.ts</code></td><td>API sözleşmesi kararı, entegrasyon, son kontrol</td></tr>
+      </tbody></table>
+      <p class="small" style="margin-top:22px">Ekip arkadaşları aynı çalışma dizinindeki dosyaları görür. Aynı dosyayı iki kişiye eşzamanlı düzenletmeyin.</p>
+      <div class="footer"><span>Kaynak: “Avoid file conflicts”, “Context and communication”</span><span>08 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Görev akışı">
+      <p class="eyebrow">Adım 5 · bağımlılıkları kur</p><h2>Önce sözleşme, sonra paralel üretim</h2>
+      <div class="flow">
+        <div class="card"><span class="tag">T0 · lider</span><h3>API sözleşmesi</h3><p>Filtre adları, yanıt alanları, hata biçimi.</p></div>
+        <div class="arrow">→</div><div class="card"><span class="tag">T1 + T2</span><h3>Paralel iş</h3><p>Frontend ve backend ayrı dosyalarda ilerler.</p></div>
+        <div class="arrow">→</div><div class="card"><span class="tag">T3 · reviewer</span><h3>İnceleme</h3><p>Gereksinim, sözleşme ve durumları denetler.</p></div>
+        <div class="arrow">→</div><div class="card"><span class="tag">T4 · lider</span><h3>Entegrasyon</h3><p>Route ekler, build/test çalıştırır, farkları kapatır.</p></div>
+      </div>
+      <div class="cols" style="margin-top:32px"><div class="callout"><strong>Görev durumu:</strong> pending → in progress → completed.</div><div class="callout"><strong>Bağımlılık:</strong> T1 ve T2, T0 netleşmeden başlayıp farklı sözleşmeler üretmemeli.</div></div>
+      <div class="layout-bottom"><p class="small muted">Görev araçları bulunmayan oturumlarda ekip mesajlarla koordine olur.</p></div>
+      <div class="footer"><span>Kaynak: “Assign and claim tasks”, “Best practices”</span><span>09 / 17</span></div>
+    </section>
+
+    <section class="slide dark" aria-label="Takım kurma promptu">
+      <p class="eyebrow">Kopyala ve uyarlayabilirsin · prompt 1</p><h2>Takımı başlat</h2>
+      <pre class="prompt smallprompt">Bu depodaki LMS için FR-26 kurs kataloğu arama ve filtreleme özelliğini planla. Önce CLAUDE.md, docs/gereksinimler.md ve ui/DESIGN.md dosyalarını oku. Üç kişilik bir <b>agent team</b> kur: frontend, backend, reviewer.
+
+İlk adımda GET /api/courses için sorgu parametreleri, yanıt alanları ve hata biçimini kısa bir sözleşme olarak öner; benim görebileceğim şekilde özetle. Ardından görev listesi ve bağımlılıkları kur. Frontend yalnız web/src/features/catalog/**, backend yalnız server/src/catalog/** dosyalarını düzenlesin. Reviewer kodu değiştirmeden bulguları docs/catalog-review.md dosyasına yazsın. Paylaşılan route/nav dosyalarını sen, lider olarak, entegrasyonda ele al.
+
+FR-26; boş/yükleniyor/hata durumları; erişilebilirlik; test ve npm run build kabul ölçütleri olsun. Ekip arkadaşlarına eksiksiz görev bağlamı ver, bitmelerini bekle, sonra sonuçları doğrula ve kalan riskleri raporla.</pre>
+      <p class="small" style="margin-top:15px;color:#c4deeb">Not: Claude bazen subagent açabilir; gerçekten agent team istediğini açıkça yinele.</p>
+      <div class="footer"><span>Kaynak: “Start your first agent team”, “Give teammates enough context”</span><span>10 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Frontend promptu">
+      <p class="eyebrow">Kopyala ve uyarlayabilirsin · prompt 2</p><h2>Frontend arkadaşına net görev ver</h2>
+      <pre class="prompt smallprompt">frontend ekip arkadaşına şu görevi ver: FR-26 için kurs kataloğu arayüzünü web/src/features/catalog/** altında oluştur. Var olan CoursesPage kayıtlı kursları gösteriyor; onu kataloğa dönüştürme. CLAUDE.md ve ui/DESIGN.md kurallarına, ortak bileşenlere ve CSS token'larına uy.
+
+Liderin kararlaştırdığı GET /api/courses sözleşmesini kullan. Anahtar kelime, kategori, seviye ve etiket filtreleri; birlikte filtreleme; yüklenme, boş sonuç ve hata durumları; klavye erişimi ve görünür odak ekle. web/src/routes/index.tsx ve web/src/layout/Sidebar/navItems.ts dosyalarını düzenleme. Tamamlayınca değiştirdiğin dosyaları, doğrulamaları ve entegrasyon için gerekenleri lidere bildir.</pre>
+      <div class="layout-bottom callout">İyi görev tanımı = <strong>bağlam + kapsam + dosya sınırı + kabul ölçütü + rapor biçimi</strong>.</div>
+      <div class="footer"><span>Kaynak: “Give teammates enough context”, “Avoid file conflicts”</span><span>11 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Backend promptu">
+      <p class="eyebrow">Kopyala ve uyarlayabilirsin · prompt 3</p><h2>Backend arkadaşına ayrı alan ver</h2>
+      <pre class="prompt smallprompt">backend ekip arkadaşına şu görevi ver: docs/gereksinimler.md içindeki FR-26 ve teknoloji varsayımlarını oku. Henüz sunucu kodu olmayan bu depoda, liderin kararlaştırdığı GET /api/courses sözleşmesine uyan katalog modülünü server/src/catalog/** altında geliştir. Node.js ve SQLite hedefini izle; destekleyici paket/altyapı gerekiyorsa önce lidere bildir.
+
+Anahtar kelime, kategori, seviye, etiket parametrelerini doğrula; birlikte filtrele; boş sonuç ve hata yanıtlarını sözleşmeye uygun üret. Kapsam dışındaki web/** dosyalarına dokunma. Değişiklikleri, çalıştırma adımlarını, test sonuçlarını ve açık bağımlılıkları lidere bildir.</pre>
+      <p class="small muted" style="margin-top:18px">Sunucu iskeleti yoksa lider önce ortak altyapı kararı vermeli. Bu, örnek akışın bilinçli entegrasyon kapısıdır.</p>
+      <div class="footer"><span>Kaynak: LMS teknoloji yığını + Agent Teams “Size tasks appropriately”</span><span>12 / 17</span></div>
+    </section>
+
+    <section class="slide dark" aria-label="Reviewer promptu">
+      <p class="eyebrow">Kopyala ve uyarlayabilirsin · prompt 4</p><h2>Bağımsız inceleme yaptır</h2>
+      <pre class="prompt">reviewer ekip arkadaşına şu görevi ver: FR-26 ve kabul ölçütlerini temel alarak frontend ile backend çıktısını incele. Kod dosyalarını değiştirme. Özellikle filtrelerin birlikte çalışmasını, istemci–API sözleşmesini, boş/yükleniyor/hata durumlarını, klavye erişimini ve doğrulama kanıtlarını kontrol et.
+
+Bulguları önem derecesi, ilgili dosya/satır, beklenen davranış ve önerilen düzeltmeyle docs/catalog-review.md içine yaz. Yanlış alarm olabilecek noktaları ayrıca belirt. Frontend ve backend arkadaşlarına sözleşme uyuşmazlığını doğrudan mesajla bildir; özeti lidere gönder.</pre>
+      <div class="layout-bottom"><span class="ribbon">Bağımsız inceleme, paralel çalışmanın kalite kapısıdır.</span></div>
+      <div class="footer"><span>Kaynak: “Run a parallel code review”, “Messages between agents”</span><span>13 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Ekip yönetimi">
+      <p class="eyebrow">Adım 6 · izle ve yönlendir</p><h2>Takımı çalışırken yönet</h2>
+      <div class="cols">
+        <div class="card"><h3>Terminalde</h3><ul><li>Varsayılan <strong>in-process</strong> panelinde ↑/↓ ile ekip arkadaşını seç.</li><li><strong>Enter</strong> ile konuşmasını aç ve doğrudan yaz.</li><li><strong>Ctrl+T</strong> ile görev listesini göster/gizle.</li><li>İş bitince çıktı ve görev durumunu kontrol et.</li></ul></div>
+        <div class="card"><h3>Kısa yönlendirme prompt’ları</h3><pre class="code compact">frontend'e sor: FR-26 kabul ölçütlerinden hangileri tamamlandı, hangileri bekliyor?
+
+backend'e bildir: kategori ve seviye parametreleri API sözleşmesindeki adlarıyla birebir eşleşsin.
+
+Ekip arkadaşlarının görevleri bitmeden entegrasyona geçme.</pre></div>
+      </div>
+      <div class="layout-bottom callout">Ekip arkadaşları liderin konuşma geçmişini almaz; bağlamı mesajda ver. İzin istekleri lider oturumunda görünür.</div>
+      <div class="footer"><span>Kaynak: “Talk to teammates directly”, “Context and communication”</span><span>14 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Doğrulama">
+      <p class="eyebrow">Adım 7 · doğrula</p><h2>“Tamamlandı” demeden önce kanıt iste</h2>
+      <div class="cols three">
+        <div class="card"><div class="big-number">1</div><h3>Dosyaları karşılaştır</h3><p>İki ekip arkadaşı aynı dosyayı düzenledi mi? API alanları ve filtre adları eşleşiyor mu?</p></div>
+        <div class="card"><div class="big-number">2</div><h3>Çalıştır</h3><p><code>web/</code> içinde <code>npm run build</code>; sunucu için gerçek test/başlatma komutları.</p></div>
+        <div class="card"><div class="big-number">3</div><h3>Kabul ölçütünü dene</h3><p>Birlikte filtreleme, boş sonuç, hata, klavye erişimi ve responsive görünüm.</p></div>
+      </div>
+      <div class="layout-bottom callout">Lider prompt’u: <strong>“Tüm görevleri ve reviewer bulgularını özetle; kritik açıkları gider, sonra kabul ölçütleri için kanıt tablosu ver.”</strong></div>
+      <div class="footer"><span>Kaynak: “Wait for teammates to finish”, “Monitor and steer”</span><span>15 / 17</span></div>
+    </section>
+
+    <section class="slide" aria-label="Sorun giderme ve sınırlamalar">
+      <p class="eyebrow">Sık karşılaşılan durumlar</p><h2>Takım beklediğiniz gibi davranmazsa</h2>
+      <table><thead><tr><th>Belirti</th><th>İlk kontrol / eylem</th></tr></thead><tbody>
+        <tr><td>Takım görünmüyor</td><td>Deneysel ayarı, etkileşimli oturumu ve açık “agent team” isteğini kontrol et.</td></tr>
+        <tr><td>Görev takılı kaldı</td><td>Çıktıyı incele; iş bittiyse görev durumunu düzeltmesini lidere söyle.</td></tr>
+        <tr><td>Ekip üyesi erken durdu</td><td>Transkripti oku; somut devam talimatı ver veya yerine yeni üye iste.</td></tr>
+        <tr><td>Oturum yeniden açıldı</td><td><code>/resume</code>, in-process ekip üyelerini geri getirmez; yenilerini oluştur.</td></tr>
+      </tbody></table>
+      <p class="small" style="margin-top:24px">Diğer sınırlar: oturum başına tek takım; iç içe takım yok; kapatma gecikebilir; çok üye daha çok token tüketir.</p>
+      <div class="footer"><span>Kaynak: “Troubleshooting”, “Limitations”, “Token usage”</span><span>16 / 17</span></div>
+    </section>
+
+    <section class="slide dark" aria-label="Kendi projenize uyarlama">
+      <p class="eyebrow">Uygulama ödevi</p><h2>Şimdi kendi projenizde deneyin</h2>
+      <div class="cols" style="grid-template-columns:1.1fr .9fr">
+        <div class="card"><h3>Doldurulabilir şablon</h3><pre class="code compact">[PROJE] içinde [GEREKSİNİM] işini ele al.
+Önce [BAĞLAM DOSYALARI] dosyalarını oku.
+[ROL 1], [ROL 2], [REVIEWER] adlı 3 kişilik
+bir agent team kur.
+
+Önce [ORTAK SÖZLEŞME] üzerinde uzlaş.
+Her role ayrı dosya alanı ver: [YOLLAR].
+Görev bağımlılıklarını ve kabul ölçütlerini yaz.
+Ekip bitince [TEST KOMUTLARI] çalıştır,
+bulguları gider ve kanıtları raporla.</pre></div>
+        <div><h3>Son kontrol</h3><ol><li>İş parçaları birbirinden bağımsız mı?</li><li>Dosya sahipliği açık mı?</li><li>Her ekip arkadaşı yeterli bağlam alıyor mu?</li><li>Bağımlılıklar tanımlı mı?</li><li>Sonuç test ve kabul ölçütüyle doğrulandı mı?</li></ol><p class="small" style="margin-top:24px">Kopyalanabilir tam prompt’lar: <strong>ornek-promptlar.md</strong></p></div>
+      </div>
+      <div class="footer"><span><a href="https://code.claude.com/docs/en/agent-teams">Resmî kaynak: code.claude.com/docs/en/agent-teams</a></span><span>17 / 17</span></div>
+    </section>
+  </main>
+  <div class="screen-note">← / → gezin · F tam ekran · P yazdır / PDF</div>
+  <nav id="controls" aria-label="Sunum denetimleri"><button id="prev" title="Önceki slayt" aria-label="Önceki slayt">←</button><span id="counter">1 / 17</span><button id="next" title="Sonraki slayt" aria-label="Sonraki slayt">→</button></nav>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    let current = 0;
+    function fit() { const stage = document.getElementById('stage'); const scale = Math.min(innerWidth/1280, innerHeight/720); stage.style.transform = `scale(${scale})`; stage.style.left = `${(innerWidth-1280*scale)/2}px`; stage.style.top = `${(innerHeight-720*scale)/2}px`; }
+    function show(n) { current = Math.max(0, Math.min(slides.length-1, n)); slides.forEach((slide,i)=>slide.classList.toggle('active',i===current)); document.getElementById('counter').textContent = `${current+1} / ${slides.length}`; location.hash = `slide-${current+1}`; }
+    document.getElementById('prev').addEventListener('click',()=>show(current-1));
+    document.getElementById('next').addEventListener('click',()=>show(current+1));
+    addEventListener('keydown',e=>{ if (['ArrowRight','PageDown',' '].includes(e.key)) { e.preventDefault(); show(current+1); } else if (['ArrowLeft','PageUp'].includes(e.key)) { e.preventDefault(); show(current-1); } else if (e.key.toLowerCase()==='f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } else if (e.key.toLowerCase()==='p') { print(); } });
+    addEventListener('resize',fit); fit();
+    const initial = Number(location.hash.match(/slide-(\d+)/)?.[1]); if (initial) show(initial-1);
+  </script>
+</body>
+</html>
