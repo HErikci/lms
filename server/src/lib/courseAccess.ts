@@ -18,6 +18,16 @@ export async function canManageCourse(user: AccessUser, courseId: string): Promi
   return Boolean(assignment);
 }
 
+/** Eğitmenin (yalnızca aktif rol INSTRUCTOR iken) atandığı kurs kimlikleri; diğer roller için boş küme. */
+export async function assignedCourseIds(user: AccessUser): Promise<Set<string>> {
+  if (!user || user.role !== 'INSTRUCTOR') return new Set();
+  const rows = await prisma.courseInstructor.findMany({
+    where: { userId: user.userId },
+    select: { courseId: true },
+  });
+  return new Set(rows.map((row) => row.courseId));
+}
+
 export async function assertCanManageCourse(
   user: AccessUser,
   courseId: string,

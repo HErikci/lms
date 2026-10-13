@@ -1,107 +1,124 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Badge, Card, Icon, Text } from '../../components';
 import { PageContainer } from '../../layout/PageContainer';
+import { useCurrentUser } from '../../data/useCurrentUser';
+import type { AnnouncementCategory } from '../../types';
+import { CATEGORIES, CATEGORY_KEYS, formatRelative, sourceLabel } from './announcementMeta';
+import { useAnnouncements } from './useAnnouncements';
 import styles from './AnnouncementsPage.module.css';
 
-interface Announcement {
-  id: string;
-  title: string;
-  category: string;
-  date: string;
-  source: string;
-  icon: string;
-  tone: 'secondary' | 'cyan' | 'warning' | 'muted';
-}
-
-const announcements: Announcement[] = [
-  {
-    id: 'ann-1',
-    title: 'Güz Dönemi Ara Sınav Takvimi Resmi Olarak Yayınlandı',
-    category: 'Akademik',
-    date: '3 saat önce',
-    source: 'Öğrenci İşleri',
-    icon: 'calendar_today',
-    tone: 'secondary',
-  },
-  {
-    id: 'ann-2',
-    title: 'Canlı Soru-Cevap Oturumu: Yapay Zekâ Projesi (Perşembe 19:00)',
-    category: 'Ders',
-    date: 'Dün',
-    source: 'Doç. Dr. Fatih Kaya',
-    icon: 'video_call',
-    tone: 'cyan',
-  },
-  {
-    id: 'ann-3',
-    title: 'Kampüs Kütüphanesi Dijital Veritabanı Bakımı Tamamlandı',
-    category: 'Bilgi İşlem',
-    date: '2 gün önce',
-    source: 'Bilgi İşlem Daire Bşk.',
-    icon: 'library_books',
-    tone: 'muted',
-  },
-  {
-    id: 'ann-4',
-    title: 'Veri Yapıları Proje Ödevi 2 Teslim Tarihi Uzatıldı (27 Ekim → 30 Ekim)',
-    category: 'Ders',
-    date: '5 gün önce',
-    source: 'Prof. Ahmet Yılmaz',
-    icon: 'assignment',
-    tone: 'warning',
-  },
-  {
-    id: 'ann-5',
-    title: 'Bahar 2025 Ders Seçim Dönemi: 15 Kasım - 22 Kasım',
-    category: 'Akademik',
-    date: '1 hafta önce',
-    source: 'Öğrenci İşleri',
-    icon: 'school',
-    tone: 'secondary',
-  },
-];
-
 export function AnnouncementsPage() {
+  const { user } = useCurrentUser();
+  const [category, setCategory] = useState<AnnouncementCategory | undefined>(undefined);
+  const { announcements, loading, error } = useAnnouncements({ category });
+  const canManage = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
+
+  const latest = announcements.reduce<string | null>(
+    (max, a) => (a.publishAt && (!max || a.publishAt > max) ? a.publishAt : max),
+    null,
+  );
+
   return (
     <PageContainer>
       <div className={styles.header}>
-        <Text role="headline-lg" as="h1">
-          Duyurular
-        </Text>
-        <Text role="body-md" tone="muted" as="p">
-          {announcements.length} duyuru · En son 3 saat önce
-        </Text>
+        <div>
+          <Text role="headline-lg" as="h1">
+            Duyurular
+          </Text>
+          <Text role="body-md" tone="muted" as="p">
+            {loading
+              ? 'Yükleniyor…'
+              : `${announcements.length} duyuru${latest ? ` · En son ${formatRelative(latest)}` : ''}`}
+          </Text>
+        </div>
+        {canManage && (
+          <Link to="/yonetim/duyurular" className={styles.manageLink}>
+            <Icon name="edit_note" size="sm" />
+            Duyuruları yönet
+          </Link>
+        )}
       </div>
 
-      <div className={styles.list}>
-        {announcements.map((ann) => (
-          <Card key={ann.id} padding="lg" elevation="1">
-            <a href="#" className={styles.announcementItem}>
-              <div className={styles.iconSection}>
-                <span className={styles[`icon-${ann.tone}`]}>
-                  <Icon name={ann.icon} size="md" filled />
-                </span>
-              </div>
-
-              <div className={styles.content}>
-                <div className={styles.titleBar}>
-                  <Text role="title-md" as="h2" tone="main">
-                    {ann.title}
-                  </Text>
-                  <Badge tone={ann.tone} variant="soft">
-                    {ann.category}
-                  </Badge>
-                </div>
-
-                <Text role="body-sm" tone="muted">
-                  {ann.source} · {ann.date}
-                </Text>
-              </div>
-
-              <Icon name="arrow_forward" size="sm" />
-            </a>
-          </Card>
+      <div className={styles.filters} role="group" aria-label="Kategoriye göre süz">
+        <button
+          type="button"
+          className={styles.chip}
+          aria-pressed={category === undefined}
+          onClick={() => setCategory(undefined)}
+        >
+          Tümü
+        </button>
+        {CATEGORY_KEYS.map((key) => (
+          <button
+            key={key}
+            type="button"
+            className={styles.chip}
+            aria-pressed={category === key}
+            onClick={() => setCategory(key)}
+          >
+            {CATEGORIES[key].label}
+          </button>
         ))}
       </div>
+
+      {error && (
+        <Text role="body-md" tone="error" as="p" className={styles.message}>
+          {error}
+        </Text>
+      )}
+      {!loading && !error && announcements.length === 0 && (
+        <Card padding="lg" elevation="1">
+          <Text role="body-md" tone="muted" as="p">
+            {category ? 'Bu kategoride yayında duyuru yok.' : 'Henüz yayınlanmış bir duyuru yok.'}
+          </Text>
+        </Card>
+      )}
+
+      <ul className={styles.list}>
+        {announcements.map((ann) => {
+          const meta = CATEGORIES[ann.category];
+          return (
+            <li key={ann.id}>
+              <Card padding="lg" elevation="1">
+                <Link to={`/duyurular/${ann.id}`} className={styles.announcementItem}>
+                  <span className={[styles.iconSection, styles[`icon-${meta.iconTone}`]].join(' ')}>
+                    <Icon name={meta.icon} size="md" filled />
+                  </span>
+
+                  <span className={styles.content}>
+                    <span className={styles.titleBar}>
+                      <Text role="title-md" as="h2" tone="main">
+                        {ann.pinned && (
+                          <span className={styles.pin}>
+                            <Icon name="push_pin" size="sm" filled />
+                            <span className={styles.srOnly}>Sabitlenmiş: </span>
+                          </span>
+                        )}
+                        {ann.title}
+                      </Text>
+                      <Badge tone={meta.badgeTone} variant="soft">
+                        {meta.label}
+                      </Badge>
+                    </span>
+
+                    <Text role="body-md" tone="muted" as="p" className={styles.excerpt}>
+                      {ann.body}
+                    </Text>
+
+                    <Text role="body-sm" tone="muted">
+                      {sourceLabel(ann)}
+                      {ann.publishAt && ` · ${formatRelative(ann.publishAt)}`}
+                    </Text>
+                  </span>
+
+                  <Icon name="arrow_forward" size="sm" />
+                </Link>
+              </Card>
+            </li>
+          );
+        })}
+      </ul>
     </PageContainer>
   );
 }

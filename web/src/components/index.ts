@@ -18,3 +18,7 @@ export { StatTile } from './StatTile';
 export type { StatTone } from './StatTile';
 export { Text } from './Text';
 export type { TextRole, TextTone } from './Text';
+export { Dialog } from './Dialog';
+export type { DialogSize } from './Dialog';
+export { formStyles } from './Form';
+export { ConfirmDialog } from './ConfirmDialog';

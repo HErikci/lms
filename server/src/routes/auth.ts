@@ -5,6 +5,7 @@ import { signToken, type TokenPayload } from '../lib/jwt.js';
 import { requireAuth } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
 import { toPublicUser } from '../lib/publicUser.js';
+import { parseRoles } from '../lib/users.js';
 
 interface RegisterBody {
   email: string;
@@ -19,14 +20,6 @@ interface LoginBody {
 
 interface SwitchRoleBody {
   role: TokenPayload['role'];
-}
-
-function parseRoles(user: { role: string; roles?: string | null }): TokenPayload['role'][] {
-  const raw = user.roles && user.roles.length > 0 ? user.roles : user.role;
-  return raw
-    .split(',')
-    .map((r) => r.trim())
-    .filter(Boolean) as TokenPayload['role'][];
 }
 
 export function registerAuthRoutes(app: FastifyInstance) {
@@ -64,6 +57,10 @@ export function registerAuthRoutes(app: FastifyInstance) {
     if (!user) throw genericError();
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) throw genericError();
+    // Yalnızca doğru şifreden sonra söylenir; aksi halde hesabın varlığı sızar.
+    if (user.disabledAt) {
+      throw new AppError('ACCOUNT_DISABLED', 'Hesabınız devre dışı bırakılmış. Yöneticinizle iletişime geçin.', 403);
+    }
     const roles = parseRoles(user);
     const token = signToken({ userId: user.id, role: user.role as TokenPayload['role'], roles });
     return { user: toPublicUser(user), token };

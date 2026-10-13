@@ -1,0 +1,150 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.header h1 {
+  margin-bottom: var(--space-sm);
+}
+
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  flex-shrink: 0;
+}
+
+.viewLink {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-secondary);
+  font-weight: 600;
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-default);
+  text-decoration: none;
+}
+
+.viewLink:hover {
+  background-color: var(--color-secondary-soft);
+}
+
+.viewLink:focus-visible,
+.tab:focus-visible,
+.title a:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.tab {
+  font: inherit;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.tab:hover {
+  background-color: var(--color-surface-container);
+}
+
+.tab[aria-pressed='true'] {
+  color: var(--color-secondary);
+  background-color: var(--color-secondary-soft);
+  border-color: var(--color-secondary);
+}
+
+.count {
+  min-width: 1.5rem;
+  padding: 0 var(--space-xs);
+  text-align: center;
+  background-color: var(--color-surface-container-high);
+  border-radius: var(--radius-full);
+}
+
+.message {
+  margin: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.title {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.title a:hover {
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.activeIcon {
+  color: var(--color-secondary);
+}
+
+@media (max-width: 768px) {
+  .header,
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Boş canlı bölge akıştan çıkar (sayfa aralığı oluşturmaz) ama erişilebilirlik ağacında kalır. */
+.live:empty {
+  position: absolute;
+}

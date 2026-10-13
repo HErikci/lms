@@ -26,6 +26,8 @@ model User {
   locale       String       @default("tr")
   role         String       @default("STUDENT")
   roles        String       @default("STUDENT")
+  /// Doluysa hesap devre dışıdır: giriş yapamaz, mevcut token'ları reddedilir.
+  disabledAt   DateTime?
   createdAt    DateTime     @default(now())
   instructorAssignments CourseInstructor[] @relation("InstructorAssignments")
   enrollments  Enrollment[]
@@ -35,6 +37,11 @@ model User {
   quizGradesGiven    QuizGrade[] @relation("QuizGradesGiven")
   lessonFeedback LessonFeedback[]
   calendarEventsCreated CalendarEvent[] @relation("CalendarEventsCreated")
+  announcementsAuthored Announcement[] @relation("AnnouncementsAuthored")
+  questionBanksCreated QuestionBank[] @relation("QuestionBanksCreated")
+  questionsCreated     Question[]     @relation("QuestionsCreated")
+  examsCreated         Exam[]         @relation("ExamsCreated")
+  examCandidacies      ExamCandidate[]
 }
 
 model Course {
@@ -51,6 +58,9 @@ model Course {
   instructors CourseInstructor[]
   studyActivity StudyActivity[]
   calendarEvents CalendarEvent[]
+  announcements Announcement[]
+  questionBanks QuestionBank[]
+  exams         Exam[]
 }
 
 model Module {
@@ -205,4 +215,142 @@ model CalendarEvent {
 
   @@index([start])
   @@index([courseId, start])
+}
+
+/// Duyuru. courseId boşsa genel (herkese görünür) duyurudur; doluysa yalnızca kursa
+/// kayıtlılar ve kursu yönetenler görür. Okuyucuya görünmesi için status PUBLISHED,
+/// publishAt <= şimdi ve (varsa) expiresAt > şimdi olmalıdır.
+model Announcement {
+  id        String    @id @default(cuid())
+  title     String
+  /// Düz metin; paragraflar boş satırla ayrılır.
+  body      String
+  /// Allowed literals: "ACADEMIC" | "COURSE" | "IT" | "EVENT" | "GENERAL"
+  category  String    @default("GENERAL")
+  /// Allowed literals: "DRAFT" | "PUBLISHED"
+  status    String    @default("DRAFT")
+  /// Yayın anı (UTC). PUBLISHED iken her zaman dolu; gelecekteyse duyuru zamanlanmıştır.
+  publishAt DateTime?
+  /// Bu andan itibaren okuyuculara gösterilmez (UTC). Boşsa süresiz.
+  expiresAt DateTime?
+  pinned    Boolean   @default(false)
+  courseId  String?
+  course    Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    User?     @relation("AnnouncementsAuthored", fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status, publishAt])
+  @@index([courseId])
+}
+
+/// Soru bankası. courseId boşsa genel bankadır (yalnızca ADMIN düzenler, eğitmenler okuyup
+/// sınavlarında kullanabilir); doluysa kursun bankasıdır (ADMIN veya kursa atanmış eğitmen).
+model QuestionBank {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  courseId    String?
+  course      Course?    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdById String?
+  createdBy   User?      @relation("QuestionBanksCreated", fields: [createdById], references: [id], onDelete: SetNull)
+  questions   Question[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([courseId])
+}
+
+/// Bankadaki soru. Tipe özgü içerik (şıklar, doğru cevaplar, eşleştirme çiftleri, rubrik) `content`
+/// alanında JSON olarak tutulur; biçimi ve doğrulaması src/lib/questions.ts içindedir.
+model Question {
+  id          String         @id @default(cuid())
+  bankId      String
+  bank        QuestionBank   @relation(fields: [bankId], references: [id], onDelete: Cascade)
+  /// Allowed literals: "SINGLE_CHOICE" | "MULTIPLE_CHOICE" | "TRUE_FALSE" | "FILL_BLANK" | "MATCHING" | "SHORT_ANSWER" | "ESSAY"
+  type        String
+  /// Soru metni. FILL_BLANK'te her boşluk "___" (en az üç alt çizgi) ile işaretlenir.
+  stem        String
+  content     String         @default("{}")
+  /// Sonuç ekranında gösterilecek doğru cevap açıklaması (FR-45).
+  explanation String?
+  topic       String?
+  /// Allowed literals: "EASY" | "MEDIUM" | "HARD"
+  difficulty  String         @default("MEDIUM")
+  /// Sınava eklenirken kullanılan varsayılan puan.
+  points      Int            @default(1)
+  createdById String?
+  createdBy   User?          @relation("QuestionsCreated", fields: [createdById], references: [id], onDelete: SetNull)
+  examLinks   ExamQuestion[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([bankId])
+}
+
+/// Sınav tanımı (FR-42). Her sınav bir kursa aittir; kurs sonradan değiştirilemez.
+model Exam {
+  id                  String          @id @default(cuid())
+  title               String
+  description         String?
+  courseId            String
+  course              Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  /// Allowed literals: "QUIZ" | "MIDTERM" | "FINAL" | "PRACTICE"
+  type                String          @default("QUIZ")
+  /// Allowed literals: "DRAFT" | "PUBLISHED"
+  status              String          @default("DRAFT")
+  /// Sınav penceresi (UTC). Boşsa o yönde sınır yoktur.
+  startsAt            DateTime?
+  endsAt              DateTime?
+  /// Süre sınırı (dakika). Boşsa süresizdir.
+  durationMinutes     Int?
+  maxAttempts         Int             @default(1)
+  /// Geçme notu (yüzde, 0–100). Boşsa geçme/kalma değerlendirilmez.
+  passingScore        Int?
+  shuffleQuestions    Boolean         @default(false)
+  shuffleOptions      Boolean         @default(false)
+  /// Doluysa her öğrenciye bağlı sorulardan bu kadarı rastgele seçilir (havuzdan seçim, NFR-83).
+  randomQuestionCount Int?
+  /// Sonuçta doğru cevaplar ve açıklamalar gösterilsin mi (FR-45).
+  showResults         Boolean         @default(true)
+  /// Allowed literals: "COURSE" (kursa kayıtlı herkes) | "SELECTED" (yalnızca ExamCandidate kayıtları)
+  audience            String          @default("COURSE")
+  createdById         String?
+  createdBy           User?           @relation("ExamsCreated", fields: [createdById], references: [id], onDelete: SetNull)
+  questions           ExamQuestion[]
+  candidates          ExamCandidate[]
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  @@index([courseId])
+  @@index([status, startsAt])
+}
+
+/// Sınav–soru ilişkisi: sıra ve sınava özgü puan.
+model ExamQuestion {
+  id         String   @id @default(cuid())
+  examId     String
+  exam       Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  position   Int
+  points     Int      @default(1)
+
+  @@unique([examId, questionId])
+  @@index([examId, position])
+  @@index([questionId])
+}
+
+/// audience = "SELECTED" olan sınava girecek öğrenci. Öğrenci sınavın kursuna kayıtlı olmalıdır.
+model ExamCandidate {
+  id        String   @id @default(cuid())
+  examId    String
+  exam      Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([examId, userId])
+  @@index([userId])
 }

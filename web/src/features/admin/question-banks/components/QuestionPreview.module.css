@@ -1,0 +1,119 @@
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.stem {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.blank {
+  display: inline-block;
+  min-width: 4rem;
+  margin: 0 var(--space-xs);
+  padding: 0 var(--space-sm);
+  color: var(--color-state-success);
+  font-weight: 600;
+  text-align: center;
+  background-color: var(--color-state-success-soft);
+  border-bottom: 2px solid var(--color-state-success);
+  border-radius: var(--radius-sm);
+}
+
+.options,
+.pairs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.options li,
+.pairs li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-default);
+  overflow-wrap: anywhere;
+}
+
+.pairs li {
+  color: inherit;
+  background-color: var(--color-surface-container-low);
+}
+
+.options li.correct,
+.pill.correct {
+  color: var(--color-state-success);
+  background-color: var(--color-state-success-soft);
+  font-weight: 600;
+}
+
+.trueFalse {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-full);
+}
+
+.answers,
+.rubric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.rubric p {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.chip {
+  padding: 0 var(--space-sm);
+  color: var(--color-state-success);
+  font-weight: 600;
+  background-color: var(--color-state-success-soft);
+  border-radius: var(--radius-full);
+}
+
+.explanation {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-on-surface);
+  background-color: var(--color-secondary-soft);
+  border-radius: var(--radius-default);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

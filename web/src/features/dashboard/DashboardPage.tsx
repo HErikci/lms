@@ -4,7 +4,9 @@ import { useCurrentUser } from '../../data/useCurrentUser';
 import { useCourses } from '../courses/useCourses';
 import { useStudyActivity } from './useStudyActivity';
 import { useMyGrades } from './useMyGrades';
-import type { GradeSummary, KpiMetric } from '../../types';
+import { useAnnouncements } from '../announcements/useAnnouncements';
+import { formatRelative, sourceLabel } from '../announcements/announcementMeta';
+import type { Announcement, AnnouncementItem, GradeSummary, KpiMetric } from '../../types';
 import {
   AiGuideCard,
   AnnouncementsFeed,
@@ -43,12 +45,24 @@ function describeAverage(summary: GradeSummary): AverageTile {
   return { value, unit, footnote: 'Son quizde değişim yok', footnoteIcon: 'trending_flat' };
 }
 
+/** API duyurusunu panel akışı satırına çevirir: sabitlenen vurgulu, kurs duyurusu camgöbeği. */
+function toFeedItem(item: AnnouncementItem): Announcement {
+  return {
+    id: item.id,
+    title: item.title,
+    source: sourceLabel(item),
+    timeAgo: item.publishAt ? formatRelative(item.publishAt) : '',
+    tone: item.pinned ? 'secondary' : item.course ? 'cyan' : 'muted',
+  };
+}
+
 export function DashboardPage() {
   const data = useDashboardData();
   const { user } = useCurrentUser();
   const { courses, loading: coursesLoading, error: coursesError } = useCourses();
   const study = useStudyActivity();
   const myGrades = useMyGrades();
+  const feed = useAnnouncements({ limit: 3 });
   const greeting = user ? `Hoş geldin, ${user.name} 👋` : 'Hoş geldin 👋';
   const studyReady = !study.loading && !study.error;
   const coursesReady = !coursesLoading && !coursesError;
@@ -125,7 +139,7 @@ export function DashboardPage() {
         <div className={styles.secondary}>
           <UpcomingTasks tasks={data.upcomingTasks} />
           <AiGuideCard guide={data.aiGuide} />
-          <AnnouncementsFeed announcements={data.announcements} />
+          <AnnouncementsFeed announcements={feed.announcements.map(toFeedItem)} />
         </div>
       </div>
     </PageContainer>

@@ -4,8 +4,12 @@ import type { UserProfile } from '../../types';
 import { useNavItems } from '../../data/useNavItems';
 import {
   ADMIN_MENU_MANAGEMENT_ITEM,
+  ANNOUNCEMENT_MANAGEMENT_ITEM,
   CALENDAR_MANAGEMENT_ITEM,
+  EXAM_MANAGEMENT_ITEM,
   FALLBACK_NAV_ITEMS,
+  QUESTION_BANK_ITEM,
+  USER_MANAGEMENT_ITEM,
 } from './navItems';
 import styles from './Sidebar.module.css';
 
@@ -19,13 +23,17 @@ interface SidebarProps {
 export function Sidebar({ user, isOpen, onNavigate }: SidebarProps) {
   const { items, loading } = useNavItems(user?.role);
   const baseItems = loading || items.length === 0 ? FALLBACK_NAV_ITEMS : items;
-  const withCalendar =
-    (user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR') &&
-    !baseItems.some((item) => item.path === CALENDAR_MANAGEMENT_ITEM.path)
-      ? [...baseItems, CALENDAR_MANAGEMENT_ITEM]
-      : baseItems;
-  const navItems =
-    user?.role === 'ADMIN' ? [...withCalendar, ADMIN_MENU_MANAGEMENT_ITEM] : withCalendar;
+  const isStaff = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
+  const staffItems = isStaff
+    ? [CALENDAR_MANAGEMENT_ITEM, ANNOUNCEMENT_MANAGEMENT_ITEM, EXAM_MANAGEMENT_ITEM, QUESTION_BANK_ITEM].filter(
+        (extra) => !baseItems.some((item) => item.path === extra.path),
+      )
+    : [];
+  const withStaff = [...baseItems, ...staffItems];
+  const adminItems = [USER_MANAGEMENT_ITEM, ADMIN_MENU_MANAGEMENT_ITEM].filter(
+    (extra) => !withStaff.some((item) => item.path === extra.path),
+  );
+  const navItems = user?.role === 'ADMIN' ? [...withStaff, ...adminItems] : withStaff;
 
   return (
     <aside

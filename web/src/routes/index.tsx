@@ -6,7 +6,7 @@ import { RequireRole } from './RequireRole';
 import { RedirectIfAuthed } from './RedirectIfAuthed';
 import { DashboardPage } from '../features/dashboard';
 import { CoursesPage, CourseDetailPage, LessonDetailPage } from '../features/courses';
-import { AnnouncementsPage } from '../features/announcements';
+import { AnnouncementsPage, AnnouncementDetailPage, AnnouncementsAdminPage } from '../features/announcements';
 import { AssignmentsPage } from '../features/assignments';
 import { ExamsPage } from '../features/exams';
 import { LoginPage, RegisterPage } from '../features/auth';
@@ -18,6 +18,9 @@ import {
   QuizGradesPage,
 } from '../features/admin/courses';
 import { AdminNavItemsPage } from '../features/admin/nav-items';
+import { AdminUsersPage } from '../features/admin/users';
+import { AdminExamsPage, ExamEditorPage } from '../features/admin/exams';
+import { QuestionBanksPage, QuestionBankDetailPage } from '../features/admin/question-banks';
 
 // Takvim, FullCalendar'ı ana pakete eklememek için ayrı parça (chunk) olarak yüklenir.
 const CalendarPage = lazy(() => import('../features/calendar').then((m) => ({ default: m.CalendarPage })));
@@ -42,6 +45,7 @@ export const router = createBrowserRouter([
           { path: 'kurslarim/:id', element: <CourseDetailPage /> },
           { path: 'kurslarim/:courseId/ders/:lessonId', element: <LessonDetailPage /> },
           { path: 'duyurular', element: <AnnouncementsPage /> },
+          { path: 'duyurular/:id', element: <AnnouncementDetailPage /> },
           {
             path: 'takvim',
             element: (
@@ -60,6 +64,7 @@ export const router = createBrowserRouter([
               { path: 'yonetim/kurslar/:id/ogrenciler', element: <CourseStudentsPage /> },
               { path: 'yonetim/kurslar/:id/icerik', element: <CourseContentPage /> },
               { path: 'yonetim/menu', element: <AdminNavItemsPage /> },
+              { path: 'yonetim/kullanicilar', element: <AdminUsersPage /> },
             ],
           },
           {
@@ -67,6 +72,11 @@ export const router = createBrowserRouter([
             element: <RequireRole allow={['ADMIN', 'INSTRUCTOR']} />,
             children: [
               { path: 'yonetim/kurslar/:courseId/dersler/:lessonId/notlar', element: <QuizGradesPage /> },
+              { path: 'yonetim/duyurular', element: <AnnouncementsAdminPage /> },
+              { path: 'yonetim/sinavlar', element: <AdminExamsPage /> },
+              { path: 'yonetim/sinavlar/:examId', element: <ExamEditorPage /> },
+              { path: 'yonetim/soru-bankasi', element: <QuestionBanksPage /> },
+              { path: 'yonetim/soru-bankasi/:bankId', element: <QuestionBankDetailPage /> },
               {
                 path: 'yonetim/takvim',
                 element: (

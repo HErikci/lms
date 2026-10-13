@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Icon, Panel, Text } from '../../../components';
 import type { Announcement } from '../../../types';
 import styles from './AnnouncementsFeed.module.css';
@@ -13,14 +14,19 @@ export function AnnouncementsFeed({ announcements }: AnnouncementsFeedProps) {
       icon="campaign"
       iconTone="secondary"
       action={
-        <a href="#" className={styles.seeAll}>
+        <Link to="/duyurular" className={styles.seeAll}>
           <Text role="label-md" tone="inherit">
             Tümü
           </Text>
           <Icon name="arrow_forward" size="sm" />
-        </a>
+        </Link>
       }
     >
+      {announcements.length === 0 && (
+        <Text role="body-sm" tone="muted" as="p">
+          Yayında duyuru yok.
+        </Text>
+      )}
       <ul className={styles.list}>
         {announcements.map((announcement) => (
           <li key={announcement.id} className={styles.item}>
@@ -29,11 +35,11 @@ export function AnnouncementsFeed({ announcements }: AnnouncementsFeedProps) {
               aria-hidden="true"
             />
             <span className={styles.text}>
-              <a href="#" className={styles.title}>
+              <Link to={`/duyurular/${announcement.id}`} className={styles.title}>
                 <Text role="label-lg" tone="inherit">
                   {announcement.title}
                 </Text>
-              </a>
+              </Link>
               <Text role="body-sm" tone="muted">
                 {announcement.source} · {announcement.timeAgo}
               </Text>

@@ -13,6 +13,7 @@ Taban yol: `/api/v1`. Tüm hata yanıtları: `{ "error": { "code": "string", "me
 İstek: `{ "email": string, "password": string }`
 200: `{ "user": { "id", "email", "name", "role", "avatarUrl", "locale", "createdAt" }, "token": string }`
 401: `{ "error": { "code": "INVALID_CREDENTIALS", "message": "E-posta veya şifre hatalı." } }`
+403: hesap devre dışı (yalnızca şifre doğruysa) → `{ "error": { "code": "ACCOUNT_DISABLED", "message": "Hesabınız devre dışı bırakılmış. Yöneticinizle iletişime geçin." } }`
 
 ### GET /api/v1/auth/me
 Header: `Authorization: Bearer <token>`
@@ -162,6 +163,41 @@ Header: `Authorization: Bearer <token>`
 Not: `progress` yalnızca `PUBLISHED` dersler üzerinden hesaplanır; tamamlanan ders yoksa `percent: 0` döner.
 Not: `nextLesson` = modüller `order` artan, dersler `order` artan sırayla, kullanıcının henüz tamamlamadığı (`LessonProgress` kaydı olmayan) ilk `PUBLISHED` ders; kursta yayınlanmış ders yoksa veya hepsi tamamlandıysa `null`. `moduleCount` = en az bir `PUBLISHED` dersi olan modül sayısı (boş/yalnızca taslak modüller sayılmaz).
 Not: Sıralama: önce `percent` 1..99 olan kurslar (yüksek yüzde önce), sonra `percent` 0, en son `percent` 100; eşitlikte başlığa göre (tr) artan.
+
+## Admin Users (Kullanıcı yönetimi)
+
+Tüm uç noktalar yalnızca ADMIN içindir (aksi halde 403 `FORBIDDEN`). Kullanıcılar silinmez; devre dışı bırakılır (`disabledAt`), böylece kayıt, not ve geri bildirim geçmişi korunur.
+
+Oturum geçerliliği: `requireAuth` her istekte kullanıcıyı DB'den doğrular. Kullanıcı silinmiş ya da devre dışıysa veya token'daki aktif rol kullanıcıdan geri alınmışsa istek 401 `UNAUTHORIZED` döner; yönetici değişiklikleri token süresinin dolmasını beklemeden etkili olur. Devre dışı hesapla girişte (şifre doğruysa) 403 `ACCOUNT_DISABLED` döner; şifre yanlışsa her zamanki 401 `INVALID_CREDENTIALS`.
+
+Yönetim kullanıcı nesnesi: genel kullanıcı alanlarına (`id`, `email`, `name`, `role`, `roles`, `avatarUrl`, `locale`, `createdAt`) ek olarak:
+```json
+{ "status": "ACTIVE", "disabledAt": null, "enrollmentCount": 2, "teachingCount": 0 }
+```
+`status`: `ACTIVE` | `DISABLED`. `teachingCount`: eğitmen olarak atandığı kurs sayısı. `role` aktif roldür, `roles` sahip olunan rollerdir (sıra: STUDENT, INSTRUCTOR, ADMIN).
+
+### GET /api/v1/admin/users?q=&role=&status=&page=&pageSize=
+`q`: ad veya e-postada arama. `role`: `STUDENT` | `INSTRUCTOR` | `ADMIN` (rollerden birine sahip olanlar). `status`: `ACTIVE` | `DISABLED`. `page` ≥ 1 (varsayılan 1), `pageSize` 1–100 (varsayılan 20). Sıra: `createdAt` azalan.
+200: `{ "users": [ <kullanıcı>, ... ], "total": number, "page": number, "pageSize": number, "summary": { "total", "disabled", "students", "instructors", "admins" } }` (`summary` süzgeçlerden bağımsızdır)
+400: geçersiz parametre → `VALIDATION_ERROR`
+
+### POST /api/v1/admin/users
+Body: `{ "name": string, "email": string, "password": string, "roles"?: string[] }`
+- `name` kırpılır, 1–100 karakter; `password` en az 8 karakter; `roles` boş olmayan, bilinen rollerden oluşan dizi (varsayılan `["STUDENT"]`). Aktif rol, sahip olunan en az yetkili roldür.
+201: `{ "user": <kullanıcı> }`
+400: `INVALID_EMAIL` | `WEAK_PASSWORD` | `VALIDATION_ERROR`; 409: `EMAIL_TAKEN`
+
+### PATCH /api/v1/admin/users/:id
+Body (en az bir alan): `{ "name"?: string, "email"?: string, "roles"?: string[], "password"?: string, "disabled"?: boolean }`
+- `password` verilirse şifre sıfırlanır.
+- Aktif rol `roles`'ten çıkarılırsa aktif rol en az yetkili role düşer; o rolle açılmış oturumlar reddedilir.
+200: `{ "user": <kullanıcı> }`
+400: doğrulama hataları (POST ile aynı kodlar)
+404: `{ "error": { "code": "NOT_FOUND", "message": "Kullanıcı bulunamadı." } }`
+409:
+- `EMAIL_TAKEN`: e-posta başka bir hesapta.
+- `SELF_LOCKOUT`: yönetici kendi ADMIN rolünü kaldıramaz veya kendini devre dışı bırakamaz (bu, sistemde her zaman en az bir etkin yönetici kalmasını da sağlar).
+- `INSTRUCTOR_HAS_COURSES`: kursa atanmış bir eğitmenden INSTRUCTOR rolü alınamaz; önce kurs atamaları kaldırılmalıdır.
 
 ## Progress (Kurs tamamlanma oranı)
 
@@ -394,3 +430,203 @@ Header: `Authorization: Bearer <token>` (PATCH ile aynı yetki)
 200: `{ "deleted": true }`
 401/403: yukarıdaki biçimlerle
 404: `{ "error": { "code": "NOT_FOUND", "message": "Etkinlik bulunamadı." } }`
+
+## Announcements (Duyurular)
+
+Saklama: `Announcement` tablosu. `courseId` null ise genel duyurudur (herkes görür); doluysa kursa aittir. Kurs silinirse duyuruları da silinir; yazar silinirse `author` null olur.
+- `category`: `ACADEMIC` | `COURSE` | `IT` | `EVENT` | `GENERAL` (varsayılan `GENERAL`).
+- `status` (saklanan): `DRAFT` | `PUBLISHED` (varsayılan `DRAFT`).
+- `state` (türetilen, yanıtta): `DRAFT` (taslak) | `SCHEDULED` (`PUBLISHED` ve `publishAt` gelecekte) | `PUBLISHED` (yayında) | `EXPIRED` (`expiresAt` geçmiş).
+- Okuyucuya görünür ("yayında") = `status=PUBLISHED`, `publishAt <= şimdi` ve (`expiresAt` yok veya `> şimdi`).
+
+Duyuru nesnesi:
+```json
+{
+  "id": "string",
+  "title": "string",
+  "body": "string",
+  "category": "ACADEMIC",
+  "status": "PUBLISHED",
+  "state": "PUBLISHED",
+  "publishAt": "2026-10-13T09:00:00.000Z",
+  "expiresAt": null,
+  "pinned": true,
+  "course": { "id": "string", "title": "string" },
+  "author": { "id": "string", "name": "string" },
+  "createdAt": "2026-10-13T08:55:00.000Z",
+  "updatedAt": "2026-10-13T08:55:00.000Z",
+  "canEdit": false
+}
+```
+Not: `course` genel duyuruda `null`; `body` düz metindir (paragraflar boş satırla ayrılır). `canEdit`: ADMIN için her zaman `true`; aktif rolü INSTRUCTOR olan kullanıcı için yalnızca atandığı kursun duyurularında `true`; genel duyurular yalnızca ADMIN tarafından düzenlenir.
+
+### GET /api/v1/announcements?category=&courseId=&limit=
+Header: `Authorization: Bearer <token>` (giriş yapmış herhangi bir rol)
+Yalnızca yayında olan duyurular. Görünürlük: ADMIN tümünü görür; diğerleri genel duyuruları, kayıtlı oldukları kursların ve (yalnızca aktif rolü INSTRUCTOR iken) atandıkları kursların duyurularını görür.
+Sıra: sabitlenenler önce, sonra `publishAt` azalan. `limit`: 1–100 (varsayılan 50).
+200: `{ "announcements": [ <duyuru>, ... ] }`
+400: geçersiz `category`/`limit` → `VALIDATION_ERROR`
+
+### GET /api/v1/announcements/manage?state=&courseId= (rol: ADMIN, INSTRUCTOR)
+Tüm durumlardaki (taslak, zamanlanmış, süresi dolmuş dahil) düzenlenebilir duyurular: ADMIN hepsini, INSTRUCTOR atandığı kursların duyurularını görür. `state` ile süzülebilir. Sıra: `updatedAt` azalan.
+200: `{ "announcements": [ <duyuru>, ... ] }`
+400: geçersiz `state` → `VALIDATION_ERROR`; 403: diğer roller
+
+### GET /api/v1/announcements/:id
+Okuyucu yalnızca kendisine görünen ve yayında olan duyuruyu görür; düzenleme yetkisi olan her durumdakini görür. Aksi halde (varlığı sızdırmamak için) 404.
+200: `{ "announcement": <duyuru> }`
+404: `{ "error": { "code": "NOT_FOUND", "message": "Duyuru bulunamadı." } }`
+
+### POST /api/v1/announcements
+Header: `Authorization: Bearer <token>` (genel duyuru: yalnızca ADMIN; kurs duyurusu: ADMIN veya kursa atanmış INSTRUCTOR)
+Body: `{ "title": string, "body": string, "category"?: string, "status"?: "DRAFT" | "PUBLISHED", "publishAt"?: string | null, "expiresAt"?: string | null, "pinned"?: boolean, "courseId"?: string | null }`
+- `title` kırpılır, 1–200 karakter; `body` kırpılır, 1–10000 karakter.
+- `publishAt`/`expiresAt`: ofsetli ISO tarih-saat. `status=PUBLISHED` ve `publishAt` yoksa şimdi yayınlanır; gelecekteki `publishAt` duyuruyu zamanlar. `expiresAt` verilirse yayın anından sonra olmalıdır.
+- Yazar, isteği yapan kullanıcıdır.
+201: `{ "announcement": <duyuru> }`
+400/401/403; 404: `Kurs bulunamadı.`
+
+### PATCH /api/v1/announcements/:id
+Body: POST ile aynı alanların kısmi hali (en az bir alan); birleşik sonuç POST kurallarıyla doğrulanır.
+- `DRAFT` → `PUBLISHED` geçişinde `publishAt` gönderilmezse duyuru şimdi yayınlanır (eski tarih kullanılmaz).
+- Yetki hem mevcut duyuru için hem (`courseId` değişiyorsa) hedef kurs/genel için gerekir.
+200: `{ "announcement": <duyuru> }`
+400/401/403; 404: `Duyuru bulunamadı.` (hedef kurs yoksa `Kurs bulunamadı.`)
+
+### DELETE /api/v1/announcements/:id
+PATCH ile aynı yetki.
+200: `{ "deleted": true }`
+401/403; 404: `Duyuru bulunamadı.`
+
+## Question Banks (Soru bankası)
+
+Tüm uç noktalar ADMIN veya INSTRUCTOR rolü gerektirir (diğerleri 403). `courseId` null olan banka **genel** bankadır.
+- Okuma (ve sınava soru ekleme): ADMIN tümü; aktif rolü INSTRUCTOR olan eğitmen genel bankalar + atandığı kursların bankaları. Okunamayan banka/soru 404 döner.
+- Düzenleme: ADMIN tümü; eğitmen yalnızca atandığı kursların bankaları (genel bankalar yalnızca ADMIN).
+- Bankanın kursu sonradan değiştirilemez.
+
+Banka nesnesi: `{ "id", "name", "description": string|null, "course": { "id", "title" } | null, "questionCount": number, "createdBy": { "id", "name" } | null, "createdAt", "updatedAt", "canEdit": boolean }`
+
+Soru nesnesi (doğru cevaplar dahil; yalnızca yönetim API'sinde döner):
+```json
+{
+  "id": "string", "bank": { "id": "string", "name": "string" },
+  "type": "SINGLE_CHOICE", "stem": "string", "content": {},
+  "explanation": "string | null", "topic": "string | null", "difficulty": "EASY | MEDIUM | HARD", "points": 2,
+  "usageCount": 1, "createdBy": { "id": "string", "name": "string" }, "createdAt": "…", "updatedAt": "…", "canEdit": true
+}
+```
+`usageCount`: sorunun eklendiği sınav sayısı. `createdBy` yazar silinmişse `null`. `content` tipe göre:
+
+| type | content | kurallar |
+|---|---|---|
+| `SINGLE_CHOICE` | `{ "options": [{ "id", "text", "correct" }] }` | 2–10 seçenek, metinler benzersiz, **tam bir** doğru |
+| `MULTIPLE_CHOICE` | aynı | 2–10 seçenek, **en az bir** doğru |
+| `TRUE_FALSE` | `{ "correctAnswer": boolean }` | |
+| `FILL_BLANK` | `{ "blanks": [{ "accepted": string[] }], "caseSensitive": boolean }` | `stem` içindeki her `___` (en az 3 alt çizgi) için bir `blanks` öğesi (1–20 boşluk) |
+| `MATCHING` | `{ "pairs": [{ "id", "left", "right" }] }` | 2–20 çift; sol ve sağ öğeler benzersiz |
+| `SHORT_ANSWER` | `{ "accepted": string[], "caseSensitive": boolean }` | 1–20 kabul edilen cevap |
+| `ESSAY` | `{ "rubric": string or null }` | açık uçlu; eğitmen puanlar |
+
+Seçenek/çift `id`'si gönderilirse korunur (harf, rakam, `-`, `_`; en fazla 40), gönderilmezse sunucu üretir. Kabul edilen cevaplar kırpılır, boşlar atılır, tekrarlar (`caseSensitive=false` iken Türkçe küçük harf kuralıyla) ayıklanır; her cevap en fazla 200 karakter. `stem` 1–5000, `explanation` ≤ 5000, `topic` ≤ 100, `rubric` ≤ 5000 karakter; `points` 1–100 (varsayılan 1); `difficulty` varsayılan `MEDIUM`.
+
+### GET /api/v1/question-banks
+200: `{ "banks": [ <banka>, ... ] }` (okunabilen bankalar, `updatedAt` azalan)
+
+### POST /api/v1/question-banks
+Body: `{ "name": string (1–150), "description"?: string|null (≤ 2000), "courseId"?: string|null }`
+201: `{ "bank": <banka> }` · 403: eğitmen genel ya da atanmadığı kurs için · 404: `Kurs bulunamadı.`
+
+### GET /api/v1/question-banks/:id
+200: `{ "bank": <banka> }` · 404: `Soru bankası bulunamadı.`
+
+### PATCH /api/v1/question-banks/:id
+Body: `{ "name"?, "description"? }` (en az biri). `courseId` gönderilirse 400.
+200: `{ "bank": <banka> }` · 403/404
+
+### DELETE /api/v1/question-banks/:id
+Sorularıyla birlikte siler. 200: `{ "deleted": true }` · 409 `BANK_IN_USE`: bankadaki sorulardan biri bir sınavda kullanılıyorsa.
+
+### GET /api/v1/question-banks/:id/questions
+200: `{ "questions": [ <soru>, ... ] }` (`createdAt` azalan; `canEdit` bankanın düzenleme yetkisidir)
+
+### POST /api/v1/question-banks/:id/questions
+Body: `{ "type", "stem", "content", "explanation"?, "topic"?, "difficulty"?, "points"? }`
+201: `{ "question": <soru> }` · 400 `VALIDATION_ERROR` · 403 (bankayı düzenleme yetkisi yok)
+
+### PATCH /api/v1/questions/:id
+Body: POST alanlarının kısmi hali (en az biri); birleşik sonuç POST kurallarıyla doğrulanır. `type` değişirken `content` zorunludur.
+200: `{ "question": <soru> }` · 400/403/404
+
+### DELETE /api/v1/questions/:id
+200: `{ "deleted": true }` · 409 `QUESTION_IN_USE`: soru bir sınavda kullanılıyorsa (önce sınavdan çıkarılmalı).
+
+## Exams (Sınavlar)
+
+Her sınav bir kursa aittir ve kursu sonradan değiştirilemez. Yönetim uç noktaları ADMIN veya INSTRUCTOR rolü ister; ayrıca kursu yönetme yetkisi (ADMIN veya kursa atanmış eğitmen) gerekir, yoksa 403.
+
+Ayarlar (FR-42):
+
+| alan | tip | kural / varsayılan |
+|---|---|---|
+| `title` | string | 1–200, zorunlu |
+| `description` | string or null | ≤ 5000 |
+| `type` | `QUIZ` / `MIDTERM` / `FINAL` / `PRACTICE` | `QUIZ` |
+| `status` | `DRAFT` / `PUBLISHED` | `DRAFT`; oluşturmada her zaman `DRAFT` |
+| `startsAt`, `endsAt` | ofsetli ISO tarih-saat or null | `endsAt > startsAt` |
+| `durationMinutes` | int or null | 1–600; pencere tanımlıysa pencereden uzun olamaz |
+| `maxAttempts` | int | 1–10, varsayılan 1 |
+| `passingScore` | int or null | 0–100 (yüzde) |
+| `shuffleQuestions`, `shuffleOptions` | boolean | `false` |
+| `randomQuestionCount` | int or null | doluysa her öğrenciye bağlı sorulardan bu kadarı rastgele seçilir |
+| `showResults` | boolean | `true` (sonuçta doğru cevap ve açıklama gösterimi, FR-45) |
+| `audience` | `COURSE` / `SELECTED` | `COURSE`: kursa kayıtlı herkes; `SELECTED`: yalnızca seçilen öğrenciler |
+
+Yayın koşulları: en az bir soru; `randomQuestionCount` ≤ soru sayısı; `SELECTED` modunda kursa kayıtlı en az bir seçili öğrenci. Yayındaki sınavda bu koşulları bozan her değişiklik (ayar, soru çıkarma, öğrenci listesi) 409 `EXAM_NOT_PUBLISHABLE` ile reddedilir ve geri alınır.
+
+`availability` (sunucu saatine göre, NFR-81): `UPCOMING` (`startsAt` gelecekte) / `CLOSED` (`endsAt` geçmiş) / `OPEN`.
+
+Yönetim sınav nesnesi: tüm ayarlar + `{ "id", "course": { "id", "title" }, "availability", "questionCount", "totalPoints", "candidateCount", "createdBy", "createdAt", "updatedAt" }`. `candidateCount`: `COURSE` modunda kursa kayıtlı sayısı, `SELECTED` modunda kursa hâlâ kayıtlı seçili öğrenci sayısı.
+
+Ayrıntı yanıtı (aşağıda "ayrıntı"): `{ "exam": <sınav>, "questions": [{ "questionId", "position", "points", "question": <soru> }] }` (`position` 1'den başlar, boşluksuz).
+
+### GET /api/v1/exams/my
+Giriş yapmış herhangi bir kullanıcı. Kayıtlı olduğu kursların yayındaki sınavlarından kendisine açık olanlar (`COURSE` ya da seçili olduğu `SELECTED`). Sorular ve cevaplar dönmez (NFR-80).
+200: `{ "exams": [{ "id", "title", "description", "type", "course", "startsAt", "endsAt", "durationMinutes", "maxAttempts", "passingScore", "questionCount", "availability" }], "serverTime": string }`
+Sıra: `OPEN` (en erken kapanan önce), `UPCOMING` (en erken açılan önce), `CLOSED` (en son kapanan önce). `questionCount`, rastgele seçim varsa öğrencinin göreceği sayıdır.
+
+### GET /api/v1/exams/manage?courseId=&status=
+200: `{ "exams": [ <sınav>, ... ] }` (yönetilebilen sınavlar, `updatedAt` azalan)
+
+### POST /api/v1/exams
+Body: `{ "courseId": string, "title": string, ...ayarlar }` → 201: ayrıntı · 403 · 404 `Kurs bulunamadı.`
+
+### GET /api/v1/exams/:id
+200: ayrıntı · 403 · 404 `Sınav bulunamadı.`
+
+### PATCH /api/v1/exams/:id
+Body: ayarların kısmi hali (en az biri; `null` alanı temizler). Farklı `courseId` → 400.
+200: ayrıntı · 400 · 409 `EXAM_NOT_PUBLISHABLE`
+
+### DELETE /api/v1/exams/:id
+200: `{ "deleted": true }`
+
+### POST /api/v1/exams/:id/questions
+Body: `{ "questionIds": string[] }` (1–1000, tekrarsız). Sorular istek sırasıyla sona eklenir; zaten ekli olanlar atlanır; puan sorunun varsayılan puanıdır. Yalnızca sınavın kursunun ve genel bankaların soruları eklenebilir (aksi 400); okunamayan soru 404.
+200: ayrıntı
+
+### PATCH /api/v1/exams/:id/questions/:questionId
+Body: `{ "points": 1–100 }` → 200: ayrıntı · 404 `Soru bu sınavda değil.`
+
+### DELETE /api/v1/exams/:id/questions/:questionId
+Sıra numaraları yeniden 1..n yapılır. 200: ayrıntı · 404 · 409 `EXAM_NOT_PUBLISHABLE`
+
+### PUT /api/v1/exams/:id/questions/order
+Body: `{ "questionIds": string[] }`: sınavdaki soruların tamamı, her biri bir kez (aksi 400). 200: ayrıntı
+
+### GET /api/v1/exams/:id/candidates
+200: `{ "audience": "COURSE" | "SELECTED", "students": [{ "id", "name", "email", "avatarUrl", "selected": boolean }] }` (kursa kayıtlı kullanıcılar, ada göre sıralı)
+
+### PUT /api/v1/exams/:id/candidates
+Body: `{ "userIds": string[] }`: seçili öğrenci listesini tümüyle değiştirir; hepsi kursa kayıtlı olmalıdır (aksi 400).
+200: GET ile aynı · 409 `EXAM_NOT_PUBLISHABLE` (yayındaki `SELECTED` sınavda boş liste)

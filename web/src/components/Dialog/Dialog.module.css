@@ -1,0 +1,36 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  background-color: var(--scrim);
+}
+
+.dialog {
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--space-lg);
+  background-color: var(--color-surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-3);
+}
+
+.sm {
+  max-width: 28rem;
+}
+
+.md {
+  max-width: 36rem;
+}
+
+.lg {
+  max-width: 52rem;
+}
+
+.title {
+  margin: 0 0 var(--space-md);
+}

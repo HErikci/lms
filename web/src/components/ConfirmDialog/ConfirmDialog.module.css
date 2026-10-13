@@ -1,0 +1,25 @@
+.body {
+  margin-bottom: var(--space-md);
+}
+
+.body p {
+  margin: 0;
+}
+
+.error {
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-state-error-soft);
+  border-radius: var(--radius-default);
+}
+
+.error p {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}

@@ -1,0 +1,164 @@
+/* Canlı bölge boşken aralık oluşturmasın diye gap yerine kenar boşlukları kullanılır. */
+.top {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.back {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+  color: var(--color-secondary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.back:focus-visible,
+.tab:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.headerText h1,
+.headerText p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.errorBanner,
+.infoBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-default);
+}
+
+.errorBanner {
+  background-color: var(--color-state-error-soft);
+}
+
+.infoBanner {
+  color: var(--color-on-surface);
+  background-color: var(--color-state-success-soft);
+}
+
+.errorBanner p,
+.infoBanner p {
+  margin: 0;
+}
+
+.live:not(:empty) {
+  margin-top: var(--space-md);
+}
+
+.checklist h2 {
+  margin: 0 0 var(--space-sm);
+}
+
+.checklist ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.ok {
+  color: var(--color-state-success);
+}
+
+.missing {
+  color: var(--color-state-error);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+.tab {
+  font: inherit;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: -1px;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--color-on-surface);
+}
+
+.tab[aria-selected='true'] {
+  color: var(--color-secondary);
+  border-bottom-color: var(--color-secondary);
+}
+
+.panel {
+  min-width: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+  }
+}

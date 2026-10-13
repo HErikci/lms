@@ -1,0 +1,141 @@
+/*
+ * Form denetimleri için ortak stiller (giriş, seçim, metin alanı, onay kutusu, alan grupları).
+ * Bileşenler `formStyles.input` gibi kullanır; tüm değerler tokens.css'ten gelir.
+ */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.row3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.input,
+.textarea {
+  font: inherit;
+  width: 100%;
+  color: var(--color-on-surface);
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-default);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.input:disabled,
+.textarea:disabled {
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-container);
+  cursor: not-allowed;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.input:focus-visible,
+.textarea:focus-visible,
+.checkbox input:focus-visible,
+.choice input:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.checkbox,
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.choice {
+  align-items: flex-start;
+}
+
+.choice input {
+  margin-top: var(--space-xs);
+}
+
+.choiceText {
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-md);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-default);
+}
+
+.fieldset legend {
+  padding: 0 var(--space-xs);
+}
+
+.error {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-state-error-soft);
+  border-radius: var(--radius-default);
+}
+
+.success {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-state-success-soft);
+  border-radius: var(--radius-default);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}
+
+.spacer {
+  margin-right: auto;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .row,
+  .row3 {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .spacer {
+    margin-right: 0;
+  }
+}

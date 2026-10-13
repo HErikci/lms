@@ -1,0 +1,62 @@
+.back,
+.editLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-secondary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Sayfa kapsayıcısı flex sütun olduğundan bağlantı tam genişliğe yayılmasın. */
+.back {
+  align-self: flex-start;
+}
+
+.back:hover,
+.editLink:hover {
+  text-decoration: underline;
+}
+
+.back:focus-visible,
+.editLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.article {
+  max-width: 48rem;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.title {
+  margin: 0 0 var(--space-sm);
+}
+
+.meta {
+  margin: 0 0 var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.body p {
+  margin: 0;
+}
+
+.editLink {
+  margin-top: var(--space-lg);
+}

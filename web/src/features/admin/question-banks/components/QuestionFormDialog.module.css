@@ -1,0 +1,118 @@
+.notice {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-state-warning-soft);
+  border-radius: var(--radius-default);
+}
+
+.notice p,
+.hint p {
+  margin: 0;
+}
+
+/* İpucu, üstündeki tip seçicisine ait olduğundan form aralığının yarısıyla yaklaştırılır. */
+.hint {
+  margin-top: calc(-1 * var(--space-sm));
+}
+
+.inlineRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.optionRow {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.correctToggle {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--color-state-success);
+}
+
+.correctToggle:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.optionLetter {
+  width: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.blankRow {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.pairRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.arrow {
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.previewBox {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px dashed var(--color-outline-variant);
+  border-radius: var(--radius-default);
+}
+
+.previewBox summary {
+  cursor: pointer;
+  padding: var(--space-xs) 0;
+}
+
+.previewBox[open] summary {
+  margin-bottom: var(--space-sm);
+}
+
+.previewBox summary:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+@media (max-width: 768px) {
+  /* Dar ekranda çift iki satıra bölünür: sol öğe üstte, eşi altta, kaldır düğmesi yanda. */
+  .pairRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'left remove'
+      'right remove';
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-outline-variant);
+  }
+
+  .pairRow .arrow {
+    display: none;
+  }
+
+  .pairLeft {
+    grid-area: left;
+  }
+
+  .pairRight {
+    grid-area: right;
+  }
+
+  .pairRemove {
+    grid-area: remove;
+  }
+
+  .blankRow {
+    grid-template-columns: 1fr;
+  }
+}

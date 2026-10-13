@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { seedExamData } from './examSeedData';
 
 const prisma = new PrismaClient();
 
@@ -217,11 +218,57 @@ async function main() {
       { path: '/duyurular', label: 'Duyurular', icon: 'campaign', order: 3, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
       { path: '/takvim', label: 'Takvim', icon: 'calendar_today', order: 4, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
       { path: '/notlar-ve-gorevler', label: 'Notlar & Görevler', icon: 'assignment_turned_in', order: 5, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
-      { path: '/sinavlar', label: 'Sınav Sistemi', icon: 'quiz', order: 6, roles: 'ADMIN' },
+      { path: '/sinavlar', label: 'Sınavlar', icon: 'quiz', order: 6, roles: 'STUDENT,INSTRUCTOR,ADMIN' },
       { path: '/yonetim/kurslar', label: 'Kurs Yönetimi', icon: 'admin_panel_settings', order: 7, roles: 'ADMIN' },
       { path: '/yonetim/takvim', label: 'Takvim Yönetimi', icon: 'edit_calendar', order: 8, roles: 'ADMIN,INSTRUCTOR' },
+      { path: '/yonetim/duyurular', label: 'Duyuru Yönetimi', icon: 'edit_note', order: 9, roles: 'ADMIN,INSTRUCTOR' },
+      { path: '/yonetim/kullanicilar', label: 'Kullanıcı Yönetimi', icon: 'manage_accounts', order: 10, roles: 'ADMIN' },
+      { path: '/yonetim/sinavlar', label: 'Sınav Yönetimi', icon: 'fact_check', order: 11, roles: 'ADMIN,INSTRUCTOR' },
+      { path: '/yonetim/soru-bankasi', label: 'Soru Bankası', icon: 'library_books', order: 12, roles: 'ADMIN,INSTRUCTOR' },
     ],
   });
+
+  const hoursAgo = (hours: number) => new Date(Date.now() - hours * 60 * 60 * 1000);
+  await prisma.announcement.createMany({
+    data: [
+      {
+        title: 'Güz Dönemi Ara Sınav Takvimi Yayınlandı',
+        body: 'Güz dönemi ara sınav takvimi kesinleşmiştir. Sınav tarih ve saatlerini Takvim sayfasından takip edebilirsiniz.\n\nMazeret sınavı başvuruları sınavdan sonraki 3 iş günü içinde yapılmalıdır.',
+        category: 'ACADEMIC',
+        status: 'PUBLISHED',
+        publishAt: hoursAgo(3),
+        pinned: true,
+        authorId: student.id,
+      },
+      {
+        title: 'Canlı Soru-Cevap Oturumu: Perşembe 19:00',
+        body: 'React ile Modern Web Geliştirme kursu için haftalık canlı soru-cevap oturumu Perşembe 19:00\'da yapılacaktır. Sorularınızı önceden ders forumuna iletebilirsiniz.',
+        category: 'COURSE',
+        status: 'PUBLISHED',
+        publishAt: hoursAgo(26),
+        courseId: course.id,
+        authorId: instructor.id,
+      },
+      {
+        title: 'Kampüs Kütüphanesi Dijital Veritabanı Bakımı Tamamlandı',
+        body: 'Kütüphane dijital veritabanlarına erişim yeniden sağlanmıştır. Erişim sorunu yaşarsanız Bilgi İşlem destek hattına başvurunuz.',
+        category: 'IT',
+        status: 'PUBLISHED',
+        publishAt: hoursAgo(50),
+        authorId: student.id,
+      },
+      {
+        title: 'Bahar Dönemi Ders Seçim Takvimi (Taslak)',
+        body: 'Bahar dönemi ders seçim tarihleri kesinleştiğinde bu duyuru yayınlanacaktır.',
+        category: 'ACADEMIC',
+        status: 'DRAFT',
+        authorId: student.id,
+      },
+    ],
+  });
+
+  // Öğrenci hesabı aynı zamanda yönetici (roles: STUDENT,ADMIN); genel bankanın sahibi olarak kullanılır.
+  await seedExamData(prisma, { courseId: course.id, instructorId: instructor.id, adminId: student.id });
 
   console.log('Seed tamamlandı.');
 }

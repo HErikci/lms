@@ -1,9 +1,38 @@
 .header {
-  margin-bottom: var(--space-2xl);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
 }
 
 .header h1 {
   margin-bottom: var(--space-sm);
+}
+
+.manageLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-secondary);
+  font-weight: 600;
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-default);
+  text-decoration: none;
+}
+
+.manageLink:hover {
+  background-color: var(--color-secondary-soft);
+}
+
+.manageLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.sectionTitle {
+  margin: 0 0 var(--space-md);
 }
 
 .grid {
@@ -16,24 +45,23 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  color: inherit;
-  text-decoration: none;
-  transition: transform var(--transition-base);
-}
-
-.examCard:hover {
-  transform: translateY(-2px);
-}
-
-.examCard:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
+  height: 100%;
 }
 
 .cardHeader {
   display: flex;
   align-items: flex-start;
   gap: var(--space-md);
+}
+
+.cardHeader > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardHeader h3 {
+  margin: var(--space-xs) 0 0 0;
+  overflow-wrap: anywhere;
 }
 
 .iconSection {
@@ -48,18 +76,16 @@
   color: var(--color-secondary);
 }
 
-.cardHeader > div {
-  flex: 1;
-}
-
-.cardHeader h3 {
-  margin: var(--space-xs) 0 0 0;
+.description {
+  margin: 0;
+  white-space: pre-line;
 }
 
 .examDetails {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  margin: 0;
   padding: var(--space-md);
   background: var(--color-surface-container-low);
   border-radius: var(--radius-lg);
@@ -72,28 +98,45 @@
   color: var(--color-text-muted);
 }
 
-.scoreSection {
+.detail dt,
+.detail dd {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  margin: 0;
 }
 
-.scoreLabel {
+.cardFooter {
   display: flex;
-  justify-content: space-between;
-}
-
-.cardAction {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-sm);
-  padding: var(--space-md);
-  text-decoration: none;
-  color: var(--color-secondary);
-  border-top: 1px solid var(--color-surface-container);
+  margin-top: auto;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.passing {
+  white-space: nowrap;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }
