@@ -1,0 +1,39 @@
+{
+  "name": "@btk-akademi/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:generate": "prisma generate",
+    "prisma:seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "fastify": "^4.28.1",
+    "@prisma/client": "^5.19.1",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.1",
+    "typescript": "^5.6.2",
+    "tsx": "^4.19.1",
+    "vitest": "^2.1.1",
+    "@types/node": "^22.5.5",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.7"
+  },
+  "allowScripts": {
+    "@prisma/client@5.22.0": true,
+    "@prisma/engines@5.22.0": true,
+    "bcrypt@5.1.1": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.21.5": true,
+    "prisma@5.22.0": true
+  }
+}
