@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// NOTE: SQLite's Prisma connector does not support native `enum` types
+// (P1012 at `prisma migrate dev`). The four enums specified in the brief
+// (Role, AccessMode, ContentStatus, EnrollmentMethod) are implemented below
+// as `String` fields with identical field names, defaults, and allowed
+// literal values ("STUDENT" | "INSTRUCTOR" | "ADMIN", etc.) so that
+// downstream route code using these field names is unaffected.
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  name         String
+  avatarUrl    String?
+  locale       String       @default("tr")
+  role         String       @default("STUDENT")
+  createdAt    DateTime     @default(now())
+  courses      Course[]     @relation("InstructorCourses")
+  enrollments  Enrollment[]
+}
+
+model Course {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  category    String
+  level       String
+  tags        String       @default("")
+  accessMode  String       @default("FREE")
+  status      String       @default("DRAFT")
+  instructorId String
+  instructor  User         @relation("InstructorCourses", fields: [instructorId], references: [id])
+  modules     Module[]
+  enrollments Enrollment[]
+}
+
+model Module {
+  id       String   @id @default(cuid())
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id])
+  title    String
+  order    Int
+  lessons  Lesson[]
+}
+
+model Lesson {
+  id       String   @id @default(cuid())
+  moduleId String
+  module   Module   @relation(fields: [moduleId], references: [id])
+  title    String
+  order    Int
+  status   String   @default("DRAFT")
+}
+
+model Enrollment {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id])
+  method     String
+  enrolledAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+}
