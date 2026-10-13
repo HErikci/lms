@@ -16,6 +16,18 @@ Aşağıdaki varsayımlar, gereksinimlerin yazılabilmesi için alınmış ön k
 | V3 | Canlı ders (senkron video) üçüncü taraf servis ile tümleştirilir, platform içinde geliştirilmez. |
 | V4 | Yapay zekâ asistanı harici bir LLM sağlayıcısı üzerinden, RAG mimarisiyle çalışır. |
 | V5 | Ödeme ve satış süreci kapsam dışıdır; kurs kaydı yönetici ataması veya açık kayıt ile yapılır. |
+| V6 | Uygulama tek makinede (yerel sunucu/masaüstü) çalışacak şekilde tasarlanır; çok sunuculu/bulut dağıtımı kapsam dışıdır. |
+| V7 | Eşzamanlı kullanıcı sayısı küçüktür (bir sınıf/kurum ölçeği, onlarca kullanıcı); binlerce eşzamanlı kullanıcı hedeflenmez. |
+
+### Teknoloji Yığını Kararı
+
+| Katman | Seçim | Not |
+|---|---|---|
+| Arayüz | React | SPA, tarayıcı üzerinden yerel sunucuya bağlanır. |
+| Sunucu | Node.js (Express/Fastify) | Tek dil (JavaScript/TypeScript) ile uçtan uca geliştirme. |
+| Veritabanı | SQLite (WAL modu) | Kurulum gerektirmez, dosya tabanlı; tek makine senaryosuna uygun. Prisma/Drizzle gibi bir ORM ile erişilmesi, ileride PostgreSQL'e geçişi kolaylaştırır. |
+
+Bu karar, aşağıdaki fonksiyonel olmayan gereksinimlerin **bulut/çok-sunuculu ölçek varsayımından yerel tek-makine varsayımına** göre yeniden yazılmasını gerektirmiştir (bkz. §2.1, §2.5, §2.8).
 
 ### Aktörler ve Roller
 
@@ -168,15 +180,17 @@ Aşağıdaki varsayımlar, gereksinimlerin yazılabilmesi için alınmış ön k
 
 ### 2.1 Performans ve Ölçeklenebilirlik
 
+Yerel tek-makine dağıtımı (V6, V7) nedeniyle bu başlık çok-sunuculu bulut ölçeği yerine **tek SQLite örneğinin kaldırabileceği yük** esas alınarak tanımlanmıştır.
+
 | ID | Gereksinim |
 |---|---|
-| NFR-01 | Panel ve kurs sayfaları için sunucu yanıt süresi p95 < 500 ms, p99 < 1 s olmalıdır. |
-| NFR-02 | En büyük içerik boyaması (LCP) mobil bağlantıda < 2,5 s olmalıdır. |
-| NFR-03 | Sistem eşzamanlı 2.000 aktif kullanıcıyı ve dakikada 10.000 isteği, yanıt süresi hedeflerini bozmadan karşılamalıdır. |
-| NFR-04 | Video içerikleri CDN üzerinden, uyarlanabilir bit hızıyla (HLS veya DASH) sunulmalıdır. |
-| NFR-05 | Uygulama katmanı durumsuz olmalı ve yatay ölçeklenebilmelidir. |
-| NFR-06 | Analitik sorguları işlemsel veritabanının performansını etkilememeli; raporlama ayrı okuma modeli üzerinden yürütülmelidir. |
-| NFR-07 | Sınav başlangıcı gibi ani yük tepelerinde sistem kademeli bozulma göstermeli, tamamen durmamalıdır. |
+| NFR-01 | Panel ve kurs sayfaları için sunucu yanıt süresi p95 < 300 ms, p99 < 800 ms olmalıdır (yerel ağ, harici gecikme yok). |
+| NFR-02 | En büyük içerik boyaması (LCP) yerel ağ bağlantısında < 1,5 s olmalıdır. |
+| NFR-03 | Sistem eşzamanlı en az 50 aktif kullanıcıyı (bir sınıf/kurum ölçeği) yanıt süresi hedeflerini bozmadan karşılamalıdır. Bu sınırın üzerinde büyüme planlanıyorsa SQLite'tan PostgreSQL'e geçiş değerlendirilmelidir (bkz. A6). |
+| NFR-04 | Video içerikleri doğrudan dosya sisteminden (HTTP range request desteğiyle) sunulmalıdır; CDN kullanılmaz. Büyük video kütüphanelerinde disk G/Ç'si izlenmelidir. |
+| NFR-05 | SQLite **WAL (Write-Ahead Logging)** modunda çalıştırılmalı; eşzamanlı okuma/yazma performansı bu şekilde sağlanmalıdır. |
+| NFR-06 | Analitik sorguları ana işlemleri (sınav/ödev teslimi) kilitlememelidir; gerekirse analitik sorgular düşük öncelikli veya önbellekli çalıştırılmalıdır. |
+| NFR-07 | Sınav başlangıcı gibi ani yük tepelerinde (bir sınıfın aynı anda sınava girmesi) sistem kademeli bozulma göstermeli, tamamen durmamalıdır. |
 
 ### 2.2 Güvenlik
 
@@ -216,14 +230,16 @@ Aşağıdaki varsayımlar, gereksinimlerin yazılabilmesi için alınmış ön k
 
 ### 2.5 Güvenilirlik ve Süreklilik
 
+Yerel tek-makine dağıtımında "yüksek kullanılabilirlik" bulut hedefleri yerine **veri bütünlüğü ve kolay yedekleme** öncelikli hale gelir.
+
 | ID | Gereksinim |
 |---|---|
-| NFR-40 | Aylık kullanılabilirlik hedefi, planlı bakım hariç, ≥ %99,5 olmalıdır. |
-| NFR-41 | Veritabanı yedeği günlük alınmalı, 30 gün saklanmalı ve geri yükleme en az üç ayda bir test edilmelidir. |
-| NFR-42 | Kurtarma hedefleri: RPO ≤ 1 saat, RTO ≤ 4 saat. |
-| NFR-43 | Sınav ve ödev teslim verileri hiçbir koşulda kaybolmamalıdır; yazma işlemleri işlemsel olmalıdır. |
-| NFR-44 | Harici servis kesintisinde (video, e-posta, LLM) sistem ilgili özelliği devre dışı bırakıp çalışmaya devam etmelidir. |
-| NFR-45 | Planlı bakım en az 48 saat önce duyurulmalıdır. |
+| NFR-40 | Uygulama, barındırıldığı makine açıkken kesintisiz çalışmalıdır; çoklu sunucu/otomatik yük devretme (failover) hedeflenmez. |
+| NFR-41 | SQLite veritabanı dosyasının günlük otomatik kopyası alınmalı ve en az 30 gün saklanmalıdır (basit dosya kopyalama yeterlidir). |
+| NFR-42 | Kurtarma hedefleri: RPO ≤ 24 saat (günlük yedek), RTO ≤ 1 saat (dosya geri kopyalama + yeniden başlatma). |
+| NFR-43 | Sınav ve ödev teslim verileri hiçbir koşulda kaybolmamalıdır; yazma işlemleri SQLite işlemleri (transaction) içinde yürütülmelidir. |
+| NFR-44 | Harici servis kesintisinde (e-posta, LLM API) sistem ilgili özelliği devre dışı bırakıp çalışmaya devam etmelidir. |
+| NFR-45 | Uygulama güncellemesi/yeniden başlatma öncesi kullanıcıya uygulama içi bir uyarı gösterilmelidir. |
 
 ### 2.6 Sürdürülebilirlik ve Geliştirme Kalitesi
 
@@ -250,11 +266,11 @@ Aşağıdaki varsayımlar, gereksinimlerin yazılabilmesi için alınmış ön k
 
 | ID | Gereksinim |
 |---|---|
-| NFR-70 | Sistem Chrome, Edge, Firefox ve Safari'nin son iki ana sürümünde çalışmalıdır. |
-| NFR-71 | Uygulama konteynerleştirilmiş olmalı ve tek komutla yerel ortamda ayağa kalkmalıdır. |
-| NFR-72 | Sağlayıcıya özel kilitlenmeden kaçınılmalı; dosya depolama S3 uyumlu arayüz üzerinden kullanılmalıdır. |
-| NFR-73 | İçerik tümleştirmesi için SCORM ve xAPI desteği yol haritasında yer almalı; mimari bunu engellememelidir. |
-| NFR-74 | Tek oturum açma için SAML veya OIDC tümleştirmesi mümkün olmalıdır. |
+| NFR-70 | Sistem Chrome, Edge ve Firefox'un son iki ana sürümünde çalışmalıdır. |
+| NFR-71 | Uygulama tek komutla (`npm install && npm run start` benzeri) yerel ortamda ayağa kalkmalıdır; harici servis bağımlılığı (veritabanı sunucusu vb.) olmamalıdır. |
+| NFR-72 | Yüklenen dosyalar (video, PDF, ödev ekleri) yerel dosya sisteminde, veritabanı dışında saklanmalıdır; veritabanı yalnızca meta veri ve dosya yolunu tutmalıdır. |
+| NFR-73 | Veri modeli; ileride çok kullanıcılı bir sunucuya (PostgreSQL) taşınmaya elverecek şekilde SQLite'a özgü olmayan bir ORM (Prisma/Drizzle) üzerinden tanımlanmalıdır. |
+| NFR-74 | Kullanıcı sayısı küçük olduğundan SAML/OIDC gibi kurumsal SSO ilk sürümde gerekli değildir; FR-02'deki OAuth girişi yeterlidir. |
 
 ### 2.9 Sınav Bütünlüğü
 
@@ -275,7 +291,7 @@ Aşağıdaki varsayımlar, gereksinimlerin yazılabilmesi için alınmış ön k
 | **v2** | Analitik görselleştirme, tartışma ortamı, sertifika, soru bankası ve manuel puanlama | FR-44, FR-46, FR-48, FR-64, FR-71…75, FR-80…85, FR-100, FR-101 |
 | **v3** | Yapay zekâ asistanı, kişiselleştirilmiş öğrenme yolları, rozetler | FR-30…34, FR-50…57, FR-102…104 |
 
-Fonksiyonel olmayan gereksinimlerden **NFR-10…19, NFR-30, NFR-33, NFR-40…43, NFR-50…55, NFR-60…64, NFR-80…83** MVP ile birlikte karşılanmalıdır. Bunlar sonraya bırakılabilir özellik değil, baştan alınması gereken mimari kararlardır.
+Fonksiyonel olmayan gereksinimlerden **NFR-05 (WAL modu), NFR-10…19, NFR-30, NFR-33, NFR-40…43, NFR-50…55, NFR-60…64, NFR-71…73, NFR-80…83** MVP ile birlikte karşılanmalıdır. Bunlar sonraya bırakılabilir özellik değil, baştan alınması gereken mimari kararlardır.
 
 ## 4. Kabul Ölçütü Yaklaşımı
 
@@ -293,4 +309,6 @@ Her fonksiyonel gereksinim, geliştirmeye alınmadan önce en az bir kabul ölç
 | A2 | Yapay zekâ asistanı için sağlayıcı ve bütçe üst sınırı nedir? | Ürün + Teknik |
 | A3 | Sertifika kurumsal olarak akredite mi olacak, yalnızca katılım belgesi mi? | Ürün |
 | A4 | Çoklu kurum (multi-tenant) desteği gerekecek mi? | Teknik mimari |
-| A5 | Hedeflenen eşzamanlı kullanıcı sayısı NFR-03'teki 2.000 değeri ile doğrulanıyor mu? | Ürün |
+| A5 | Hedeflenen eşzamanlı kullanıcı sayısı NFR-03'teki 50 değeri ile doğrulanıyor mu, yoksa daha büyük mü? | Ürün |
+| A6 | SQLite'ın eşzamanlılık sınırına yaklaşılırsa (NFR-03 aşımı) PostgreSQL'e geçiş hangi eşikte tetiklenecek? | Teknik mimari |
+| A7 | Yerel uygulama tek bir Node süreci olarak mı çalışacak, yoksa Electron gibi bir masaüstü kabuğu ile mi paketlenecek? | Teknik mimari |
