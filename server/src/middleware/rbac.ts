@@ -21,6 +21,19 @@ export async function requireAuth(request: FastifyRequest, _reply: FastifyReply)
   }
 }
 
+export async function tryAuth(request: FastifyRequest, _reply: FastifyReply) {
+  const header = request.headers.authorization;
+  if (!header?.startsWith('Bearer ')) {
+    return;
+  }
+  const token = header.slice('Bearer '.length);
+  try {
+    request.user = verifyToken(token);
+  } catch {
+    // no valid token -> proceed unauthenticated
+  }
+}
+
 export function requireRole(...roles: TokenPayload['role'][]) {
   return async function (request: FastifyRequest, _reply: FastifyReply) {
     if (!request.user || !roles.includes(request.user.role)) {

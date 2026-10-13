@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma.js';
-import { requireAuth, requireRole } from '../middleware/rbac.js';
+import { requireAuth, requireRole, tryAuth } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
 
 interface CreateCourseBody {
@@ -46,6 +46,7 @@ export function registerCourseRoutes(app: FastifyInstance) {
     const { category, level, tag, q } = request.query;
     const courses = await prisma.course.findMany({
       where: {
+        status: 'PUBLISHED',
         ...(category ? { category } : {}),
         ...(level ? { level } : {}),
         ...(tag ? { tags: { contains: tag } } : {}),
@@ -55,33 +56,43 @@ export function registerCourseRoutes(app: FastifyInstance) {
     return { courses: courses.map(toPublicCourse) };
   });
 
-  app.get<{ Params: { id: string } }>('/api/v1/courses/:id', async (request) => {
-    const course = await prisma.course.findUnique({
-      where: { id: request.params.id },
-      include: { modules: { include: { lessons: true }, orderBy: { order: 'asc' } } },
-    });
-    if (!course) {
-      throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
-    }
-    return {
-      course: {
-        ...toPublicCourse(course),
-        modules: course.modules.map((module) => ({
-          id: module.id,
-          title: module.title,
-          order: module.order,
-          lessons: module.lessons
-            .sort((a, b) => a.order - b.order)
-            .map((lesson) => ({
-              id: lesson.id,
-              title: lesson.title,
-              order: lesson.order,
-              status: lesson.status,
-            })),
-        })),
-      },
-    };
-  });
+  app.get<{ Params: { id: string } }>(
+    '/api/v1/courses/:id',
+    { preHandler: [tryAuth] },
+    async (request) => {
+      const course = await prisma.course.findUnique({
+        where: { id: request.params.id },
+        include: { modules: { include: { lessons: true }, orderBy: { order: 'asc' } } },
+      });
+      if (!course) {
+        throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
+      }
+      const isOwnerOrAdmin =
+        request.user?.role === 'ADMIN' || request.user?.userId === course.instructorId;
+      if (course.status !== 'PUBLISHED' && !isOwnerOrAdmin) {
+        throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
+      }
+      return {
+        course: {
+          ...toPublicCourse(course),
+          modules: course.modules.map((module) => ({
+            id: module.id,
+            title: module.title,
+            order: module.order,
+            lessons: module.lessons
+              .filter((lesson) => isOwnerOrAdmin || lesson.status === 'PUBLISHED')
+              .sort((a, b) => a.order - b.order)
+              .map((lesson) => ({
+                id: lesson.id,
+                title: lesson.title,
+                order: lesson.order,
+                status: lesson.status,
+              })),
+          })),
+        },
+      };
+    },
+  );
 
   app.post<{ Body: CreateCourseBody }>(
     '/api/v1/courses',
