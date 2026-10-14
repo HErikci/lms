@@ -10,6 +10,7 @@ export interface UserFilters {
 }
 
 export interface CreateUserInput {
+  birthDate?: string | null;
   name: string;
   email: string;
   password: string;
@@ -17,6 +18,7 @@ export interface CreateUserInput {
 }
 
 export interface UpdateUserInput {
+  birthDate?: string | null;
   name?: string;
   email?: string;
   roles?: UserRole[];

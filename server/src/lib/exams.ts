@@ -39,6 +39,8 @@ export interface RawExamSettings {
   randomQuestionCount?: unknown;
   showResults?: unknown;
   audience?: unknown;
+  learningObjectives?: unknown;
+  requiresCourseCompletion?: unknown;
 }
 
 export interface ExamSettings {
@@ -56,6 +58,8 @@ export interface ExamSettings {
   randomQuestionCount: number | null;
   showResults: boolean;
   audience: ExamAudience;
+  learningObjectives: string;
+  requiresCourseCompletion: boolean;
 }
 
 export const EXAM_SETTING_FIELDS = [
@@ -73,6 +77,8 @@ export const EXAM_SETTING_FIELDS = [
   'randomQuestionCount',
   'showResults',
   'audience',
+  'learningObjectives',
+  'requiresCourseCompletion',
 ] as const;
 
 function oneOf<T extends string>(value: unknown, allowed: readonly T[], field: string, fallback: T): T {
@@ -102,6 +108,14 @@ function optionalInstant(value: unknown, field: string): Date | null {
   const date = parseDateTime(value);
   if (!date) throw validation(`${field} ofset veya Z içeren ISO tarih-saat olmalıdır.`);
   return date;
+}
+
+function objectives(value: unknown): string {
+  if (value === undefined) return '[]';
+  if (!Array.isArray(value) || value.length > 20 || value.some((item) => typeof item !== 'string' || item.trim().length === 0 || item.trim().length > 500)) {
+    throw validation('learningObjectives en fazla 20 hedef içermeli; her hedef 1–500 karakter olmalıdır.');
+  }
+  return JSON.stringify([...new Set((value as string[]).map((item) => item.trim()))]);
 }
 
 /** Sınav ayarlarını (oluşturma gövdesi ya da PATCH birleşimi) doğrular. */
@@ -151,6 +165,8 @@ export function normalizeExamSettings(raw: RawExamSettings): ExamSettings {
     randomQuestionCount: optionalInt(raw.randomQuestionCount, 'randomQuestionCount', 1, 1000),
     showResults: bool(raw.showResults, 'showResults', true),
     audience: oneOf(raw.audience, EXAM_AUDIENCES, 'audience', 'COURSE'),
+    learningObjectives: objectives(raw.learningObjectives),
+    requiresCourseCompletion: bool(raw.requiresCourseCompletion, 'requiresCourseCompletion', false),
   };
 }
 
@@ -177,6 +193,8 @@ export function toRawSettings(exam: StoredSettings): Record<(typeof EXAM_SETTING
     randomQuestionCount: exam.randomQuestionCount,
     showResults: exam.showResults,
     audience: exam.audience,
+    learningObjectives: JSON.parse(exam.learningObjectives),
+    requiresCourseCompletion: exam.requiresCourseCompletion,
   };
 }
 

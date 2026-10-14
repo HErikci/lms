@@ -38,6 +38,15 @@ function ExamCard({ exam }: { exam: MyExam }) {
         </Text>
       )}
 
+      {exam.learningObjectives.length > 0 && (
+        <div>
+          <Text role="label-md">Ölçülen öğrenme hedefleri</Text>
+          <ul className={styles.objectives}>
+            {exam.learningObjectives.map((objective, index) => <li key={index}>{objective}</li>)}
+          </ul>
+        </div>
+      )}
+
       <dl className={styles.examDetails}>
         <div className={styles.detail}>
           <dt>
@@ -72,7 +81,7 @@ function ExamCard({ exam }: { exam: MyExam }) {
             <span className={styles.srOnly}>Deneme hakkı</span>
           </dt>
           <dd>
-            <Text role="body-sm">{exam.maxAttempts === 1 ? 'Tek deneme hakkı' : `${exam.maxAttempts} deneme hakkı`}</Text>
+            <Text role="body-sm">{exam.attemptsUsed} / {exam.maxAttempts} deneme kullanıldı</Text>
           </dd>
         </div>
       </dl>
@@ -90,13 +99,24 @@ function ExamCard({ exam }: { exam: MyExam }) {
           </Text>
         )}
       </div>
+      {exam.latestResult && (
+        <Text role="body-sm" tone={exam.latestResult.passed === false ? 'warning' : 'success'}>
+          Son sonuç: %{exam.latestResult.score}
+          {exam.latestResult.passed === null ? '' : exam.latestResult.passed ? ' · Başarılı' : ' · Geçme notunun altında'}
+        </Text>
+      )}
+      {exam.startBlockedReason && <Text role="body-sm" tone="muted">{exam.startBlockedReason}</Text>}
+      <Link to={`/sinavlar/${exam.id}`} className={styles.manageLink}>
+        <Icon name="quiz" size="sm" />
+        {exam.canStart ? 'Sınava git' : exam.attemptsUsed > 0 ? 'Denememi görüntüle' : 'Sınav bilgileri'}
+      </Link>
     </Card>
   );
 }
 
 export function ExamsPage() {
   const { user } = useCurrentUser();
-  const { exams, loading, error } = useMyExams();
+  const { exams, loading, error, reload } = useMyExams();
   const canManage = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
 
   const count = (key: ExamAvailability) => exams.filter((exam) => exam.availability === key).length;
@@ -121,9 +141,10 @@ export function ExamsPage() {
       </div>
 
       {error && (
-        <Text role="body-md" tone="error" as="p">
-          {error}
-        </Text>
+        <div role="alert">
+          <Text role="body-md" tone="error" as="p">{error}</Text>
+          <button type="button" onClick={reload} className={styles.manageLink}>Yeniden dene</button>
+        </div>
       )}
 
       {!loading && !error && exams.length === 0 && (

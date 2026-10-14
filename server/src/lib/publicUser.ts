@@ -7,6 +7,7 @@ export function toPublicUser(user: {
   avatarUrl: string | null;
   locale: string;
   createdAt: Date;
+  birthDate?: Date | null;
 }) {
   const parsedRoles = (user.roles ?? '')
     .split(',')
@@ -22,5 +23,6 @@ export function toPublicUser(user: {
     avatarUrl: user.avatarUrl,
     locale: user.locale,
     createdAt: user.createdAt,
+    birthDate: user.birthDate?.toISOString().slice(0, 10) ?? null,
   };
 }

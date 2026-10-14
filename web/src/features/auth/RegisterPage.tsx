@@ -8,6 +8,7 @@ export function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [name, setName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,7 +24,7 @@ export function RegisterPage() {
     }
 
     try {
-      await register(email, password, name);
+      await register(email, password, name, birthDate || undefined);
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Kayıt başarısız.');
@@ -65,6 +66,12 @@ export function RegisterPage() {
         onChange={(e) => setConfirmPassword(e.target.value)}
         required
       />
+      <label className={styles.field}>
+        <Text role="body-sm" as="span">Doğum tarihi (isteğe bağlı)</Text>
+        <input className={styles.input} type="date" value={birthDate} min="1900-01-01"
+          max={new Date().toLocaleDateString('en-CA')} onChange={(event) => setBirthDate(event.target.value)} />
+      </label>
+      <Text role="body-sm" tone="muted">18 yaşından küçük öğrencilerin veli bağlantısını kurum yöneticisi oluşturur.</Text>
       {error && (
         <Text role="body-sm" tone="error" className={styles.error}>
           {error}

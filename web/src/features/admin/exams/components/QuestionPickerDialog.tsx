@@ -3,6 +3,7 @@ import { Badge, Button, Dialog, SearchInput, Text, formStyles } from '../../../.
 import type { QuestionDifficulty, QuestionType } from '../../../../types';
 import { useBankQuestions, useQuestionBanks } from '../../question-banks/data/questionBankApi';
 import { DIFFICULTIES, DIFFICULTY_KEYS, QUESTION_TYPES, QUESTION_TYPE_KEYS, searchKey } from '../../question-banks/questionMeta';
+import { EXAM_QUESTION_GUIDANCE, isSupportedExamQuestion } from '../examQuestionSupport';
 import styles from './QuestionPickerDialog.module.css';
 
 interface QuestionPickerDialogProps {
@@ -35,7 +36,7 @@ export function QuestionPickerDialog({ courseId, existingIds, onAdd, onClose }: 
     const term = searchKey(search.trim());
     return !term || searchKey(`${q.stem} ${q.topic ?? ''}`).includes(term);
   });
-  const selectable = visible.filter((q) => !existingIds.has(q.id));
+  const selectable = visible.filter((q) => !existingIds.has(q.id) && isSupportedExamQuestion(q.type));
   const allVisibleSelected = selectable.length > 0 && selectable.every((q) => selected.includes(q.id));
 
   const toggle = (id: string, checked: boolean) =>
@@ -61,6 +62,7 @@ export function QuestionPickerDialog({ courseId, existingIds, onAdd, onClose }: 
 
   return (
     <Dialog title="Bankadan soru ekle" size="lg" busy={busy} onClose={onClose}>
+      <Text role="body-sm" as="p" tone="muted">{EXAM_QUESTION_GUIDANCE}</Text>
       <div className={styles.filters}>
         <label className={formStyles.field}>
           <Text role="label-md" as="span" tone="muted">
@@ -144,13 +146,14 @@ export function QuestionPickerDialog({ courseId, existingIds, onAdd, onClose }: 
         )}
         {visible.map((question) => {
           const added = existingIds.has(question.id);
+          const unsupported = !isSupportedExamQuestion(question.type);
           return (
             <li key={question.id}>
-              <label className={[styles.item, added ? styles.added : ''].join(' ')}>
+              <label className={[styles.item, added || unsupported ? styles.added : ''].join(' ')}>
                 <input
                   type="checkbox"
                   checked={added || selected.includes(question.id)}
-                  disabled={added}
+                  disabled={added || unsupported}
                   onChange={(event) => toggle(question.id, event.target.checked)}
                 />
                 <span className={styles.itemBody}>
@@ -166,6 +169,7 @@ export function QuestionPickerDialog({ courseId, existingIds, onAdd, onClose }: 
                     </Badge>
                     {question.topic && <Badge tone="neutral">{question.topic}</Badge>}
                     <Badge tone="muted">{question.points} puan</Badge>
+                    {unsupported && <Badge tone="warning">Sınav ekranında desteklenmiyor</Badge>}
                     {added && (
                       <Badge tone="success" icon="check">
                         Sınavda

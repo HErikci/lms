@@ -12,6 +12,11 @@
   border: 1px solid var(--color-outline);
 }
 
+.field {
+  display: grid;
+  gap: var(--space-sm);
+}
+
 .error {
   color: var(--color-state-error);
 }

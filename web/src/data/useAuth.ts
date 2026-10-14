@@ -1,11 +1,12 @@
 import { useCallback, useState } from 'react';
 import { apiFetch } from '../lib/apiClient';
+import type { UserRole } from '../types';
 
 export interface AuthUser {
   id: string;
   email: string;
   name: string;
-  role: 'STUDENT' | 'INSTRUCTOR' | 'ADMIN';
+  role: UserRole;
 }
 
 interface AuthResponse {
@@ -28,10 +29,10 @@ export function useAuth() {
     return result.user;
   }, []);
 
-  const register = useCallback(async (email: string, password: string, name: string) => {
+  const register = useCallback(async (email: string, password: string, name: string, birthDate?: string | null) => {
     const result = await apiFetch<AuthResponse>('/api/v1/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password, name }),
+      body: JSON.stringify({ email, password, name, birthDate }),
     });
     localStorage.setItem('authToken', result.token);
     setToken(result.token);

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { Badge, Button, Card, IconButton, Text } from '../../../../components';
 import type { ExamDetail, ExamQuestionLink } from '../../../../types';
 import { QuestionPreview } from '../../question-banks/components/QuestionPreview';
 import { DIFFICULTIES, QUESTION_TYPES } from '../../question-banks/questionMeta';
+import { EXAM_QUESTION_GUIDANCE, isSupportedExamQuestion } from '../examQuestionSupport';
 import {
   addExamQuestions,
   removeExamQuestion,
@@ -102,6 +104,24 @@ export function ExamQuestionsPanel({ detail, onDetailChange }: ExamQuestionsPane
         </Button>
       </div>
 
+      <Card padding="md" elevation="1">
+        <Text role="title-md" as="h2">Hedeflere uygun basit bir sınav hazırlayın</Text>
+        {(exam.learningObjectives ?? []).length > 0 ? (
+          <ul>
+            {exam.learningObjectives.map((objective, index) => (
+              <li key={index}><Text role="body-sm">{objective}</Text></li>
+            ))}
+          </ul>
+        ) : (
+          <Text role="body-sm" as="p" tone="muted">Ölçmek istediğiniz öğrenme hedeflerini Genel ayarlar sekmesinde belirleyin.</Text>
+        )}
+        <Text role="body-sm" as="p" tone="muted">
+          Her hedefi ölçen kısa sorular hazırlayın. <Link to="/yonetim/soru-bankasi">Soru Bankası</Link> sayfasında
+          soruları ve doğru cevapları kaydedin, ardından buradan sınava ekleyin.
+        </Text>
+        <Text role="body-sm" as="p" tone="muted">{EXAM_QUESTION_GUIDANCE}</Text>
+      </Card>
+
       <div aria-live="polite">
         {error && (
           <div className={styles.error} role="alert">
@@ -148,6 +168,9 @@ export function ExamQuestionsPanel({ detail, onDetailChange }: ExamQuestionsPane
                       <Badge tone="secondary" icon={QUESTION_TYPES[question.type].icon}>
                         {QUESTION_TYPES[question.type].short}
                       </Badge>
+                      {!isSupportedExamQuestion(question.type) && (
+                        <Badge tone="warning">Yayınlamak için bu soruyu çıkarın</Badge>
+                      )}
                       <Badge tone={DIFFICULTIES[question.difficulty].tone} variant="soft">
                         {DIFFICULTIES[question.difficulty].label}
                       </Badge>

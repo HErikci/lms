@@ -8,6 +8,8 @@ import {
   CALENDAR_MANAGEMENT_ITEM,
   EXAM_MANAGEMENT_ITEM,
   FALLBACK_NAV_ITEMS,
+  GUARDIAN_NAV_ITEMS,
+  GUARDIAN_MANAGEMENT_ITEM,
   QUESTION_BANK_ITEM,
   USER_MANAGEMENT_ITEM,
 } from './navItems';
@@ -22,7 +24,7 @@ interface SidebarProps {
 
 export function Sidebar({ user, isOpen, onNavigate }: SidebarProps) {
   const { items, loading } = useNavItems(user?.role);
-  const baseItems = loading || items.length === 0 ? FALLBACK_NAV_ITEMS : items;
+  const baseItems = user?.role === 'GUARDIAN' ? GUARDIAN_NAV_ITEMS : loading || items.length === 0 ? FALLBACK_NAV_ITEMS : items;
   const isStaff = user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR';
   const staffItems = isStaff
     ? [CALENDAR_MANAGEMENT_ITEM, ANNOUNCEMENT_MANAGEMENT_ITEM, EXAM_MANAGEMENT_ITEM, QUESTION_BANK_ITEM].filter(
@@ -30,7 +32,7 @@ export function Sidebar({ user, isOpen, onNavigate }: SidebarProps) {
       )
     : [];
   const withStaff = [...baseItems, ...staffItems];
-  const adminItems = [USER_MANAGEMENT_ITEM, ADMIN_MENU_MANAGEMENT_ITEM].filter(
+  const adminItems = [USER_MANAGEMENT_ITEM, GUARDIAN_MANAGEMENT_ITEM, ADMIN_MENU_MANAGEMENT_ITEM].filter(
     (extra) => !withStaff.some((item) => item.path === extra.path),
   );
   const navItems = user?.role === 'ADMIN' ? [...withStaff, ...adminItems] : withStaff;
@@ -48,7 +50,7 @@ export function Sidebar({ user, isOpen, onNavigate }: SidebarProps) {
               Akademi LMS
             </Text>
             <Text role="label-md" tone="secondary">
-              Öğrenci Portalı
+              {user?.role === 'GUARDIAN' ? 'Veli Portalı' : 'Öğrenci Portalı'}
             </Text>
           </span>
         </div>

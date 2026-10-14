@@ -81,6 +81,14 @@
   white-space: pre-line;
 }
 
+.objectives {
+  padding-left: var(--space-lg);
+  margin: var(--space-sm) 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
 .examDetails {
   display: flex;
   flex-direction: column;

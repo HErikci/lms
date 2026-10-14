@@ -15,9 +15,11 @@ import { registerCalendarRoutes } from './routes/calendar.js';
 import { registerAnnouncementRoutes } from './routes/announcements.js';
 import { registerQuestionBankRoutes } from './routes/questionBanks.js';
 import { registerExamRoutes } from './routes/exams.js';
+import { registerExamAttemptRoutes } from './routes/examAttempts.js';
 import { registerUserRoutes } from './routes/users.js';
 import { registerAdminUserRoutes } from './routes/adminUsers.js';
 import { registerNavItemRoutes } from './routes/nav-items.js';
+import { registerGuardianRoutes } from './routes/guardians.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: true });
@@ -54,9 +56,11 @@ export async function buildApp(): Promise<FastifyInstance> {
   registerAnnouncementRoutes(app);
   registerQuestionBankRoutes(app);
   registerExamRoutes(app);
+  registerExamAttemptRoutes(app);
   registerUserRoutes(app);
   registerAdminUserRoutes(app);
   registerNavItemRoutes(app);
+  registerGuardianRoutes(app);
 
   await app.ready();
   return app;

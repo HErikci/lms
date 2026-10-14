@@ -4,7 +4,9 @@ import { AppShell } from '../layout/AppShell';
 import { RequireAuth } from './RequireAuth';
 import { RequireRole } from './RequireRole';
 import { RedirectIfAuthed } from './RedirectIfAuthed';
-import { DashboardPage } from '../features/dashboard';
+import { HomePage } from './HomePage';
+import { GuardianPage } from '../features/guardians/GuardianPage';
+import { AdminGuardiansPage } from '../features/guardians/AdminGuardiansPage';
 import { CoursesPage, CourseDetailPage, LessonDetailPage } from '../features/courses';
 import { AnnouncementsPage, AnnouncementDetailPage, AnnouncementsAdminPage } from '../features/announcements';
 import { AssignmentsPage } from '../features/assignments';
@@ -40,7 +42,11 @@ export const router = createBrowserRouter([
         path: '/',
         element: <AppShell />,
         children: [
-          { index: true, element: <DashboardPage /> },
+          { index: true, element: <HomePage /> },
+          {
+            element: <RequireRole allow={['GUARDIAN']} />,
+            children: [{ path: 'veli', element: <GuardianPage /> }],
+          },
           { path: 'kurslarim', element: <CoursesPage /> },
           { path: 'kurslarim/:id', element: <CourseDetailPage /> },
           { path: 'kurslarim/:courseId/ders/:lessonId', element: <LessonDetailPage /> },
@@ -65,6 +71,7 @@ export const router = createBrowserRouter([
               { path: 'yonetim/kurslar/:id/icerik', element: <CourseContentPage /> },
               { path: 'yonetim/menu', element: <AdminNavItemsPage /> },
               { path: 'yonetim/kullanicilar', element: <AdminUsersPage /> },
+              { path: 'yonetim/veliler', element: <AdminGuardiansPage /> },
             ],
           },
           {

@@ -7,7 +7,7 @@ import styles from './AppShell.module.css';
 
 /** Sidebar + Topbar kabuğu; sayfalar <Outlet /> içine render edilir. */
 export function AppShell() {
-  const { user, switchRole } = useCurrentUser();
+  const { user, switchRole, loading, error } = useCurrentUser();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -41,7 +41,7 @@ export function AppShell() {
           onMenuToggle={() => setMenuOpen((open) => !open)}
         />
         <main id="main-content" className={styles.main}>
-          <Outlet />
+          <Outlet context={{ user, loading, error }} />
         </main>
       </div>
     </div>

@@ -188,6 +188,8 @@ describe('exam settings', () => {
       randomQuestionCount: null,
       showResults: true,
       audience: 'COURSE',
+      learningObjectives: '[]',
+      requiresCourseCompletion: false,
     });
   });
 

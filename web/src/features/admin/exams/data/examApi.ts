@@ -12,6 +12,8 @@ export interface NewExamInput {
   title: string;
   type: ExamType;
   description: string | null;
+  learningObjectives: string[];
+  requiresCourseCompletion: boolean;
 }
 
 /** GET /api/v1/exams/manage: kullanıcının yönetebildiği sınavlar. */

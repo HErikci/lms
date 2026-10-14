@@ -3,6 +3,7 @@ import type { UserProfile } from '../../../types';
 import styles from './ProfileHeader.module.css';
 
 const roleLabels: Record<UserProfile['role'], string> = {
+  GUARDIAN: 'Veli',
   STUDENT: 'Öğrenci',
   INSTRUCTOR: 'Eğitmen',
   ADMIN: 'Yönetici',

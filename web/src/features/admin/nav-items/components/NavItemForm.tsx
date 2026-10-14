@@ -13,6 +13,7 @@ interface NavItemFormProps {
 }
 
 const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
+  { value: 'GUARDIAN', label: 'Veli' },
   { value: 'STUDENT', label: 'Öğrenci' },
   { value: 'INSTRUCTOR', label: 'Okutman' },
   { value: 'ADMIN', label: 'Yönetici' },

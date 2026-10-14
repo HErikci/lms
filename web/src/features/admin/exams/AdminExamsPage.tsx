@@ -64,7 +64,8 @@ export function AdminExamsPage() {
             Sınav Yönetimi
           </Text>
           <Text role="body-md" tone="muted" as="p">
-            Sınav tanımlayın, soru bankalarından soru ekleyin, sınava girecek öğrencileri belirleyin ve yayınlayın.
+            Eğitim sonu sınavı için öğrenme hedeflerini belirleyin, soru bankasından kısa sorular seçin ve yayınlayın.
+            Öğrenci, kursu tamamladığında sınava girebilir.
           </Text>
         </div>
         <div className={styles.headerActions}>
@@ -160,6 +161,7 @@ export function AdminExamsPage() {
                         <Text role="body-sm" tone="muted">
                           {exam.course.title} · {EXAM_TYPES[exam.type].label}
                         </Text>
+                        {exam.requiresCourseCompletion && <Badge tone="cyan" icon="school">Eğitim sonu</Badge>}
                       </span>
                     </td>
                     <td data-label="Durum">

@@ -10,6 +10,7 @@ import { ExamQuestionsPanel } from './components/ExamQuestionsPanel';
 import { ExamSettingsForm } from './components/ExamSettingsForm';
 import { deleteExam, updateExam, useExamCandidates, useExamDetail } from './data/examApi';
 import styles from './ExamEditorPage.module.css';
+import { isSupportedExamQuestion } from './examQuestionSupport';
 
 type TabKey = 'settings' | 'questions' | 'students';
 
@@ -54,6 +55,20 @@ export function ExamEditorPage() {
   // Sunucudaki yayın koşullarının istemci tarafı görünümü (asıl denetim sunucudadır).
   const checks = [
     { ok: questions.length > 0, label: questions.length > 0 ? `${questions.length} soru eklendi` : 'En az bir soru eklenmeli' },
+    {
+      ok: questions.every((link) => isSupportedExamQuestion(link.question.type)),
+      label: questions.every((link) => isSupportedExamQuestion(link.question.type))
+        ? 'Soru türleri öğrenci sınav ekranıyla uyumlu'
+        : 'Eşleştirme ve açık uçlu soruları çıkarın; bu türler henüz desteklenmiyor',
+    },
+    {
+      ok: !exam.requiresCourseCompletion || (exam.learningObjectives ?? []).length > 0,
+      label: exam.requiresCourseCompletion
+        ? (exam.learningObjectives ?? []).length > 0
+          ? `${exam.learningObjectives.length} öğrenme hedefi belirlendi; sınav eğitim tamamlanınca açılır`
+          : 'Eğitim sonu sınavı için öğrenme hedefi eklenmeli'
+        : 'Eğitim tamamlanmadan da sınava girilebilir',
+    },
     {
       ok: exam.randomQuestionCount === null || exam.randomQuestionCount <= questions.length,
       label:
@@ -132,6 +147,7 @@ export function ExamEditorPage() {
               <Badge tone="secondary" icon={EXAM_TYPES[exam.type].icon}>
                 {EXAM_TYPES[exam.type].label}
               </Badge>
+              {exam.requiresCourseCompletion && <Badge tone="cyan" icon="school">Eğitim sonu</Badge>}
               <Badge tone={status.tone} icon={status.icon}>
                 {status.label}
               </Badge>

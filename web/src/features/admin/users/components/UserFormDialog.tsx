@@ -22,6 +22,7 @@ interface UserFormDialogProps {
 export function UserFormDialog({ user, isSelf, onCreate, onUpdate, onClose }: UserFormDialogProps) {
   const [name, setName] = useState(user?.name ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
+  const [birthDate, setBirthDate] = useState(user?.birthDate?.slice(0, 10) ?? '');
   const [roles, setRoles] = useState<UserRole[]>(user?.roles ?? ['STUDENT']);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,6 +41,9 @@ export function UserFormDialog({ user, isSelf, onCreate, onUpdate, onClose }: Us
     if (!name.trim()) return 'Ad soyad zorunludur.';
     if (!EMAIL_RE.test(email.trim())) return 'Geçerli bir e-posta adresi girin.';
     if (roles.length === 0) return 'En az bir rol seçmelisiniz.';
+    if (birthDate && (birthDate < '1900-01-01' || birthDate > new Date().toLocaleDateString('en-CA'))) {
+      return '1900 yılından bugüne kadar geçerli bir doğum tarihi girin.';
+    }
     if ((!user || password) && password.length < MIN_PASSWORD) {
       return `Şifre en az ${MIN_PASSWORD} karakter olmalıdır.`;
     }
@@ -61,6 +65,7 @@ export function UserFormDialog({ user, isSelf, onCreate, onUpdate, onClose }: Us
         const input: UpdateUserInput = {};
         if (name.trim() !== user.name) input.name = name.trim();
         if (email.trim() !== user.email) input.email = email.trim();
+        if ((birthDate || null) !== (user.birthDate?.slice(0, 10) ?? null)) input.birthDate = birthDate || null;
         const sameRoles = roles.length === user.roles.length && roles.every((r) => user.roles.includes(r));
         if (!sameRoles) input.roles = roles;
         if (password) input.password = password;
@@ -70,7 +75,7 @@ export function UserFormDialog({ user, isSelf, onCreate, onUpdate, onClose }: Us
         }
         await onUpdate(input);
       } else {
-        await onCreate({ name: name.trim(), email: email.trim(), password, roles });
+        await onCreate({ name: name.trim(), email: email.trim(), password, roles, birthDate: birthDate || null });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'İşlem tamamlanamadı.');
@@ -110,6 +115,13 @@ export function UserFormDialog({ user, isSelf, onCreate, onUpdate, onClose }: Us
             required
             aria-required="true"
           />
+        </label>
+
+        <label className={styles.field}>
+          <Text role="label-md" as="span" tone="muted">Doğum tarihi (isteğe bağlı)</Text>
+          <input className={styles.input} type="date" value={birthDate} min="1900-01-01"
+            max={new Date().toLocaleDateString('en-CA')} onChange={(event) => setBirthDate(event.target.value)} />
+          <Text role="body-sm" as="span" tone="muted">18 yaşından küçük öğrenciler veli yönetiminden bir veliye bağlanabilir.</Text>
         </label>
 
         <fieldset className={styles.fieldset}>

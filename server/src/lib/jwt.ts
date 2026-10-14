@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-type Role = 'STUDENT' | 'INSTRUCTOR' | 'ADMIN';
+type Role = 'STUDENT' | 'GUARDIAN' | 'INSTRUCTOR' | 'ADMIN';
 
 export interface TokenPayload {
   userId: string;

@@ -6,12 +6,14 @@ import type { UserProfile, UserRole } from '../../types';
 import styles from './Topbar.module.css';
 
 const ROLE_LABELS: Record<UserRole, string> = {
+  GUARDIAN: 'Veli',
   STUDENT: 'Öğrenci',
   INSTRUCTOR: 'Eğitmen',
   ADMIN: 'Yönetici',
 };
 
 const ROLE_SWITCHER_LABELS: Record<UserRole, string> = {
+  GUARDIAN: 'Veli Paneli',
   STUDENT: 'Öğrenci Paneli',
   INSTRUCTOR: 'Eğitmen Paneli',
   ADMIN: 'Yönetici Paneli',
@@ -67,9 +69,7 @@ export function Topbar({ user, switchRole, onMenuToggle, isMenuOpen }: TopbarPro
       setSwitchError(null);
       await switchRole(role);
       setRoleMenuOpen(false);
-      if (role !== 'ADMIN') {
-        navigate('/');
-      }
+      navigate(role === 'GUARDIAN' ? '/veli' : '/');
     } catch (err) {
       setSwitchError(err instanceof Error ? err.message : 'Rol değiştirilemedi.');
     }

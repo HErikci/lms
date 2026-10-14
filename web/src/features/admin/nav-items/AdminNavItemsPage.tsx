@@ -7,6 +7,7 @@ import { NavItemForm } from './components/NavItemForm';
 import styles from './AdminNavItemsPage.module.css';
 
 const ROLE_LABELS: Record<string, string> = {
+  GUARDIAN: 'Veli',
   STUDENT: 'Öğrenci',
   INSTRUCTOR: 'Okutman',
   ADMIN: 'Yönetici',

@@ -4,6 +4,7 @@ import { prisma } from '../lib/prisma.js';
 import { requireAuth, requireRole } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
 import { assertCanManageCourse, assignedCourseIds } from '../lib/courseAccess.js';
+import { courseCompleted, expireAttempt, startBlockedReason } from '../lib/examAttempts.js';
 import {
   EXAM_SETTING_FIELDS,
   effectiveQuestionCount,
@@ -141,6 +142,8 @@ function serializeExam(
     randomQuestionCount: exam.randomQuestionCount,
     showResults: exam.showResults,
     audience: exam.audience,
+    learningObjectives: JSON.parse(exam.learningObjectives) as string[],
+    requiresCourseCompletion: exam.requiresCourseCompletion,
     availability: examAvailability(exam, now),
     questionCount: stats.questionCount,
     totalPoints: stats.totalPoints,
@@ -214,26 +217,52 @@ export function registerExamRoutes(app: FastifyInstance) {
     const exams = await prisma.exam.findMany({
       where: {
         status: 'PUBLISHED',
+        course: { status: 'PUBLISHED' },
         courseId: { in: enrollments.map((row) => row.courseId) },
         OR: [{ audience: 'COURSE' }, { candidates: { some: { userId } } }],
       },
       include: { course: { select: { id: true, title: true } }, _count: { select: { questions: true } } },
     });
 
-    const items = exams.map((exam) => ({
-      id: exam.id,
-      title: exam.title,
-      description: exam.description,
-      type: exam.type,
-      course: exam.course,
-      startsAt: exam.startsAt?.toISOString() ?? null,
-      endsAt: exam.endsAt?.toISOString() ?? null,
-      durationMinutes: exam.durationMinutes,
-      maxAttempts: exam.maxAttempts,
-      passingScore: exam.passingScore,
-      questionCount: effectiveQuestionCount(exam.randomQuestionCount, exam._count.questions),
-      availability: examAvailability(exam, now),
-    }));
+    const items = [];
+    for (const exam of exams) {
+      const progress = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`UPDATE "Exam" SET "id" = "id" WHERE "id" = ${exam.id}`;
+        const completed = await courseCompleted(tx, exam.courseId, userId);
+        const attemptsUsed = await tx.examAttempt.count({ where: { examId: exam.id, userId } });
+        const latestRow = await tx.examAttempt.findFirst({ where: { examId: exam.id, userId }, orderBy: { number: 'desc' } });
+        const latest = await expireAttempt(tx, latestRow, new Date());
+        const reason = latest?.status === 'IN_PROGRESS' ? null : await startBlockedReason(tx, exam, completed, attemptsUsed, now);
+        const latestSubmitted = latest?.status === 'SUBMITTED' ? latest : await tx.examAttempt.findFirst({
+          where: { examId: exam.id, userId, status: 'SUBMITTED' }, orderBy: { number: 'desc' },
+        });
+        const latestResult = latestSubmitted?.result ? JSON.parse(latestSubmitted.result) as { score: number; passed: boolean | null } : null;
+        return {
+          courseCompleted: completed,
+          attemptsUsed,
+          canStart: reason === null,
+          startBlockedReason: reason,
+          latestResult: latestResult ? { score: latestResult.score, passed: latestResult.passed } : null,
+        };
+      }, { timeout: 10000 });
+      items.push({
+        id: exam.id,
+        title: exam.title,
+        description: exam.description,
+        type: exam.type,
+        course: exam.course,
+        startsAt: exam.startsAt?.toISOString() ?? null,
+        endsAt: exam.endsAt?.toISOString() ?? null,
+        durationMinutes: exam.durationMinutes,
+        maxAttempts: exam.maxAttempts,
+        passingScore: exam.passingScore,
+        questionCount: effectiveQuestionCount(exam.randomQuestionCount, exam._count.questions),
+        availability: examAvailability(exam, now),
+        learningObjectives: JSON.parse(exam.learningObjectives) as string[],
+        requiresCourseCompletion: exam.requiresCourseCompletion,
+        ...progress,
+      });
+    }
     // Açık olanlar önce (en erken kapanan başta), sonra yaklaşanlar (en erken açılan), en son kapananlar (en yeni).
     const time = (iso: string | null, fallback: number) => (iso ? Date.parse(iso) : fallback);
     items.sort((a, b) => {

@@ -6,11 +6,13 @@ import { requireAuth } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
 import { toPublicUser } from '../lib/publicUser.js';
 import { parseRoles } from '../lib/users.js';
+import { parseBirthDate } from '../lib/guardians.js';
 
 interface RegisterBody {
   email: string;
   password: string;
   name: string;
+  birthDate?: string | null;
 }
 
 interface LoginBody {
@@ -42,7 +44,7 @@ export function registerAuthRoutes(app: FastifyInstance) {
     }
     const passwordHash = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
-      data: { email, passwordHash, name, role: 'STUDENT', roles: 'STUDENT' },
+      data: { email, passwordHash, name, role: 'STUDENT', roles: 'STUDENT', birthDate: request.body.birthDate === undefined ? null : parseBirthDate(request.body.birthDate) },
     });
     const roles = parseRoles(user);
     const token = signToken({ userId: user.id, role: user.role as TokenPayload['role'], roles });

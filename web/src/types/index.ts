@@ -1,7 +1,7 @@
 import type { BadgeTone } from '../components';
 import type { StatTone } from '../components';
 
-export type UserRole = 'STUDENT' | 'INSTRUCTOR' | 'ADMIN';
+export type UserRole = 'STUDENT' | 'GUARDIAN' | 'INSTRUCTOR' | 'ADMIN';
 
 export interface UserProfile {
   id: string;
@@ -12,6 +12,7 @@ export interface UserProfile {
   avatarUrl: string | null;
   locale: string;
   createdAt: string;
+  birthDate?: string | null;
 }
 
 export interface StudentProfile {
@@ -402,6 +403,8 @@ export interface ExamSettings {
   randomQuestionCount: number | null;
   showResults: boolean;
   audience: ExamAudience;
+  learningObjectives: string[];
+  requiresCourseCompletion: boolean;
 }
 
 export interface ManagedExam extends ExamSettings {
@@ -452,4 +455,38 @@ export interface MyExam {
   passingScore: number | null;
   questionCount: number;
   availability: ExamAvailability;
+  learningObjectives: string[];
+  requiresCourseCompletion: boolean;
+  courseCompleted: boolean;
+  attemptsUsed: number;
+  canStart: boolean;
+  startBlockedReason: string | null;
+  latestResult: { score: number; passed: boolean | null } | null;
+}
+
+/** Student-facing attempt data excludes correct answers until results are released. */
+export interface StudentExamAttempt {
+  id: string;
+  examId: string;
+  title: string;
+  status: 'IN_PROGRESS' | 'SUBMITTED';
+  startedAt: string;
+  deadlineAt: string | null;
+  submittedAt: string | null;
+  learningObjectives: string[];
+  questions: {
+    id: string;
+    type: 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'TRUE_FALSE' | 'SHORT_ANSWER' | 'FILL_BLANK';
+    stem: string;
+    points: number;
+    content: { options?: { id: string; text: string }[]; blankCount?: number };
+  }[];
+  answers: Record<string, string | boolean | string[]>;
+  result: {
+    score: number;
+    earnedPoints: number;
+    totalPoints: number;
+    passed: boolean | null;
+    feedback: { questionId: string; correct: boolean; correctAnswer: string | boolean | string[]; explanation: string | null }[] | null;
+  } | null;
 }

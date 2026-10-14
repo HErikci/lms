@@ -4,6 +4,14 @@ export interface NavItem {
   icon: string;
 }
 
+export const GUARDIAN_NAV_ITEMS: NavItem[] = [
+  { path: '/veli', label: 'Çocuklarım / Raporlar', icon: 'family_restroom' },
+  { path: '/profil', label: 'Profilim', icon: 'person' },
+];
+export const GUARDIAN_MANAGEMENT_ITEM: NavItem = {
+  path: '/yonetim/veliler', label: 'Veli Yönetimi', icon: 'family_restroom',
+};
+
 /**
  * Menü artık DB üzerinden (GET /api/v1/nav-items/me, bkz. useNavItems.ts)
  * yüklenir. Bu liste yalnızca yükleme sırasında / istek hata verdiğinde

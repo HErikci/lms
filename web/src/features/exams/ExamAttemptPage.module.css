@@ -1,0 +1,108 @@
+.backLink {
+  color: var(--color-secondary);
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.backLink:hover { text-decoration: underline; }
+
+.header,
+.progress,
+.submitBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.header h1 { margin: 0 0 var(--space-sm); }
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: var(--color-secondary-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  font-variant-numeric: tabular-nums;
+}
+
+.objectives {
+  padding-left: var(--space-lg);
+  margin: var(--space-md) 0 0;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+.questions,
+.options,
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.question { min-width: 0; border: 0; }
+.legend { font-weight: 600; color: var(--color-secondary); }
+.preserveLines { white-space: pre-line; overflow-wrap: anywhere; }
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-surface-container-low);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.option:has(input:checked) {
+  border-color: var(--color-secondary);
+  background: var(--color-secondary-soft);
+}
+
+.option input { margin-top: var(--space-xs); accent-color: var(--color-secondary); }
+.option span { overflow-wrap: anywhere; }
+.textLabel { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+.input {
+  width: 100%;
+  padding: var(--space-md);
+  color: var(--color-text-main);
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  font: inherit;
+}
+
+.input:disabled { background: var(--color-surface-container-low); }
+.input:focus-visible,
+.option input:focus-visible,
+.backLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.submitBar {
+  padding: var(--space-lg);
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.notice {
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-state-warning-soft);
+}
+
+.result { align-items: flex-start; }
+.result h2,
+.result p { margin: 0; }
+
+@media (max-width: 600px) {
+  .submitBar { align-items: stretch; flex-direction: column; }
+}

@@ -581,6 +581,8 @@ Ayarlar (FR-42):
 | `randomQuestionCount` | int or null | doluysa her öğrenciye bağlı sorulardan bu kadarı rastgele seçilir |
 | `showResults` | boolean | `true` (sonuçta doğru cevap ve açıklama gösterimi, FR-45) |
 | `audience` | `COURSE` / `SELECTED` | `COURSE`: kursa kayıtlı herkes; `SELECTED`: yalnızca seçilen öğrenciler |
+| `learningObjectives` | string[] | En fazla 20 hedef, her biri 1–500 karakter; varsayılan `[]` |
+| `requiresCourseCompletion` | boolean | `false`; açıksa tüm yayımlanmış dersler tamamlanmalıdır, sıfır ders tamamlanmış sayılmaz |
 
 Yayın koşulları: en az bir soru; `randomQuestionCount` ≤ soru sayısı; `SELECTED` modunda kursa kayıtlı en az bir seçili öğrenci. Yayındaki sınavda bu koşulları bozan her değişiklik (ayar, soru çıkarma, öğrenci listesi) 409 `EXAM_NOT_PUBLISHABLE` ile reddedilir ve geri alınır.
 
@@ -630,3 +632,36 @@ Body: `{ "questionIds": string[] }`: sınavdaki soruların tamamı, her biri bir
 ### PUT /api/v1/exams/:id/candidates
 Body: `{ "userIds": string[] }`: seçili öğrenci listesini tümüyle değiştirir; hepsi kursa kayıtlı olmalıdır (aksi 400).
 200: GET ile aynı · 409 `EXAM_NOT_PUBLISHABLE` (yayındaki `SELECTED` sınavda boş liste)
+
+## Öğrenci sınav uygulaması
+
+Aktif `STUDENT` rolü gerekir. Kurs ve sınav yayımlanmış olmalı, öğrenci kursa kayıtlı ve sınavın hedef kitlesinde olmalıdır. Erişilemeyen sınav veya başkasının denemesi 404 döner.
+
+`GET /api/v1/exams/my` yalnızca yayımlanmış kursların sınavlarını gösterir ve her sınava şu alanları ekler: `learningObjectives`, `requiresCourseCompletion`, `courseCompleted`, `attemptsUsed`, `canStart`, `startBlockedReason: string|null`, `latestResult: {score, passed}|null`. Devam eden deneme varsa `canStart` devam edebilmek anlamına gelir. Süresi dolan denemeler kayıtlı cevaplarıyla otomatik teslim edilir.
+
+- `POST /api/v1/exams/:id/attempts`: Deneme başlatır veya mevcut denemeyi döner. Başlama engeli 409 `EXAM_START_BLOCKED`; hak tüketilmez. Devam eden deneme süresi dolmuşsa önce o denemenin teslim edilmiş sonucu döner; yeni deneme için tekrar çağrılır.
+- `GET /api/v1/exams/:id/attempts/current`: En son denemeyi veya `{attempt: null}` döner.
+- `PUT /api/v1/exams/:id/attempts/:attemptId/answers`: `{answers: Record<questionId, string|boolean|string[]>}` ile cevap taslağını tümüyle kaydeder.
+- `POST /api/v1/exams/:id/attempts/:attemptId/submit`: Aynı gövde ile teslim eder. Tekrar teslim, sonucu değiştirmeden önceki sonucu döner.
+
+Yanıtlar `{attempt: StudentExamAttempt}` biçimindedir:
+
+```ts
+type StudentExamAttempt = {
+  id: string; examId: string; title: string;
+  status: 'IN_PROGRESS' | 'SUBMITTED';
+  startedAt: string; deadlineAt: string | null; submittedAt: string | null;
+  learningObjectives: string[];
+  questions: { id: string; type: string; stem: string; points: number;
+    content: { options?: { id: string; text: string }[]; blankCount?: number } }[];
+  answers: Record<string, string | boolean | string[]>;
+  result: null | { score: number; earnedPoints: number; totalPoints: number;
+    passed: boolean | null;
+    feedback: null | { questionId: string; correct: boolean;
+      correctAnswer: string | boolean | string[]; explanation: string | null }[] };
+};
+```
+
+Desteklenen türler: `SINGLE_CHOICE`, `MULTIPLE_CHOICE`, `TRUE_FALSE`, `SHORT_ANSWER`, `FILL_BLANK`. Diğer türler varsa başlamaya izin verilmez. Kısa cevap ve boşluk doldurmada kırpma ve soru ayarına göre Türkçe küçük harf eşleştirmesi uygulanır. Çoklu seçim ve boşluk doldurma tam doğruysa puan alır; kısmi puan yoktur. Puan sınava özgü soru puanlarıyla ağırlıklandırılır; yüzde iki ondalığa yuvarlanır.
+
+Sorular, seçenek sırası, cevap anahtarı, başlık, hedefler, geçme notu ve sonuç görünürlüğü deneme başında sabitlenir. Son tarih süre sınırı ile sınav bitişinin erken olanıdır. Süre dolduktan sonra yeni cevaplar kabul edilmez; son kaydedilen taslak puanlanır. `showResults=false` olduğunda puan görünür, doğru cevap ve açıklama içeren `feedback` null olur. Teslim öncesinde doğru cevaplar ve açıklamalar hiçbir öğrenci yanıtında bulunmaz. Hak sınırı ve tek aktif deneme, veritabanı işlemi ve benzersiz indekslerle korunur.

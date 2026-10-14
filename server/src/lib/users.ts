@@ -5,7 +5,7 @@ import { toPublicUser } from './publicUser.js';
 export type Role = TokenPayload['role'];
 
 /** Kanonik rol sırası: en az yetkiliden en çoğa. CSV bu sırayla yazılır; varsayılan aktif rol ilk sahip olunandır. */
-export const ROLE_ORDER: readonly Role[] = ['STUDENT', 'INSTRUCTOR', 'ADMIN'];
+export const ROLE_ORDER: readonly Role[] = ['STUDENT', 'GUARDIAN', 'INSTRUCTOR', 'ADMIN'];
 
 export const MAX_NAME = 100;
 export const MIN_PASSWORD = 8;
@@ -81,6 +81,7 @@ export interface AdminUserRow {
   avatarUrl: string | null;
   locale: string;
   disabledAt: Date | null;
+  birthDate?: Date | null;
   createdAt: Date;
   _count: { enrollments: number; instructorAssignments: number };
 }

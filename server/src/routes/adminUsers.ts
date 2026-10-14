@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma.js';
 import { requireAuth, requireRole } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
+import { parseBirthDate } from '../lib/guardians.js';
 import {
   DEFAULT_PAGE_SIZE,
   MAX_PAGE_SIZE,
@@ -28,7 +29,7 @@ interface ListQuery {
 }
 
 const STATUSES = ['ACTIVE', 'DISABLED'] as const;
-const PATCH_FIELDS = ['name', 'email', 'roles', 'password', 'disabled'] as const;
+const PATCH_FIELDS = ['name', 'email', 'roles', 'password', 'disabled', 'birthDate'] as const;
 
 function validation(message: string): AppError {
   return new AppError('VALIDATION_ERROR', message, 400);
@@ -121,6 +122,7 @@ export function registerAdminUserRoutes(app: FastifyInstance) {
         passwordHash: await bcrypt.hash(password, 12),
         roles: serializeRoles(roles),
         role: defaultActiveRole(roles),
+        birthDate: body.birthDate === undefined ? null : parseBirthDate(body.birthDate),
       },
       include: adminUserCount,
     });
@@ -145,9 +147,11 @@ export function registerAdminUserRoutes(app: FastifyInstance) {
       role?: Role;
       passwordHash?: string;
       disabledAt?: Date | null;
+      birthDate?: Date | null;
     } = {};
 
     if (body.name !== undefined) data.name = parseNameInput(body.name);
+    if (body.birthDate !== undefined) data.birthDate = parseBirthDate(body.birthDate);
     if (body.email !== undefined) {
       data.email = parseEmailInput(body.email);
       await assertEmailFree(data.email, existing.id);

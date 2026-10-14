@@ -4,6 +4,7 @@ import { Button, Dialog, Text, formStyles } from '../../../../components';
 import type { ExamType } from '../../../../types';
 import { EXAM_TYPES, EXAM_TYPE_KEYS } from '../../../exams/examMeta';
 import type { NewExamInput } from '../data/examApi';
+import { LearningObjectivesFields, parseLearningObjectives } from './LearningObjectivesFields';
 
 interface ExamCreateDialogProps {
   courses: { id: string; title: string }[];
@@ -16,6 +17,8 @@ export function ExamCreateDialog({ courses, onCreate, onClose }: ExamCreateDialo
   const [courseId, setCourseId] = useState('');
   const [type, setType] = useState<ExamType>('QUIZ');
   const [description, setDescription] = useState('');
+  const [learningObjectives, setLearningObjectives] = useState('');
+  const [requiresCourseCompletion, setRequiresCourseCompletion] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -26,10 +29,18 @@ export function ExamCreateDialog({ courses, onCreate, onClose }: ExamCreateDialo
     event.preventDefault();
     if (!title.trim()) return setError('Sınav adı zorunludur.');
     if (!selectedCourseId) return setError('Bir kurs seçmelisiniz.');
+    const objectives = parseLearningObjectives(learningObjectives);
+    if (typeof objectives === 'string') return setError(objectives);
+    if (requiresCourseCompletion && objectives.length === 0) {
+      return setError('Eğitim sonu sınavı için en az bir öğrenme hedefi yazın.');
+    }
     setBusy(true);
     setError(null);
     try {
-      await onCreate({ title: title.trim(), courseId: selectedCourseId, type, description: description.trim() || null });
+      await onCreate({
+        title: title.trim(), courseId: selectedCourseId, type, description: description.trim() || null,
+        learningObjectives: objectives, requiresCourseCompletion,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sınav oluşturulamadı.');
       setBusy(false);
@@ -97,6 +108,13 @@ export function ExamCreateDialog({ courses, onCreate, onClose }: ExamCreateDialo
             onChange={(event) => setDescription(event.target.value)}
           />
         </label>
+
+        <LearningObjectivesFields
+          objectives={learningObjectives}
+          requiresCourseCompletion={requiresCourseCompletion}
+          onObjectivesChange={setLearningObjectives}
+          onCompletionChange={setRequiresCourseCompletion}
+        />
 
         {error && (
           <div className={formStyles.error} role="alert">

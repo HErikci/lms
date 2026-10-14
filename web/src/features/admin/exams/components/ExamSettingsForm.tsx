@@ -4,6 +4,7 @@ import { Button, Text, formStyles } from '../../../../components';
 import type { ExamSettings, ExamType, ManagedExam } from '../../../../types';
 import { toDateTimeInput } from '../../../calendar/dateUtils';
 import { EXAM_TYPES, EXAM_TYPE_KEYS } from '../../../exams/examMeta';
+import { LearningObjectivesFields, parseLearningObjectives } from './LearningObjectivesFields';
 
 interface FormState {
   title: string;
@@ -18,6 +19,8 @@ interface FormState {
   shuffleQuestions: boolean;
   shuffleOptions: boolean;
   showResults: boolean;
+  learningObjectives: string;
+  requiresCourseCompletion: boolean;
 }
 
 const toLocal = (iso: string | null) => (iso ? toDateTimeInput(new Date(iso)) : '');
@@ -37,6 +40,8 @@ function fromExam(exam: ManagedExam): FormState {
     shuffleQuestions: exam.shuffleQuestions,
     shuffleOptions: exam.shuffleOptions,
     showResults: exam.showResults,
+    learningObjectives: (exam.learningObjectives ?? []).join('\n'),
+    requiresCourseCompletion: exam.requiresCourseCompletion ?? false,
   };
 }
 
@@ -50,6 +55,11 @@ function parseOptionalInt(value: string, label: string, min: number, max: number
 
 function toPatch(state: FormState): Partial<ExamSettings> | string {
   if (!state.title.trim()) return 'Sınav adı zorunludur.';
+  const learningObjectives = parseLearningObjectives(state.learningObjectives);
+  if (typeof learningObjectives === 'string') return learningObjectives;
+  if (state.requiresCourseCompletion && learningObjectives.length === 0) {
+    return 'Eğitim sonu sınavı için en az bir öğrenme hedefi yazın.';
+  }
   const startsAt = state.startsAt ? new Date(state.startsAt) : null;
   const endsAt = state.endsAt ? new Date(state.endsAt) : null;
   if (startsAt && endsAt && endsAt <= startsAt) return 'Bitiş zamanı başlangıçtan sonra olmalıdır.';
@@ -79,6 +89,8 @@ function toPatch(state: FormState): Partial<ExamSettings> | string {
     shuffleQuestions: state.shuffleQuestions,
     shuffleOptions: state.shuffleOptions,
     showResults: state.showResults,
+    learningObjectives,
+    requiresCourseCompletion: state.requiresCourseCompletion,
   };
 }
 
@@ -169,6 +181,13 @@ export function ExamSettingsForm({ exam, questionCount, onSave }: ExamSettingsFo
           onChange={(event) => set('description', event.target.value)}
         />
       </label>
+
+      <LearningObjectivesFields
+        objectives={state.learningObjectives}
+        requiresCourseCompletion={state.requiresCourseCompletion}
+        onObjectivesChange={(value) => set('learningObjectives', value)}
+        onCompletionChange={(value) => set('requiresCourseCompletion', value)}
+      />
 
       <fieldset className={formStyles.fieldset}>
         <legend>

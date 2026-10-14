@@ -3,7 +3,7 @@ import { prisma } from '../lib/prisma.js';
 import { requireAuth, requireRole } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
 
-const VALID_ROLES = ['STUDENT', 'INSTRUCTOR', 'ADMIN'] as const;
+const VALID_ROLES = ['STUDENT', 'GUARDIAN', 'INSTRUCTOR', 'ADMIN'] as const;
 type Role = (typeof VALID_ROLES)[number];
 
 interface CreateNavItemBody {
